@@ -5,21 +5,27 @@ import (
 )
 
 func init() {
-	registerCommand("website", sayWebsite)
-	registerCommand("rooster", sayRooster)
-	registerCommand("fb", SayFb)
-	registerCommand("Canvas", sayCanvas)
-	registerCommand("ects", sayEcts)
-	registerCommand("lunch", sayLunch)
-	registerCommand("sharepoint", saySharepoint)
-	registerCommand("corona", sayCorona)
-	registerCommand("stuvo", sayStuvo)
-	registerCommand("discord", sayDiscord)
-	registerCommand("kot", sayKot)
-	registerCommand("centen", sayCenten)
-	registerCommand("laptop", sayLaptop)
-	registerCommand("sinners", saySinners)
-	registerCommand("emt", sayEmt)
+	registerCommand("website", "links", "Link naar Thomas More website", sayWebsite)
+	registerCommand("rooster", "links", "Link naar ", sayRooster)
+	registerCommand("fb", "links", "Link naar Facebook paginas", SayFb)
+	registerCommand("canvas", "links", "Link naar Canvas", sayCanvas)
+	registerCommand("ects", "links", "Link naar ECTS fiches", sayEcts)
+	registerCommand("lunch", "links", "Link naar weekmenu", sayLunch)
+	registerCommand("sharepoint", "links", "Link naar Studentenportaal", saySharepoint)
+	registerCommand("corona", "links", "Link naar Corona informatie", sayCorona)
+	registerCommand("stuvo", "links", "Link naar Stuvo", sayStuvo)
+	registerCommand("discord", "links", "Link naar Discord", sayDiscord)
+	registerCommand("kot", "links", "Link naar kot informatie", sayKot)
+	registerCommand("centen", "links", "Link naar financi�le info", sayCenten)
+	registerCommand("laptop", "links", "Link naar info over laptops", sayLaptop)
+	registerCommand("sinners", "links", "Link naar Sinners", saySinners)
+	registerCommand("emt", "links", "Link naar EMT", sayEmt)
+	registerCommand("wallet", "Link naar wallet", sayWallet)
+	registerCommand("kuloket", "Link naar KUloket", sayKuloket)
+	registerCommand("printen", "Link naar printbeheer", sayPrinten)
+	registerCommand("campusshop", "Link naar campusshop", sayCampusshop)
+	registerCommand("icecube", "Link naar ice-cube", sayIcecube)
+	registerCommand("bot", "Link naar de git repo", sayBot)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -77,10 +83,32 @@ func sayLaptop(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func saySinners(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Wat is Sinners? https://sinners.be/")
-
 }
 
 func sayEmt(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Heeft de IT-Factory een eigen studentenvereniging? Jazeker: https://www.facebook.com/StudentenverenigingEMT")
+}
 
+func sayWallet(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Hoeveel staat er nog op mijn studentenkaart? https://wallet.thomasmore.be/Account/Login?ReturnUrl=%2F")
+}
+
+func sayKuloket(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Kuloket raadplegen? https://kuloket.be")
+}
+
+func sayPrinten(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Je print gegevens bekijken? https://printbeheer.thomasmore.be/")
+}
+
+func sayCampusshop(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Een kijkje nemen in de campusshop? https://www.campiniamedia.be/mvc/index.jsp")
+}
+
+func sayIcecube(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Ice-cube, wat is dat? https://www.thomasmore.be/ice-cube")
+}
+
+func sayBot(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Biep Boep, bekijk zeker mijn git repo https://github.com/itfactory-tm/thomas-bot ")
 }
