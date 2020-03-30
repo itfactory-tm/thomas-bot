@@ -19,12 +19,12 @@ func init() {
 	registerCommand("laptop", "links", "Link naar info over laptops", sayLaptop)
 	registerCommand("sinners", "links", "Link naar Sinners", saySinners)
 	registerCommand("emt", "links", "Link naar EMT", sayEmt)
-	registerCommand("wallet", "Link naar wallet", sayWallet)
-	registerCommand("kuloket", "Link naar KUloket", sayKuloket)
-	registerCommand("printen", "Link naar printbeheer", sayPrinten)
-	registerCommand("campusshop", "Link naar campusshop", sayCampusshop)
-	registerCommand("icecube", "Link naar ice-cube", sayIcecube)
-	registerCommand("bot", "Link naar de git repo", sayBot)
+	registerCommand("wallet", "links", "Link naar wallet", sayWallet)
+	registerCommand("kuloket", "links", "Link naar KUloket", sayKuloket)
+	registerCommand("printen", "links", "Link naar printbeheer", sayPrinten)
+	registerCommand("campusshop", "links", "Link naar campusshop", sayCampusshop)
+	registerCommand("icecube", "links", "Link naar ice-cube", sayIcecube)
+	registerCommand("bot", "links", "Link naar de git repo", sayBot)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
