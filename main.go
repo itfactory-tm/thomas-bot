@@ -7,8 +7,6 @@ import (
 	"regexp"
 	"syscall"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -56,8 +54,6 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-
-	spew.Dump(m.Content, commandRegex.MatchString(m.Content))
 
 	if commandRegex.MatchString(m.Content) {
 		if fn, exists := handlers[commandRegex.FindStringSubmatch(m.Content)[1]]; exists {
