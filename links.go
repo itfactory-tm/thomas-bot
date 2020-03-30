@@ -11,7 +11,7 @@ func init() {
 	registerCommand("Canvas",sayCanvas)
 	registerCommand("ects", sayEcts)
 	registerCommand("lunch", sayLunch)
-	registerCommand("365", SaySharepoint)
+	registerCommand("sharepoint", saySharepoint)
 	registerCommand("corona", sayCorona)
 	registerCommand("stuvo", sayStuvo)
 	registerCommand("discord", sayDiscord)
