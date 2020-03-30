@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var userRegex = regexp.MustCompile(`tm!u?n?mute <(.*)>`)
+var userRegex = regexp.MustCompile(`!u?n?mute <(.*)>`)
 
 func init() {
 	registerCommand("mute", "moderation", "Een gebruiker muten (admin only)", muteUser)
