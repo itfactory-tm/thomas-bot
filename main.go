@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"syscall"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -17,7 +19,7 @@ type config struct {
 
 var c config
 var handlers = map[string]func(*discordgo.Session, *discordgo.MessageCreate){}
-var commandRegex = regexp.MustCompile(`tm!(.*)\b`)
+var commandRegex = regexp.MustCompile(`tm!(\w*)\b`)
 
 func main() {
 	err := envconfig.Process("thomasbot", &c)
@@ -54,6 +56,8 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
+
+	spew.Dump(m.Content, commandRegex.MatchString(m.Content))
 
 	if commandRegex.MatchString(m.Content) {
 		if fn, exists := handlers[commandRegex.FindStringSubmatch(m.Content)[1]]; exists {
