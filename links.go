@@ -11,7 +11,7 @@ func init() {
 	registerCommand("Canvas",sayCanvas)
 	registerCommand("ects", sayEcts)
 	registerCommand("lunch", sayLunch)
-	registerCommand("365", say365)
+	registerCommand("365", SaySharepoint)
 	registerCommand("corona", sayCorona)
 	registerCommand("stuvo", sayStuvo)
 	registerCommand("discord", sayDiscord)
@@ -41,7 +41,7 @@ func sayLunch(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Heb je honger? Bekijk hier de menu voor deze week: https://thomasmore365.sharepoint.com/sites/James/NL/stuvo/Paginas/Weekmenu.aspx?tmbaseCampus=Geel")
 }
 
-func Say365(s *discordgo.Session, m *discordgo.MessageCreate) {
+func saySharepoint(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Bekijk hier de 365 sharepoint van de ITFactory: https://thomasmore365.sharepoint.com/sites/s.itfactory/SitePages/Start.aspx")
 
 }
