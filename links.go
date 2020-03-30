@@ -16,7 +16,6 @@ func init() {
 	registerCommand("stuvo", "links", "Link naar Stuvo", sayStuvo)
 	registerCommand("discord", "links", "Link naar Discord", sayDiscord)
 	registerCommand("kot", "links", "Link naar kot informatie", sayKot)
-	registerCommand("centen", "links", "Link naar financi�le info", sayCenten)
 	registerCommand("laptop", "links", "Link naar info over laptops", sayLaptop)
 	registerCommand("sinners", "links", "Link naar Sinners", saySinners)
 	registerCommand("emt", "links", "Link naar EMT", sayEmt)

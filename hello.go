@@ -5,7 +5,7 @@ import (
 )
 
 func init() {
-	registerCommand("hello", sayHello)
+	registerCommand("hello", "fun", "Zeg hallo", sayHello)
 }
 
 func sayHello(s *discordgo.Session, m *discordgo.MessageCreate) {
