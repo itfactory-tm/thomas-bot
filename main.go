@@ -12,18 +12,21 @@ import (
 )
 
 type config struct {
-	Token string
+	Token  string
+	Prefix string `default:"tm"`
 }
 
 var c config
 var handlers = map[string]func(*discordgo.Session, *discordgo.MessageCreate){}
-var commandRegex = regexp.MustCompile(`tm!(\w*)\b`)
+var commandRegex *regexp.Regexp
 
 func main() {
 	err := envconfig.Process("thomasbot", &c)
 	if c.Token == "" {
 		log.Fatal("No token specified")
 	}
+
+	commandRegex = regexp.MustCompile(c.Prefix + `!(\w*)\b`)
 
 	dg, err := discordgo.New("Bot " + c.Token)
 	if err != nil {
