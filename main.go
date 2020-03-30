@@ -64,6 +64,10 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func registerCommand(name string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
+func registerCommand(name, category, helpText string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
 	handlers[name] = fn
+	if _, exists := helpData[category]; !exists {
+		helpData[category] = map[string]string{}
+	}
+	helpData[category][name] = helpText
 }

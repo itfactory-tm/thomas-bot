@@ -10,8 +10,8 @@ import (
 var userRegex = regexp.MustCompile(`tm!u?n?mute <(.*)>`)
 
 func init() {
-	registerCommand("mute", muteUser)
-	registerCommand("unmute", unmuteUser)
+	registerCommand("mute", "moderation", "Een gebruiker muten (admin only)", muteUser)
+	registerCommand("unmute", "moderation", "Een gebruiker unmuten (admin only)", unmuteUser)
 }
 
 func muteUser(s *discordgo.Session, m *discordgo.MessageCreate) {
