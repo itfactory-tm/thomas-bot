@@ -8,7 +8,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo ./
 
 FROM alpine:3.11
 
-RUN apk add --no-cahce ca-certificates
+RUN apk add --no-cache ca-certificates
 
 COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot /usr/local/bin/
 
