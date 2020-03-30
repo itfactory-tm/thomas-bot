@@ -5,6 +5,7 @@ var admins = map[string]bool{
 	"687912036595663051": true, // Ann Hannes
 	"633665080994562048": true, // Ward Kerkhofs
 	"688028811677138986": true, // Els Peetermans
+	"371304151851728896": true, // Michiel Verboven
 }
 
 func isAdmin(userID string) bool {
