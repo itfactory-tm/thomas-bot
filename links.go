@@ -15,6 +15,11 @@ func init() {
 	registerCommand("corona", sayCorona)
 	registerCommand("stuvo", sayStuvo)
 	registerCommand("discord", sayDiscord)
+	registerCommand("kot", sayKot)
+	registerCommand("centen", sayCenten)
+	registerCommand("laptop", sayLaptop)
+	registerCommand("sinners", saySinners)
+	registerCommand("emt", sayEmt)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -57,6 +62,30 @@ func sayStuvo(s *discordgo.Session, m *discordgo.MessageCreate) {
 func sayDiscord(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Nog een beetje in de war over hoe Discord werkt?: https://support.discordapp.com/hc/nl")
 }
+
+func sayKot(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Informatie nodig rond op kot gaan? https://www.thomasmore.be/studenten/op-kot")
+}
+
+func sayCenten(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Wil je het financiële aspect van verder studeren bekijken? https://centenvoorstudenten.be/")
+}
+
+func sayLaptop(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Welk materiaal heb ik nodig om in de IT-Factory te kunnen starten? https://www.thomasmore.be/sites/www.thomasmore.be/files/Laptopspecificaties%20voor%20IT%20Factory-studenten%202019-2020.pdf")
+}
+
+func saySinners(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Wat is Sinners? https://sinners.be/")
+
+}
+
+func sayEmt(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Heeft de IT-Factory een eigen studentenvereniging? Jazeker: https://www.facebook.com/StudentenverenigingEMT")
+
+}
+
+
 
 
 
