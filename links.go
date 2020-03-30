@@ -49,7 +49,7 @@ func sayEcts(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func sayLunch(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSend(m.ChannelID, "Heb je honger? Bekijk hier de menu voor deze week: https://thomasmore365.sharepoint.com/sites/James/NL/stuvo/Paginas/Weekmenu.aspx?tmbaseCampus=Geel")
+	s.ChannelMessageSend(m.ChannelID, "Heb je honger? Bekijk hier het menu voor deze week: https://thomasmore365.sharepoint.com/sites/James/NL/stuvo/Paginas/Weekmenu.aspx?tmbaseCampus=Geel")
 }
 
 func saySharepoint(s *discordgo.Session, m *discordgo.MessageCreate) {
