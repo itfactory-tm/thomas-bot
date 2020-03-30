@@ -8,7 +8,7 @@ func init() {
 	registerCommand("website", sayWebsite)
 	registerCommand("rooster", sayRooster)
 	registerCommand("fb", SayFb)
-	registerCommand("Canvas",sayCanvas)
+	registerCommand("Canvas", sayCanvas)
 	registerCommand("ects", sayEcts)
 	registerCommand("lunch", sayLunch)
 	registerCommand("sharepoint", saySharepoint)
@@ -68,7 +68,7 @@ func sayKot(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func sayCenten(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSend(m.ChannelID, "Wil je het financiële aspect van verder studeren bekijken? https://centenvoorstudenten.be/")
+	s.ChannelMessageSend(m.ChannelID, "Wil je het financiÃ«le aspect van verder studeren bekijken? https://centenvoorstudenten.be/")
 }
 
 func sayLaptop(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -84,8 +84,3 @@ func sayEmt(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Heeft de IT-Factory een eigen studentenvereniging? Jazeker: https://www.facebook.com/StudentenverenigingEMT")
 
 }
-
-
-
-
-
