@@ -8,7 +8,7 @@ func init() {
 	registerCommand("website", "links", "Link naar Thomas More website", sayWebsite)
 	registerCommand("rooster", "links", "Link naar ", sayRooster)
 	registerCommand("fb", "links", "Link naar Facebook paginas", SayFb)
-	registerCommand("Canvas", "links", "Link naar Canvas", sayCanvas)
+	registerCommand("canvas", "links", "Link naar Canvas", sayCanvas)
 	registerCommand("ects", "links", "Link naar ECTS fiches", sayEcts)
 	registerCommand("lunch", "links", "Link naar weekmenu", sayLunch)
 	registerCommand("sharepoint", "links", "Link naar Studentenportaal", saySharepoint)
