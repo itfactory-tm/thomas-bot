@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -16,10 +17,22 @@ func init() {
 func sayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	embed := NewEmbed()
 	embed.SetTitle("Help")
-	for categoryname, content := range helpData {
+
+	categories := make([]string, 0, len(helpData))
+	for k := range helpData {
+		categories = append(categories, k)
+	}
+	sort.Strings(categories)
+	for _, categoryname := range categories {
+		commandoKeys := make([]string, 0, len(helpData[categoryname]))
+		for k := range helpData[categoryname] {
+			commandoKeys = append(commandoKeys, k)
+		}
+		sort.Strings(commandoKeys)
+
 		out := ""
-		for commandoName, helptext := range content {
-			out += fmt.Sprintf("* `%s`: %s\n", commandoName, helptext)
+		for _, commandoName := range commandoKeys {
+			out += fmt.Sprintf("* `%s`: %s\n", commandoName, helpData[categoryname][commandoName])
 		}
 		embed.AddField(categoryname, out)
 	}
