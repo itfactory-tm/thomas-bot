@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"strings"
+	"regexp"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
@@ -16,6 +16,8 @@ type config struct {
 }
 
 var c config
+var handlers = map[string]func(*discordgo.Session, *discordgo.MessageCreate){}
+var commandRegex = regexp.MustCompile(`tm!(.*)\b`)
 
 func main() {
 	err := envconfig.Process("thomasbot", &c)
@@ -53,7 +55,13 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.Contains(m.Content, "tm!hello") {
-		s.ChannelMessageSend(m.ChannelID, "Beep bop boop! Ik ben Thomas Bot, fork me on GitHub!")
+	if commandRegex.MatchString(m.Content) {
+		if fn, exists := handlers[commandRegex.FindStringSubmatch(m.Content)[1]]; exists {
+			fn(s, m)
+		}
 	}
+}
+
+func registerCommand(name string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
+	handlers[name] = fn
 }
