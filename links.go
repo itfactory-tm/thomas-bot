@@ -25,6 +25,7 @@ func init() {
 	registerCommand("printen", "Link naar printbeheer", sayPrinten)
 	registerCommand("campusshop", "Link naar campusshop", sayCampusshop)
 	registerCommand("icecube", "Link naar ice-cube", sayIcecube)
+	registerCommand("bot", "Link naar de git repo", sayBot)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -103,6 +104,11 @@ func sayPrinten(s *discordgo.Session, m *discordgo.MessageCreate) {
 func sayCampusshop(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Een kijkje nemen in de campusshop? https://www.campiniamedia.be/mvc/index.jsp")
 }
+
 func sayIcecube(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Ice-cube, wat is dat? https://www.thomasmore.be/ice-cube")
+}
+
+func sayBot(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Biep Boep, bekijk zeker mijn git repo https://github.com/itfactory-tm/thomas-bot ")
 }
