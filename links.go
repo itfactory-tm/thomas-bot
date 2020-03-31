@@ -25,8 +25,8 @@ func init() {
 	registerCommand("campusshop", "links", "Link naar campusshop", sayCampusshop)
 	registerCommand("icecube", "links", "Link naar ice-cube", sayIcecube)
 	registerCommand("bot", "links", "Link naar de git repo", sayBot)
-	registerCommand("inschrijven","links", "Link naar inschrijven", sayInschrijving)
-	registerCommand("junior", "links","Link naar Junior College", sayJunior)
+	registerCommand("inschrijven", "links", "Link naar inschrijven", sayInschrijving)
+	registerCommand("junior", "links", "Link naar Junior College", sayJunior)
 	registerCommand("oho", "links", "Link naar OHO", sayOho)
 }
 
