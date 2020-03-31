@@ -6,7 +6,7 @@ import (
 
 func init() {
 	registerCommand("website", "links", "Link naar Thomas More website", sayWebsite)
-	registerCommand("rooster", "links", "Link naar ", sayRooster)
+	registerCommand("rooster", "links", "Link naar lessenrooster", sayRooster)
 	registerCommand("fb", "links", "Link naar Facebook paginas", SayFb)
 	registerCommand("canvas", "links", "Link naar Canvas", sayCanvas)
 	registerCommand("ects", "links", "Link naar ECTS fiches", sayEcts)
