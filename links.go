@@ -25,6 +25,8 @@ func init() {
 	registerCommand("campusshop", "links", "Link naar campusshop", sayCampusshop)
 	registerCommand("icecube", "links", "Link naar ice-cube", sayIcecube)
 	registerCommand("bot", "links", "Link naar de git repo", sayBot)
+	registerCommand("inschrijven","links", "Link naar inschrijven", sayInschrijving)
+	registerCommand("junior", "links","Link naar Junior College", sayJunior)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -110,4 +112,16 @@ func sayIcecube(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func sayBot(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Biep Boep, bekijk zeker mijn git repo https://github.com/itfactory-tm/thomas-bot ")
+}
+
+func sayInschrijving(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Wil je je inschrijven? Dat kan hier! https://www.thomasmore.be/inschrijven")
+}
+
+func sayJunior(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Benieuwd wat Junior College is? Bekijk het hier: https://www.thomasmore.be/site/junior-university-college")
+}
+
+func sayOho(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Werken en studeren combineren? Dat kan zeker! https://www.thomasmore.be/opleidingen/professionele-bachelor/toegepaste-informatica/toegepaste-informatica-combinatie-werken-en-studeren-oho")
 }
