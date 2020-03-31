@@ -16,7 +16,7 @@ namespace ThomasBot.Commands
             await ctx.RespondAsync("Bezoek onze website: https://thomasmore.be/opleidingen/professionele-bachelor/it-factory");
         }
 
-        [Command("website")]
+        [Command("rooster")]
         [Description("Link naar lessenrooster")]
         public async Task Rooster(CommandContext ctx)
         {

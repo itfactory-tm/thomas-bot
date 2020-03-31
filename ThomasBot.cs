@@ -90,7 +90,7 @@ namespace ThomasBot
                 // enable mentioning the bot as a command prefix
                 EnableMentionPrefix = true,
 
-                EnableDefaultHelp = false,
+                EnableDefaultHelp = true,
 
                 IgnoreExtraArguments = true
             };
@@ -375,7 +375,7 @@ namespace ThomasBot
                     var embed = new DiscordEmbedBuilder
                     {
                         Title = "Error",
-                        Description = $"{emoji} {e.Exception.Message} Type **>help {e.Command.Parent?.Name?.ToString() + " " + e.Command.Name}** to see the commands usage.",
+                        Description = $"{emoji} {e.Exception.Message} Type **{CommandPrefix}help {e.Command.Parent?.Name?.ToString() + " " + e.Command.Name}** to see the commands usage.",
                         Color = new DiscordColor(0xFF0000) // red
                     };
                     await e.Context.RespondAsync("", embed: embed);
