@@ -4,8 +4,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-
-
 func init() {
 	registerCommand("erasmus", "links", "Link naar erasmus", sayErasmus)
 	registerCommand("partners", "links", "Link naar partners", sayPartners)
