@@ -4,6 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Embed is a helper struct fro message embeds
 type Embed struct {
 	*discordgo.MessageEmbed
 }
