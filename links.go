@@ -28,6 +28,7 @@ func init() {
 	registerCommand("inschrijven", "links", "Link naar inschrijven", sayInschrijving)
 	registerCommand("junior", "links", "Link naar Junior College", sayJunior)
 	registerCommand("oho", "links", "Link naar OHO", sayOho)
+	registerCommand("centen", "links", "Link naar financiële informatie", sayCenten)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
