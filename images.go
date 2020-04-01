@@ -39,6 +39,6 @@ func sayLove(s *discordgo.Session, m *discordgo.MessageCreate) {
 func sayLoesje(s *discordgo.Session, m *discordgo.MessageCreate) {
 	i := rand.Intn(7)
 	embed := NewEmbed()
-	fmt.Println(fmt.Sprintf("https://static.eyskens.me/thomas-bot/loesje%d.png", i+1))
+	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/loesje%d.png", i+1))
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
