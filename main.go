@@ -22,6 +22,9 @@ var commandRegex *regexp.Regexp
 
 func main() {
 	err := envconfig.Process("thomasbot", &c)
+	if err != nil {
+		log.Fatal(err)
+	}
 	if c.Token == "" {
 		log.Fatal("No token specified")
 	}
