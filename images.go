@@ -8,6 +8,8 @@ import (
 
 func init() {
 	registerCommand("erasmus", "links", "Link naar erasmus", sayErasmus)
+	registerCommand("partners", "links", "Link naar partners", sayPartners)
+	registerCommand("love", "fun", "Toon wat liefde aan elkaar <3", sayLove)
 }
 
 func sayErasmus(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -18,19 +20,11 @@ func sayErasmus(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
 
-func init() {
-	registerCommand("partners", "links", "Link naar partners", sayPartners)
-}
-
 func sayPartners(s *discordgo.Session, m *discordgo.MessageCreate) {
 	embed := NewEmbed()
 	embed.SetTitle("Partners in education")
 	embed.SetImage("https://static.eyskens.me/thomas-bot/voorstelling_partners_in_education.png")
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
-}
-
-func init() {
-	registerCommand("love", "fun", "Toon wat liefde aan elkaar <3", sayLove)
 }
 
 func sayLove(s *discordgo.Session, m *discordgo.MessageCreate) {
