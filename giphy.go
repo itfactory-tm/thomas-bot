@@ -9,8 +9,6 @@ import (
 
 func init() {
 	registerCommand("clap", "fun", "Applaus!", clap)
-	registerCommand("partners", "links", "Link naar partners", sayPartners)
-	registerCommand("love", "fun", "Toon wat liefde aan elkaar <3", sayLove)
 }
 
 func clap(s *discordgo.Session, m *discordgo.MessageCreate) {
