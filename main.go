@@ -12,8 +12,9 @@ import (
 )
 
 type config struct {
-	Token  string
-	Prefix string `default:"tm"`
+	Token    string
+	Prefix   string `default:"tm"`
+	GiphyKey string
 }
 
 var c config
