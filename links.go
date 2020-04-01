@@ -7,7 +7,7 @@ import (
 func init() {
 	registerCommand("website", "links", "Link naar Thomas More website", sayWebsite)
 	registerCommand("rooster", "links", "Link naar lessenrooster", sayRooster)
-	registerCommand("fb", "links", "Link naar Facebook paginas", SayFb)
+	registerCommand("fb", "links", "Link naar Facebook paginas", sayFb)
 	registerCommand("canvas", "links", "Link naar Canvas", sayCanvas)
 	registerCommand("ects", "links", "Link naar ECTS fiches", sayEcts)
 	registerCommand("lunch", "links", "Link naar weekmenu", sayLunch)
@@ -28,6 +28,7 @@ func init() {
 	registerCommand("inschrijven", "links", "Link naar inschrijven", sayInschrijving)
 	registerCommand("junior", "links", "Link naar Junior College", sayJunior)
 	registerCommand("oho", "links", "Link naar OHO", sayOho)
+	registerCommand("centen", "links", "Link naar financiële informatie", sayCenten)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -38,7 +39,7 @@ func sayRooster(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Bekijk hier je lessenrooster: https://rooster.thomasmore.be/")
 }
 
-func SayFb(s *discordgo.Session, m *discordgo.MessageCreate) {
+func sayFb(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Bekijk hier onze facebook pagina van Toegepaste informatica: https://www.facebook.com/ToegepasteInformatica.ThomasMoreBE & ELO-ICT: https://www.facebook.com/ElektronicaICT.ThomasMoreBE & ACS: https://www.facebook.com/ACS.ThomasMoreBE")
 }
 

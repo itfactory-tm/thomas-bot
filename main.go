@@ -22,6 +22,9 @@ var commandRegex *regexp.Regexp
 
 func main() {
 	err := envconfig.Process("thomasbot", &c)
+	if err != nil {
+		log.Fatal(err)
+	}
 	if c.Token == "" {
 		log.Fatal("No token specified")
 	}
@@ -46,7 +49,7 @@ func main() {
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 
 	// Cleanly close down the Discord session.
