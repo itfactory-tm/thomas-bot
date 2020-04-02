@@ -29,6 +29,7 @@ func init() {
 	registerCommand("junior", "links", "Link naar Junior College", sayJunior)
 	registerCommand("oho", "links", "Link naar OHO", sayOho)
 	registerCommand("centen", "links", "Link naar financiële informatie", sayCenten)
+	registerCommand("studenten","links", "Link naar studenten info", sayStudenten)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -127,3 +128,8 @@ func sayJunior(s *discordgo.Session, m *discordgo.MessageCreate) {
 func sayOho(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Werken en studeren combineren? Dat kan zeker! https://www.thomasmore.be/opleidingen/professionele-bachelor/toegepaste-informatica/toegepaste-informatica-combinatie-werken-en-studeren-oho")
 }
+
+func sayStudenten(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, "Op zoek naar meer algemene info rondom verder studeren? https://www.thomasmore.be/studenten")
+}
+
