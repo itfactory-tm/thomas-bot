@@ -18,6 +18,16 @@ func sayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	embed := NewEmbed()
 	embed.SetTitle("Help")
 
+	c, err := s.UserChannelCreate(m.Author.ID)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Cannot DM user")
+		return
+	}
+
+	if c.ID != m.ChannelID {
+		s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
+	}
+
 	categories := make([]string, 0, len(helpData))
 	for k := range helpData {
 		categories = append(categories, k)
@@ -36,5 +46,5 @@ func sayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		embed.AddField(categoryname, out)
 	}
-	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
+	s.ChannelMessageSendEmbed(c.ID, embed.MessageEmbed)
 }
