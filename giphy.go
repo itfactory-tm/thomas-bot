@@ -16,6 +16,12 @@ func init() {
 }
 
 func clap(s *discordgo.Session, m *discordgo.MessageCreate) {
+	go func() {
+		queueChan <- "./sounds/clapping2.wav"
+	}()
+	if !audioConnected {
+		go connectVoice(s)
+	}
 	postRandomGif(s, m, "applause")
 }
 
