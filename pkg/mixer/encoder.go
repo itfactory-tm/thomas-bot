@@ -13,18 +13,15 @@ import (
 	"github.com/hraban/opus"
 )
 
-var (
-	Silence = []byte{0xF8, 0xFF, 0xFE}
-)
-
+// InputStream is the type used to control an input file stream
 type InputStream struct {
-	id      uint64
-	decoder *opus.Decoder
+	id uint64
 
 	bufLock sync.Mutex
 	buf     []int16
 }
 
+// Encoder is a discordgo voice encoder that can mix streams
 type Encoder struct {
 	queueLock    sync.Mutex
 	inputStreams map[uint64]*InputStream
@@ -37,19 +34,14 @@ type Encoder struct {
 	pcmbuf []int16
 }
 
+// NewInputStream gives a new InputStream for a given ID
 func NewInputStream(id uint64) *InputStream {
-	dec, err := opus.NewDecoder(48000, 2)
-	if err != nil {
-		panic("Failed creating decoder: " + err.Error())
-	}
-
 	return &InputStream{
-		decoder: dec,
-		id:      id,
+		id: id,
 	}
 }
 
-// Handles an incoming voice packet
+// Handles an a WAV file decoding
 func (is *InputStream) HandleFile(path string) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -80,6 +72,7 @@ func (is *InputStream) HandleFile(path string) {
 	is.bufLock.Unlock()
 }
 
+// Read gives back a buffer for the audio file, implements io.Reader
 func (is *InputStream) Read(b []int16) (n int, err error) {
 	is.bufLock.Lock()
 	defer is.bufLock.Unlock()
@@ -92,6 +85,7 @@ func (is *InputStream) Read(b []int16) (n int, err error) {
 	return
 }
 
+// NewEncoder gives a new Encoder
 func NewEncoder() *Encoder {
 	enc, err := opus.NewEncoder(48000, 2, opus.AppAudio)
 	if err != nil {
@@ -104,10 +98,12 @@ func NewEncoder() *Encoder {
 	}
 }
 
+// Stop stops the encoder
 func (e *Encoder) Stop() {
 	close(e.stop)
 }
 
+// Queue queues a WAV file input for a stream ID, different IDs live mix the audio, same IDs play on serial
 func (e *Encoder) Queue(id uint64, path string) {
 
 	st, ok := e.inputStreams[id]
@@ -121,21 +117,21 @@ func (e *Encoder) Queue(id uint64, path string) {
 	st.HandleFile(path)
 }
 
+// Run runs the encoder
 func (e *Encoder) Run() {
 	log("Encoder running")
-	// ticker := time.NewTicker(time.Millisecond * 120)
 	for {
 		select {
 		case <-e.stop:
 			log("Encoder stopping")
 			return
 		default:
-			e.ProcessQueue()
+			e.processQueue()
 		}
 	}
 }
 
-func (e *Encoder) ProcessQueue() {
+func (e *Encoder) processQueue() {
 	e.queueLock.Lock()
 	mixedPCM := make([]int16, 48*20*2)
 	for _, st := range e.inputStreams {
@@ -169,6 +165,7 @@ func (e *Encoder) ProcessQueue() {
 	e.VC.OpusSend <- output[:n]
 }
 
+// HasFinishedAll returns true if all streams have no more audio to play
 func (e *Encoder) HasFinishedAll() bool {
 	for _, st := range e.inputStreams {
 		if len(st.buf) > 0 {
