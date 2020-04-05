@@ -41,7 +41,7 @@ func NewInputStream(id uint64) *InputStream {
 	}
 }
 
-// Handles an a WAV file decoding
+// HandleFile handles an a WAV file decoding
 func (is *InputStream) HandleFile(path string) {
 	f, err := os.Open(path)
 	if err != nil {
