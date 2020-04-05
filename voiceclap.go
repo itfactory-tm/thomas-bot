@@ -10,11 +10,11 @@ import (
 )
 
 // TODO: automate these
-var itfDiscord = "687565213943332875"
-var audioChannel = "694998796618170539"
+const itfDiscord = "687565213943332875"
+const audioChannel = "688370622228725848"
 
 var audioConnected = false
-var queueChan = make(chan string)
+var voiceQueueChan = make(chan string)
 
 func connectVoice(dg *discordgo.Session) {
 	audioConnected = true
@@ -33,7 +33,7 @@ func connectVoice(dg *discordgo.Session) {
 		var i uint64
 		for {
 			select {
-			case f := <-queueChan:
+			case f := <-voiceQueueChan:
 				go encoder.Queue(uint64(i), f)
 				i++
 			case <-doneChan:

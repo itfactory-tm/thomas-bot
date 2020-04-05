@@ -7,6 +7,8 @@ import (
 	libgiphy "github.com/sanzaru/go-giphy"
 )
 
+const discordTalksVragen = "689915740564095061"
+
 func init() {
 	registerCommand("clap", "fun", "Applaus!", clap)
 	registerCommand("hug", "fun", "Omdat je altijd een knuffel kunt gebruiken", hug)
@@ -16,11 +18,13 @@ func init() {
 }
 
 func clap(s *discordgo.Session, m *discordgo.MessageCreate) {
-	go func() {
-		queueChan <- "./sounds/clapping2.wav"
-	}()
-	if !audioConnected {
-		go connectVoice(s)
+	if m.ChannelID == discordTalksVragen {
+		go func() {
+			voiceQueueChan <- "./sounds/clapping2.wav"
+		}()
+		if !audioConnected {
+			go connectVoice(s)
+		}
 	}
 	postRandomGif(s, m, "applause")
 }
