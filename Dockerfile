@@ -12,7 +12,7 @@ FROM ubuntu:18.04
 
 RUN apt-get update && apt-get install -y libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev
 
-RUN mkdir /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
+RUN mkdir -p /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 COPY ./sounds /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/sounds
 
