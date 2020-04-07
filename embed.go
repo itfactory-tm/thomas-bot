@@ -108,6 +108,27 @@ func (e *Embed) SetImage(args ...string) *Embed {
 	return e
 }
 
+//SetVideo ...
+func (e *Embed) SetVideo(args ...string) *Embed {
+	var URL string
+	var proxyURL string
+
+	if len(args) == 0 {
+		return e
+	}
+	if len(args) > 0 {
+		URL = args[0]
+	}
+	if len(args) > 1 {
+		proxyURL = args[1]
+	}
+	e.Video = &discordgo.MessageEmbedVideo{
+		URL:      URL,
+		ProxyURL: proxyURL,
+	}
+	return e
+}
+
 //SetThumbnail ...
 func (e *Embed) SetThumbnail(args ...string) *Embed {
 	var URL string

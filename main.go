@@ -12,9 +12,14 @@ import (
 )
 
 type config struct {
-	Token    string
-	Prefix   string `default:"tm"`
-	GiphyKey string
+	Token                    string
+	Prefix                   string `default:"tm"`
+	GiphyKey                 string
+	TwitterEnabled           bool   `envconfig:"TWITTER_ENABLED"`
+	TwitterConsumerKey       string `envconfig:"TWITTER_CONSUMER_KEY"`
+	TwitterConsumerSecret    string `envconfig:"TWITTER_CONSUMER_SECRET"`
+	TwitterAccessToken       string `envconfig:"TWITTER_ACCESS_TOKEN"`
+	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
 }
 
 var c config
@@ -47,6 +52,8 @@ func main() {
 	// TODO: add connection error handlers
 
 	dg.UpdateStreamingStatus(0, "Thomas Bot", "https://github.com/itfactory-tm/thomas-bot")
+
+	go postHashtagTweets(dg)
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
