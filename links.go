@@ -29,7 +29,7 @@ func init() {
 	registerCommand("junior", "links", "Link naar Junior College", sayJunior)
 	registerCommand("oho", "links", "Link naar OHO", sayOho)
 	registerCommand("centen", "links", "Link naar financiële informatie", sayCenten)
-	registerCommand("studenten","links", "Link naar studenten info", sayStudenten)
+	registerCommand("studenten", "links", "Link naar studenten info", sayStudenten)
 }
 
 func sayWebsite(s *discordgo.Session, m *discordgo.MessageCreate) {
