@@ -3,8 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"github.com/dghubble/oauth1"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -47,9 +45,7 @@ func postHashtagTweets(s *discordgo.Session) {
 			// we do not take people with less than 5 followers seriously
 			return
 		}
-		//spew.Dump(tweet)
 		embed := NewEmbed()
-		spew.Dump(tweet.Text)
 		embed.AddField("Tweet", tweet.Text)
 
 		images := []string{}
