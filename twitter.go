@@ -42,6 +42,11 @@ func postHashtagTweets(s *discordgo.Session) {
 		if tweet.Retweeted {
 			return
 		}
+
+		if tweet.User.FollowersCount < 5 {
+			// we do not take people with less than 5 followers seriously
+			return
+		}
 		//spew.Dump(tweet)
 		embed := NewEmbed()
 		spew.Dump(tweet.Text)
