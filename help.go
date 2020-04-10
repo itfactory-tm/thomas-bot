@@ -96,7 +96,7 @@ func handleHelpReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		sort.Strings(keys)
 
 		for _, key := range keys {
-			messages = append(messages, fmt.Sprintf("%s: %s", data[key].Name, data[key].Description))
+			messages = append(messages, fmt.Sprintf("* `%s`: %s", data[key].Name, data[key].Description))
 		}
 
 		embed := helpMenu()
@@ -112,7 +112,7 @@ func helpMenu() *Embed {
 
 	categories := []string{}
 	for category := range helpData {
-		categories = append(categories, fmt.Sprintf("%d:\t%s", category, command.CategoryToString(category)))
+		categories = append(categories, fmt.Sprintf("* `%d`:\t%s", category, command.CategoryToString(category)))
 	}
 	sort.Strings(categories)
 	embed.AddField("kies een categorie", strings.Join(categories, "\n"))
