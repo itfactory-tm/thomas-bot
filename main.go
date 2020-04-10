@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"syscall"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/command"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -23,7 +25,7 @@ type config struct {
 }
 
 var c config
-var handlers = map[string]func(*discordgo.Session, *discordgo.MessageCreate){}
+var handlers = map[string]command.Command{}
 var commandRegex *regexp.Regexp
 
 func main() {
@@ -44,6 +46,7 @@ func main() {
 
 	// Register handlers
 	dg.AddHandler(onMessage)
+	dg.AddHandler(onReactionAdd)
 
 	err = dg.Open()
 	if err != nil {
@@ -72,16 +75,32 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if commandRegex.MatchString(m.Content) {
-		if fn, exists := handlers[commandRegex.FindStringSubmatch(m.Content)[1]]; exists {
-			fn(s, m)
+		if c, exists := handlers[commandRegex.FindStringSubmatch(m.Content)[1]]; exists {
+			c.Handler(s, m)
 		}
 	}
 }
 
-func registerCommand(name, category, helpText string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
-	handlers[name] = fn
-	if _, exists := helpData[category]; !exists {
-		helpData[category] = map[string]string{}
+func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	handleHelpReaction(s, r)
+}
+
+func registerCommand(c command.Command) {
+	handlers[c.Name] = c
+	if _, exists := helpData[c.Category]; !exists {
+		if !c.Hidden {
+			helpData[c.Category] = map[string]command.Command{}
+		}
 	}
-	helpData[category][name] = helpText
+	helpData[c.Category][c.Name] = c
+}
+
+func registerCommandDEPRECATED(name, category, helpText string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
+	registerCommand(command.Command{
+		Name:        name,
+		Category:    command.StringToCategory(category),
+		Description: helpText,
+		Hidden:      false,
+		Handler:     fn,
+	})
 }
