@@ -4,11 +4,19 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/command"
+
 	"github.com/bwmarrin/discordgo"
 )
 
 func init() {
-	registerCommand("clean", "moderation", "Een channel leeghalen (admin only)", cleanChannel)
+	registerCommand(command.Command{
+		Name:        "clean",
+		Category:    command.CategoryModeratie,
+		Description: "Een channel leeghalen (admin only)",
+		Hidden:      false,
+		Handler:     cleanChannel,
+	})
 }
 
 func cleanChannel(s *discordgo.Session, m *discordgo.MessageCreate) {

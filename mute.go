@@ -4,14 +4,28 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/command"
+
 	"github.com/bwmarrin/discordgo"
 )
 
 var userRegex = regexp.MustCompile(`!u?n?mute <(.*)>`)
 
 func init() {
-	registerCommand("mute", "moderation", "Een gebruiker muten (admin only)", muteUser)
-	registerCommand("unmute", "moderation", "Een gebruiker unmuten (admin only)", unmuteUser)
+	registerCommand(command.Command{
+		Name:        "mute",
+		Category:    command.CategoryModeratie,
+		Description: "Een gebruiker muten (admin only)",
+		Hidden:      false,
+		Handler:     muteUser,
+	})
+	registerCommand(command.Command{
+		Name:        "unmute",
+		Category:    command.CategoryModeratie,
+		Description: "Een gebruiker unmuten (admin only)",
+		Hidden:      false,
+		Handler:     unmuteUser,
+	})
 }
 
 func muteUser(s *discordgo.Session, m *discordgo.MessageCreate) {

@@ -8,10 +8,10 @@ import (
 )
 
 func init() {
-	registerCommand("erasmus", "links", "Link naar erasmus", sayErasmus)
-	registerCommand("partners", "links", "Link naar partners", sayPartners)
-	registerCommand("love", "fun", "Toon wat liefde aan elkaar <3", sayLove)
-	registerCommand("loesje", "fun", "'Een fan van loesje' heeft wijze spreuken", sayLoesje)
+	registerCommandDEPRECATED("erasmus", "links", "Link naar erasmus", sayErasmus)
+	registerCommandDEPRECATED("partners", "links", "Link naar partners", sayPartners)
+	registerCommandDEPRECATED("love", "fun", "Toon wat liefde aan elkaar <3", sayLove)
+	registerCommandDEPRECATED("loesje", "fun", "'Een fan van loesje' heeft wijze spreuken", sayLoesje)
 }
 
 func sayErasmus(s *discordgo.Session, m *discordgo.MessageCreate) {

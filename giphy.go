@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/command"
+
 	"github.com/bwmarrin/discordgo"
 	libgiphy "github.com/sanzaru/go-giphy"
 )
@@ -10,11 +12,41 @@ import (
 const discordTalksVragen = "689915740564095061"
 
 func init() {
-	registerCommand("clap", "fun", "Applaus!", clap)
-	registerCommand("hug", "fun", "Omdat je altijd een knuffel kunt gebruiken", hug)
-	registerCommand("cat", "fun", "Voor de kattenmensen", cat)
-	registerCommand("dog", "fun", "Voor de honden fans", dog)
-	registerCommand("bunny", "fun", "Voor de niet katten of hondenmensen", bunny)
+	registerCommand(command.Command{
+		Name:        "clap",
+		Category:    command.CategoryFun,
+		Description: "Applaus!",
+		Hidden:      false,
+		Handler:     clap,
+	})
+	registerCommand(command.Command{
+		Name:        "hug",
+		Category:    command.CategoryFun,
+		Description: "Omdat je altijd een knuffel kunt gebruiken",
+		Hidden:      false,
+		Handler:     hug,
+	})
+	registerCommand(command.Command{
+		Name:        "cat",
+		Category:    command.CategoryFun,
+		Description: "Voor de kattenmensen",
+		Hidden:      false,
+		Handler:     cat,
+	})
+	registerCommand(command.Command{
+		Name:        "dog",
+		Category:    command.CategoryFun,
+		Description: "Voor de honden fans",
+		Hidden:      false,
+		Handler:     dog,
+	})
+	registerCommand(command.Command{
+		Name:        "bunny",
+		Category:    command.CategoryFun,
+		Description: "Voor de niet katten of hondenmensen",
+		Hidden:      false,
+		Handler:     bunny,
+	})
 }
 
 func clap(s *discordgo.Session, m *discordgo.MessageCreate) {
