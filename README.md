@@ -14,10 +14,9 @@ It helps teachers doing their job and students also... sometimes...
     - On Ubuntu and other Debian-based distros, install the following packages: `libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev curl`.
     - On Arch-based distros, install the following packages: `libsoxr sdl portaudio opusfile`.
     - On Windows, you're on your own for now :)
-2. Build the project using `go build`.
-3. Run the compiled `thomas-bot` binary:
-    - On Unix-like systems, run `THOMASBOT_TOKEN={TOKEN} ./thomas-bot`, where `{TOKEN}` is your Discord bot's token.
-    - On Windows, change your environment variables through your [system properties](https://docs.oracle.com/en/database/oracle/r-enterprise/1.5.1/oread/creating-and-modifying-environment-variables-on-windows.html). Then, run the bot.
+2. Compile and run the project:
+    - On Unix-like systems, run `THOMASBOT_TOKEN={TOKEN} go run ./`, where `{TOKEN}` is your Discord bot's token.
+    - On Windows, set the `THOMASBOT_TOKEN` environment variable through your [system properties](https://docs.oracle.com/en/database/oracle/r-enterprise/1.5.1/oread/creating-and-modifying-environment-variables-on-windows.html). Then, run the bot using `go run ./`
 
 ### Docker
 0. Make sure [Docker](https://docs.docker.com/get-started/) is installed and working.
