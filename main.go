@@ -95,6 +95,18 @@ func registerCommand(c command.Command) {
 	helpData[c.Category][c.Name] = c
 }
 
+func registerHardcodedCommand(name, helpText, category, response string) {
+	registerCommand(command.Command{
+		Name:        name,
+		Category:    command.StringToCategory(category),
+		Description: helpText,
+		Hidden:      false,
+		Handler: func(s *discordgo.Session, m *discordgo.MessageCreate) {
+			s.ChannelMessageSend(m.ChannelID, response)
+		},
+	})
+}
+
 func registerCommandDEPRECATED(name, category, helpText string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
 	registerCommand(command.Command{
 		Name:        name,
