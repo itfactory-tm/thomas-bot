@@ -1,5 +1,10 @@
 package main
 
+import (
+	"github.com/bwmarrin/discordgo"
+	"github.com/itfactory-tm/thomas-bot/pkg/command"
+)
+
 func init() {
 	registerLinkCommand("website", "Link naar Thomas More website", "Bezoek onze website: https://thomasmore.be/opleidingen/professionele-bachelor/it-factory")
 	registerLinkCommand("rooster", "Link naar lessenrooster", "Bekijk hier je lessenrooster: https://rooster.thomasmore.be/")
@@ -29,5 +34,13 @@ func init() {
 }
 
 func registerLinkCommand(name, helpText, response string) {
-	registerHardcodedCommand(name, helpText, "Links", response)
+	registerCommand(command.Command{
+		Name:        name,
+		Category:    command.StringToCategory("Links"),
+		Description: helpText,
+		Hidden:      false,
+		Handler: func(s *discordgo.Session, m *discordgo.MessageCreate) {
+			s.ChannelMessageSend(m.ChannelID, response)
+		},
+	})
 }
