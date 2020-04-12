@@ -19,33 +19,21 @@ func init() {
 		Hidden:      false,
 		Handler:     clap,
 	})
+	registerGiphyCommand("hug", "Omdat je altijd een knuffel kunt gebruiken", "hug")
+	registerGiphyCommand("cat", "Voor de kattenmensen", "cat")
+	registerGiphyCommand("dog", "Voor de honden fans", "dog")
+	registerGiphyCommand("bunny", "Voor de niet katten of hondenmensen", "bunny")
+}
+
+func registerGiphyCommand(name, description, keyword string) {
 	registerCommand(command.Command{
-		Name:        "hug",
+		Name:        name,
 		Category:    command.CategoryFun,
-		Description: "Omdat je altijd een knuffel kunt gebruiken",
+		Description: description,
 		Hidden:      false,
-		Handler:     hug,
-	})
-	registerCommand(command.Command{
-		Name:        "cat",
-		Category:    command.CategoryFun,
-		Description: "Voor de kattenmensen",
-		Hidden:      false,
-		Handler:     cat,
-	})
-	registerCommand(command.Command{
-		Name:        "dog",
-		Category:    command.CategoryFun,
-		Description: "Voor de honden fans",
-		Hidden:      false,
-		Handler:     dog,
-	})
-	registerCommand(command.Command{
-		Name:        "bunny",
-		Category:    command.CategoryFun,
-		Description: "Voor de niet katten of hondenmensen",
-		Hidden:      false,
-		Handler:     bunny,
+		Handler: func(s *discordgo.Session, m *discordgo.MessageCreate) {
+			postRandomGif(s, m, keyword)
+		},
 	})
 }
 
@@ -59,22 +47,6 @@ func clap(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 	postRandomGif(s, m, "applause")
-}
-
-func hug(s *discordgo.Session, m *discordgo.MessageCreate) {
-	postRandomGif(s, m, "hug")
-}
-
-func cat(s *discordgo.Session, m *discordgo.MessageCreate) {
-	postRandomGif(s, m, "cat")
-}
-
-func dog(s *discordgo.Session, m *discordgo.MessageCreate) {
-	postRandomGif(s, m, "dog")
-}
-
-func bunny(s *discordgo.Session, m *discordgo.MessageCreate) {
-	postRandomGif(s, m, "bunny")
 }
 
 func postRandomGif(s *discordgo.Session, m *discordgo.MessageCreate, subject string) {
