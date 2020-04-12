@@ -1,3 +1,6 @@
 .idea/
 .envrc
 .vs/
+
+# compiled binary
+thomas-bot
