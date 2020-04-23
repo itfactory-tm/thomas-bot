@@ -14,7 +14,10 @@ const itfWelcome = "687588438886842373"
 func serve() {
 	recaptcha.Init(c.RecaptchaSecret)
 
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./www"))))
+
 	http.HandleFunc("/", handleHome)
+	http.HandleFunc("/index.html", handleHome)
 	http.HandleFunc("/invite", handleInvite)
 	if err := http.ListenAndServe(c.BindAddr, nil); err != nil {
 		log.Fatal("failed to start server", err)
@@ -74,6 +77,7 @@ func handleInvite(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
+	log.Printf("Invited user with code %q from IP %s", i.Code, ip)
 	http.Redirect(w, r, "https://discord.gg/"+i.Code, http.StatusSeeOther)
 }
 
