@@ -94,6 +94,13 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 }
 
 func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
+	if g.GuildID != itfDiscord {
+		return
+	}
+	err := s.GuildMemberRoleAdd(g.GuildID, g.Member.User.ID, "687568536356257890") // gast role
+	if err != nil {
+		log.Printf("Cannot set rolr for user %s: %q\n", g.Member.User.ID, err)
+	}
 
 	s.ChannelMessageSend(itfWelcome, fmt.Sprintf("Welkom <@%s> op de **IT Factory Official** Discord server. Je wordt automatisch toegevoegd als **gast**. Indien je student of alumnus bent en  toegang wil tot de studenten- of alumnikanalen, gelieve dan een van de moderatoren te contacteren om de juiste rol te krijgen. Indien je graag informatie hebt over onze opleiding, neem dan gerust een kijkje op ons <#693046715665874944>.", g.User.ID))
 
