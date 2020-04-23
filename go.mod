@@ -7,6 +7,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
+	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
 	github.com/go-audio/wav v1.0.0
 	github.com/hraban/opus v0.0.0-20191117073431-57179dff69a6
 	github.com/kelseyhightower/envconfig v1.4.0

@@ -22,11 +22,15 @@ type config struct {
 	TwitterConsumerSecret    string `envconfig:"TWITTER_CONSUMER_SECRET"`
 	TwitterAccessToken       string `envconfig:"TWITTER_ACCESS_TOKEN"`
 	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
+	RecaptchaKey             string `envconfig:"RECAPTCHA_KEY"`
+	RecaptchaSecret          string `envconfig:"RECAPTCHA_SECRET"`
+	BindAddr                 string `default:":8080" envconfig:"BIND_ADDR"`
 }
 
 var c config
 var handlers = map[string]command.Command{}
 var commandRegex *regexp.Regexp
+var dg *discordgo.Session
 
 func main() {
 	err := envconfig.Process("thomasbot", &c)
@@ -39,7 +43,7 @@ func main() {
 
 	commandRegex = regexp.MustCompile(c.Prefix + `!(\w*)\b`)
 
-	dg, err := discordgo.New("Bot " + c.Token)
+	dg, err = discordgo.New("Bot " + c.Token)
 	if err != nil {
 		log.Fatal("error creating Discord session,", err)
 	}
@@ -57,6 +61,7 @@ func main() {
 	dg.UpdateStreamingStatus(0, "Thomas Bot", "https://github.com/itfactory-tm/thomas-bot")
 
 	go postHashtagTweets(dg)
+	go serve()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)

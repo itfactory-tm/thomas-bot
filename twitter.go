@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/dghubble/oauth1"
 
@@ -77,5 +78,9 @@ func postHashtagTweets(s *discordgo.Session) {
 		}
 	}
 
-	demux.HandleChan(stream.Messages)
+	for {
+		log.Println("Starting Twitter listener")
+		demux.HandleChan(stream.Messages)
+		time.Sleep(10 * time.Second) // backoff in case of crash
+	}
 }
