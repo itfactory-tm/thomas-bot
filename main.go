@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"regexp"
 	"syscall"
+	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 
@@ -51,6 +53,7 @@ func main() {
 	// Register handlers
 	dg.AddHandler(onMessage)
 	dg.AddHandler(onReactionAdd)
+	dg.AddHandler(onNewMember)
 
 	err = dg.Open()
 	if err != nil {
@@ -90,14 +93,42 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	handleHelpReaction(s, r)
 }
 
+func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
+
+	s.ChannelMessageSend(itfWelcome, fmt.Sprintf("Welkom <@%s> op de IT Factory Official Discord server. Je wordt automatisch toegevoegd als gast. Indien je student of alumnus bent en  toegang wil tot de studenten- of alumnikanalen, gelieve dan een van de moderatoren te contacteren om de juiste rol te krijgen. Indien je graag informatie hebt over onze opleiding, neem dan gerust een kijkje op ons <#693046715665874944>.", g.User.ID))
+
+	c, err := s.UserChannelCreate(g.Member.User.ID)
+	if err != nil {
+		log.Printf("Cannot DM user %s\n", g.Member.User.ID)
+		return
+	}
+
+	s.ChannelMessageSend(c.ID, fmt.Sprintf("Hallo %s", g.User.Username))
+	time.Sleep(time.Second)
+	s.ChannelMessageSend(c.ID, "Welkom op de ITFactory Discord!")
+	time.Sleep(time.Second)
+	s.ChannelMessageSend(c.ID, "Mijn naam is Thomas Bot, ik ben een bot die jou kan helpen!")
+	time.Sleep(time.Second)
+	s.ChannelMessageSend(c.ID, "Nieuw op Discord? Geen probleem hier is een handleiding: https://itf.to/discord-help")
+	embed := NewEmbed()
+	embed.SetImage("https://static.eyskens.me/thomas-bot/opendeurdag-1.png")
+	embed.SetURL("https://itf.to/discord-help")
+	s.ChannelMessageSendEmbed(c.ID, embed.MessageEmbed)
+
+	time.Sleep(time.Second)
+	s.ChannelMessageSend(c.ID, "Heb je hulp nodig zeg dan tm!help")
+	time.Sleep(time.Second)
+	s.ChannelMessageSend(c.ID, "Let op, ik kan enkel antwoorden op commandos die starten met tm!")
+}
+
 func registerCommand(c command.Command) {
 	handlers[c.Name] = c
 	if _, exists := helpData[c.Category]; !exists {
-		if !c.Hidden {
-			helpData[c.Category] = map[string]command.Command{}
-		}
+		helpData[c.Category] = map[string]command.Command{}
 	}
-	helpData[c.Category][c.Name] = c
+	if !c.Hidden {
+		helpData[c.Category][c.Name] = c
+	}
 }
 
 func registerCommandDEPRECATED(name, category, helpText string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
