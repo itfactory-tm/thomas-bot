@@ -15,4 +15,6 @@ require (
 	github.com/sanzaru/go-giphy v0.0.0-20180211202227-c353d5ec6ee8
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2 // indirect
 	golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd // indirect
+	mvdan.cc/xurls v1.1.0 // indirect
+	mvdan.cc/xurls/v2 v2.2.0
 )

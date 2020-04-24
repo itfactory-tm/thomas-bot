@@ -1,8 +1,9 @@
 package main
 
 import (
-	"net/url"
 	"strings"
+
+	"mvdan.cc/xurls/v2"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -10,23 +11,10 @@ import (
 func removeLink(s *discordgo.Session, m *discordgo.MessageCreate) bool {
 	parts := strings.Split(m.Message.Content, " ")
 	for _, part := range parts {
-		part = strings.Trim(part, "`")
-		part = strings.Trim(part, "\"")
-		part = strings.Trim(part, "**")
-		part = strings.Trim(part, "*")
-		part = strings.Trim(part, "~~")
-		part = strings.Trim(part, "~")
-		_, err := url.ParseRequestURI(part)
-		if err != nil {
-			continue
+		rxStrict := xurls.Strict()
+		if len(rxStrict.FindAllString(part, -1)) > 0 {
+			return true
 		}
-
-		u, err := url.Parse(part)
-		if err != nil || u.Scheme == "" || u.Host == "" {
-			continue
-		}
-
-		return true
 	}
 
 	return false

@@ -52,6 +52,7 @@ func main() {
 
 	// Register handlers
 	dg.AddHandler(onMessage)
+	dg.AddHandler(onMessageEdit)
 	dg.AddHandler(onReactionAdd)
 	dg.AddHandler(onNewMember)
 
@@ -88,6 +89,14 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 			c.Handler(s, m)
 		}
 	}
+}
+
+func onMessageEdit(s *discordgo.Session, u *discordgo.MessageCreate) {
+	m := &discordgo.MessageCreate{
+		u.Message,
+	}
+
+	go checkMessage(s, m)
 }
 
 func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
