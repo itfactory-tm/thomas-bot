@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -20,15 +21,21 @@ var userCache *cache.Cache
 var notifyCache *cache.Cache
 var reactionNotifyCache *cache.Cache
 var reactionCache *cache.Cache
+var checkCache *cache.Cache
 
 func init() {
 	userCache = cache.New(5*time.Minute, 10*time.Minute)
 	notifyCache = cache.New(time.Minute, 5*time.Minute)
 	reactionCache = cache.New(2*time.Minute, 5*time.Minute)
 	reactionNotifyCache = cache.New(time.Minute, 5*time.Minute)
+	checkCache = cache.New(time.Minute, 5*time.Minute)
 }
 
 func checkMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if _, exist := checkCache.Get(fmt.Sprintf("%s%s%s", m.ChannelID, m.Author.ID, m.Content)); exist {
+		return
+	}
+	checkCache.Set(fmt.Sprintf("%s%s%s", m.ChannelID, m.Author.ID, m.Content), true, cache.DefaultExpiration)
 	user, err := getUser(m.GuildID, m.Author.ID)
 	if err != nil {
 		return

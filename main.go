@@ -91,7 +91,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func onMessageEdit(s *discordgo.Session, u *discordgo.MessageCreate) {
+func onMessageEdit(s *discordgo.Session, u *discordgo.MessageUpdate) {
 	m := &discordgo.MessageCreate{
 		u.Message,
 	}
