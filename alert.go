@@ -38,6 +38,6 @@ func sayAlert(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	s.ChannelMessageSend(c.ID, "Can only alert in ITFactory")
+	s.ChannelMessageSend(c.ID, "Alert sent! Thank you.")
 	s.ChannelMessageSend(itfWarroom, fmt.Sprintf(":warning: Alert by <@%s> in <#%s>", m.Author.ID, m.ChannelID))
 }
