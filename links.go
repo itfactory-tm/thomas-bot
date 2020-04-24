@@ -36,7 +36,7 @@ func init() {
 func registerLinkCommand(name, helpText, response string) {
 	registerCommand(command.Command{
 		Name:        name,
-		Category:    command.StringToCategory("Links"),
+		Category:    command.CategoryLinks,
 		Description: helpText,
 		Hidden:      false,
 		Handler: func(s *discordgo.Session, m *discordgo.MessageCreate) {
