@@ -65,7 +65,7 @@ func main() {
 	}
 	// TODO: add connection error handlers
 
-	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bot rev. %s", revision), "https://github.com/itfactory-tm/thomas-bot")
+	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bot rev. %s", revision), "")
 
 	go postHashtagTweets(dg)
 	go serve()
