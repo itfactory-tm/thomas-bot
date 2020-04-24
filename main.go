@@ -76,6 +76,7 @@ func main() {
 }
 
 func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
+	go checkMessage(s, m)
 
 	// Ignore all messages created by the bot itself
 	if m.Author.ID == s.State.User.ID {
