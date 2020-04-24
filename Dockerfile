@@ -1,12 +1,12 @@
 FROM golang:1.14 as build
 
-RUN apt-get update && apt-get install -y libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev
+RUN apt-get update && apt-get install -y libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev git
 
 COPY ./ /go/src/github.com/itfactory-tm/thomas-bot
 
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot
 
-RUN go build ./
+RUN go build -ldflags "-X main.revision=a$(git rev-parse --short HEAD)" ./
 
 FROM ubuntu:18.04
 

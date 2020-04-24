@@ -15,6 +15,9 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+// to be overwritten in build
+var revision = "dev"
+
 type config struct {
 	Token                    string
 	Prefix                   string `default:"tm"`
@@ -62,7 +65,7 @@ func main() {
 	}
 	// TODO: add connection error handlers
 
-	dg.UpdateStreamingStatus(0, "Thomas Bot", "https://github.com/itfactory-tm/thomas-bot")
+	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bot rev. %s", revision), "https://github.com/itfactory-tm/thomas-bot")
 
 	go postHashtagTweets(dg)
 	go serve()
