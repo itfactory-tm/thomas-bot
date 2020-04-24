@@ -18,10 +18,14 @@ const itfGuestRole = "687568536356257890"
 
 var userCache *cache.Cache
 var notifyCache *cache.Cache
+var reactionNotifyCache *cache.Cache
+var reactionCache *cache.Cache
 
 func init() {
 	userCache = cache.New(5*time.Minute, 10*time.Minute)
 	notifyCache = cache.New(time.Minute, 5*time.Minute)
+	reactionCache = cache.New(2*time.Minute, 5*time.Minute)
+	reactionNotifyCache = cache.New(time.Minute, 5*time.Minute)
 }
 
 func checkMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -48,6 +52,30 @@ func checkMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		log.Printf("Removed message from %s aka %s: %s\n", m.Author.ID, m.Author.Username, m.Message.Content)
 		notifyUser(m.Author.ID)
 	}
+}
+
+func checkReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	user, err := getUser(r.GuildID, r.UserID)
+	if err != nil {
+		return
+	}
+
+	if isUserSafe(user) {
+		return
+	}
+
+	obj, exists := reactionCache.Get(r.GuildID + r.UserID)
+	if !exists {
+		obj = 0
+	}
+
+	i := obj.(int)
+	i++
+	if i > 3 {
+		s.MessageReactionRemove(r.ChannelID, r.MessageID, r.Emoji.APIName(), r.UserID)
+		notifyUserReaction(r.UserID)
+	}
+	reactionCache.Set(r.GuildID+r.UserID, i, cache.DefaultExpiration)
 }
 
 func getUser(gid, uid string) (*discordgo.Member, error) {
@@ -90,4 +118,19 @@ func notifyUser(id string) {
 
 	dg.ChannelMessageSend(c.ID, "Hallo! Ik heb een bericht van je verwijderd omdat het inging tegen de Thomas More ITFactory Discord regels.")
 	notifyCache.Add(id, true, cache.DefaultExpiration)
+}
+
+func notifyUserReaction(id string) {
+	_, hasBeenNotifiedBefore := reactionNotifyCache.Get(id)
+	if hasBeenNotifiedBefore {
+		// limit self spam
+		return
+	}
+	c, err := dg.UserChannelCreate(id)
+	if err != nil {
+		return
+	}
+
+	dg.ChannelMessageSend(c.ID, "Hallo! Ik heb je reactie van je verwijderd omdat het inging tegen de Thomas More ITFactory Discord regels.")
+	reactionNotifyCache.Add(id, true, cache.DefaultExpiration)
 }
