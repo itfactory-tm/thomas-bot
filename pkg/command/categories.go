@@ -7,12 +7,12 @@ import (
 type Category int
 
 const (
-	CategoryFun       Category = iota
-	CategoryLinks     Category = iota
 	CategoryInfodagen Category = iota
-	CategoryInfo      Category = iota
-	CategoryStudenten Category = iota
+	CategoryLinks     Category = iota
+	CategoryAlgemeen  Category = iota
+	CategoryFun       Category = iota
 	CategoryModeratie Category = iota
+	CategoryStudenten Category = iota
 	CategoryOverige   Category = iota
 )
 
@@ -24,8 +24,8 @@ func CategoryToString(in Category) string {
 		return "Links"
 	case CategoryInfodagen:
 		return "Infodagen"
-	case CategoryInfo:
-		return "Info"
+	case CategoryAlgemeen:
+		return "Algemeen"
 	case CategoryStudenten:
 		return "Studenten"
 	case CategoryModeratie:
@@ -45,8 +45,8 @@ func StringToCategory(in string) Category {
 		return CategoryLinks
 	case "infodagen":
 		return CategoryInfodagen
-	case "info":
-		return CategoryInfo
+	case "algemeen":
+		return CategoryAlgemeen
 	case "studenten":
 		return CategoryStudenten
 	case "moderatie":

@@ -7,8 +7,8 @@ import (
 
 func init() {
 	registerCommand(command.Command{
-		Name:        "hello",
-		Category:    command.CategoryFun,
+		Name:        "fun",
+		Category:    command.CategoryAlgemeen,
 		Description: "Zeg hallo",
 		Hidden:      false,
 		Handler:     sayHello,

@@ -17,7 +17,7 @@ var helpData = map[command.Category]map[string]command.Command{}
 func init() {
 	registerCommand(command.Command{
 		Name:        "help",
-		Category:    command.CategoryInfo,
+		Category:    command.CategoryAlgemeen,
 		Description: "Lijst van alle commandos (u bent hier)",
 		Hidden:      false,
 		Handler:     sayHelp,
