@@ -6,7 +6,7 @@ COPY ./ /go/src/github.com/itfactory-tm/thomas-bot
 
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot
 
-RUN go build -ldflags "-X main.revision=a$(git rev-parse --short HEAD)" ./
+RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./
 
 FROM ubuntu:18.04
 
