@@ -48,7 +48,7 @@ func registerLinkCommand(name, helpText, response string) {
 func registerInfoDagCommand(name, helpText, response string) {
 	registerCommand(command.Command{
 		Name:        name,
-		Category:    command.CategoryLinks,
+		Category:    command.CategoryInfodagen,
 		Description: helpText,
 		Hidden:      false,
 		Handler: func(s *discordgo.Session, m *discordgo.MessageCreate) {
