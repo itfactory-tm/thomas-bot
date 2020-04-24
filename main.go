@@ -91,6 +91,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	go checkReaction(s, r)
 	handleHelpReaction(s, r)
 }
 
