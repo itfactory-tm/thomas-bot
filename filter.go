@@ -32,6 +32,10 @@ func init() {
 }
 
 func checkMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.Author == nil {
+		// reactions are also edit events
+		return
+	}
 	if _, exist := checkCache.Get(fmt.Sprintf("%s%s%s", m.ChannelID, m.Author.ID, m.Content)); exist {
 		return
 	}
