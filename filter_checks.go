@@ -10,6 +10,12 @@ import (
 func removeLink(s *discordgo.Session, m *discordgo.MessageCreate) bool {
 	parts := strings.Split(m.Message.Content, " ")
 	for _, part := range parts {
+		strings.Trim(part, "`")
+		strings.Trim(part, "\"")
+		strings.Trim(part, "**")
+		strings.Trim(part, "*")
+		strings.Trim(part, "~~")
+		strings.Trim(part, "~")
 		_, err := url.ParseRequestURI(part)
 		if err != nil {
 			continue
