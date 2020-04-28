@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 
 	"github.com/bwmarrin/discordgo"
@@ -36,6 +38,7 @@ var c config
 var handlers = map[string]command.Command{}
 var commandRegex *regexp.Regexp
 var dg *discordgo.Session
+var ha *discordha.HA
 
 func main() {
 	err := envconfig.Process("thomasbot", &c)
@@ -51,6 +54,15 @@ func main() {
 	dg, err = discordgo.New("Bot " + c.Token)
 	if err != nil {
 		log.Fatal("error creating Discord session,", err)
+	}
+
+	ha, err = discordha.New(discordha.Config{
+		Session:       dg,
+		HA:            true,
+		EtcdEndpoints: []string{"localhost:2379"},
+	})
+	if err != nil {
+		log.Fatal("error creating Discord HA,", err)
 	}
 
 	// Register handlers
@@ -80,6 +92,12 @@ func main() {
 }
 
 func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if ok, err := ha.Lock(m); !ok {
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
 	go checkMessage(s, m)
 
 	// Ignore all messages created by the bot itself
@@ -92,22 +110,49 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 			c.Handler(s, m)
 		}
 	}
+	if err := ha.Unlock(m); err != nil {
+		log.Println(err)
+	}
 }
 
 func onMessageEdit(s *discordgo.Session, u *discordgo.MessageUpdate) {
+	if ok, err := ha.Lock(u); !ok {
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
 	m := &discordgo.MessageCreate{
 		u.Message,
 	}
 
 	go checkMessage(s, m)
+	if err := ha.Unlock(u); err != nil {
+		log.Println(err)
+	}
 }
 
 func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	if ok, err := ha.Lock(r); !ok {
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
 	go checkReaction(s, r)
 	handleHelpReaction(s, r)
+	if err := ha.Unlock(r); err != nil {
+		log.Println(err)
+	}
 }
 
 func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
+	if ok, err := ha.Lock(g); !ok {
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
 	if g.GuildID != itfDiscord {
 		return
 	}
@@ -140,6 +185,11 @@ func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	s.ChannelMessageSend(c.ID, "Heb je hulp nodig zeg dan tm!help")
 	time.Sleep(time.Second)
 	s.ChannelMessageSend(c.ID, "Let op, ik kan enkel antwoorden op commandos die starten met `tm!` niet op gewone berichten.")
+	time.Sleep(5 * time.Second)
+	s.ChannelMessageSend(c.ID, "Klaar voor de virtuele opendeurdag? Je kan best starten in <#693046715665874944>")
+	if err := ha.Unlock(g); err != nil {
+		log.Println(err)
+	}
 }
 
 func registerCommand(c command.Command) {

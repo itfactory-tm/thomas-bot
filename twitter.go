@@ -4,11 +4,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/dghubble/oauth1"
 
 	"github.com/dghubble/go-twitter/twitter"
-
-	"github.com/bwmarrin/discordgo"
 )
 
 const whatsupChannel = "697150309482496082"
