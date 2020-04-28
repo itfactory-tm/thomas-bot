@@ -15,14 +15,8 @@
 
      <link rel="stylesheet" href="/static/bot.css">
     <script type="text/javascript">
-          var onloadCallback = function() {
-            var verifyCallback = function() {
-                document.getElementById("invite").submit();
-            };
-            grecaptcha.render('g-recaptcha', {
-              'sitekey' : '{{ .RecaptchaKey }}',
-              'callback' : verifyCallback,
-            });
+          var verifyCallback = function() {
+            document.getElementById("invite").submit();
           };
     </script>
 </head>
@@ -32,12 +26,12 @@
         <div class="speech-bubble">
             <p>Je bent nog 1 stap weg van de ITFactory Discord! Thomas Bot is de enige robot die binnen mag. Wil je daarom even bevestigen dat jij geen collega robot bent?</p>
             <form action="/invite" method="POST" id="invite">
-                <div class="g-recaptcha" id="g-recaptcha"></div>
+                <div class="h-captcha" data-sitekey="{{.HCaptchaSiteKey}}" data-callback="verifyCallback"></div>
             </form>
         </div>
         <p><img src="/static/thomasbot.png" alt="Thomas Bot"></p>
     </div>
 
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+    <script src="https://hcaptcha.com/1/api.js" async defer></script>
 </body>
 </html>

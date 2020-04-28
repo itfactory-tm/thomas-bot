@@ -27,8 +27,8 @@ type config struct {
 	TwitterConsumerSecret    string `envconfig:"TWITTER_CONSUMER_SECRET"`
 	TwitterAccessToken       string `envconfig:"TWITTER_ACCESS_TOKEN"`
 	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
-	RecaptchaKey             string `envconfig:"RECAPTCHA_KEY"`
-	RecaptchaSecret          string `envconfig:"RECAPTCHA_SECRET"`
+	HCaptchaSiteKey          string `envconfig:"HCAPTCHA_SITE_KEY"`
+	HCaptchaSiteSecret       string `envconfig:"HCAPTCHA_SITE_SECRET"`
 	BindAddr                 string `default:":8080" envconfig:"BIND_ADDR"`
 }
 
