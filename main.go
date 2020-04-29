@@ -140,8 +140,6 @@ func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	s.ChannelMessageSend(c.ID, "Heb je hulp nodig zeg dan tm!help")
 	time.Sleep(time.Second)
 	s.ChannelMessageSend(c.ID, "Let op, ik kan enkel antwoorden op commandos die starten met `tm!` niet op gewone berichten.")
-	time.Sleep(5 * time.Second)
-	s.ChannelMessageSend(c.ID, "Klaar voor de virtuele opendeurdag? Je kan best starten in <#693046715665874944>")
 }
 
 func registerCommand(c command.Command) {
