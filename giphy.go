@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 
@@ -39,12 +40,17 @@ func registerGiphyCommand(name, description, keyword string) {
 
 func clap(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.ChannelID == discordTalksVragen {
-		go func() {
-			voiceQueueChan <- "./sounds/clapping2.wav"
-		}()
-		if !audioConnected {
-			go connectVoice(s)
-		}
+		connected := make(chan struct{}, 1)
+		go connectVoice(s, connected)
+
+		go func(connected chan struct{}) {
+			<-connected // wait for audio to connect
+
+			err := ha.SendVoiceCommand(audioChannel, "./sounds/clapping2.wav")
+			if err != nil {
+				log.Println(err)
+			}
+		}(connected)
 	}
 	postRandomGif(s, m, "applause")
 }
