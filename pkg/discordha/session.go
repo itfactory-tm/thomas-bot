@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"sync"
@@ -130,7 +131,7 @@ func (h *HA) lockKey(key string) (bool, error) {
 					return false, nil
 				}
 				if ev.Type == clientv3.EventTypeDelete {
-					return h.Lock(obj) // re-lock!
+					return h.Lock(key) // re-lock!
 				}
 			}
 		}
@@ -189,4 +190,39 @@ func (h *HA) getObjectHash(v interface{}) (string, error) {
 	hasher := sha256.New()
 	hasher.Write(jsonData)
 	return base64.URLEncoding.EncodeToString(hasher.Sum(nil)), nil
+}
+
+var ErrorCacheKeyNotExist = errors.New("Cache key does not exist")
+
+func (h *HA) CacheRead(cache, key string, want interface{}) (interface{}, error) {
+	resp, err := h.etcd.Get(context.TODO(), fmt.Sprintf("/cache/%s/%s", cache, key))
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Count < 1 {
+		return nil, ErrorCacheKeyNotExist
+	}
+
+	err = json.Unmarshal(resp.Kvs[0].Value, &want)
+	if err != nil {
+		return nil, err
+	}
+
+	return want, nil
+}
+
+func (h *HA) CacheWrite(cache, key string, data interface{}, ttl time.Duration) error {
+	grant, err := h.etcd.Grant(context.TODO(), int64(ttl.Seconds()))
+	if err != nil {
+		return err
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	_, err = h.etcd.Put(context.TODO(), fmt.Sprintf("/cache/%s/%s", cache, key), string(jsonData), clientv3.WithLease(grant.ID))
+	return err
 }

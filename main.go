@@ -59,7 +59,7 @@ func main() {
 	ha, err = discordha.New(discordha.Config{
 		Session:       dg,
 		HA:            true,
-		EtcdEndpoints: []string{"localhost:2379"},
+		EtcdEndpoints: []string{"10.0.0.11:2379"},
 	})
 	if err != nil {
 		log.Fatal("error creating Discord HA,", err)
