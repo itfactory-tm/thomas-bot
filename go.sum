@@ -30,6 +30,12 @@ github.com/kelseyhightower/envconfig v1.4.0/go.mod h1:cccZRl6mQpaq41TPp5QxidR+Sa
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
+github.com/meyskens/go-hcaptcha v0.0.0-20200428092309-5211e6dec3fb h1:dlM8cSXI6+d0VM+yTBjXre+4aunW+MOGDTrR5xsOZHI=
+github.com/meyskens/go-hcaptcha v0.0.0-20200428092309-5211e6dec3fb/go.mod h1:HIolLCBpnd1SJS+7IJSH7C/PjUfJZGOkHraw6N3nuQI=
+github.com/meyskens/go-hcaptcha v0.0.0-20200428094415-5b224d809a4d h1:19rorWUUG6b0Mb0hNvJUcJLRuxEE6JesrEbQ8306ZAs=
+github.com/meyskens/go-hcaptcha v0.0.0-20200428094415-5b224d809a4d/go.mod h1:HIolLCBpnd1SJS+7IJSH7C/PjUfJZGOkHraw6N3nuQI=
+github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd h1:n0QVTkt3UwQ9166YyvKgMCXIm02r5ZZZtadIIfkmzbI=
+github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd/go.mod h1:HIolLCBpnd1SJS+7IJSH7C/PjUfJZGOkHraw6N3nuQI=
 github.com/patrickmn/go-cache v1.0.0 h1:3gD5McaYs9CxjyK5AXGcq8gdeCARtd/9gJDUvVeaZ0Y=
 github.com/patrickmn/go-cache v2.1.0+incompatible h1:HRMgzkcYKYpi3C8ajMPV8OFXaaRUnok+kx1WdO15EQc=
 github.com/patrickmn/go-cache v2.1.0+incompatible/go.mod h1:3Qf8kWWT7OJRJbdiICTKqZju1ZixQ/KpMGzzAfe6+WQ=

@@ -6,13 +6,16 @@ import (
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/dpapathanasiou/go-recaptcha"
+
+	"github.com/meyskens/go-hcaptcha"
 )
 
 const itfWelcome = "687588438886842373"
 
+var hc *hcaptcha.HCaptcha
+
 func serve() {
-	recaptcha.Init(c.RecaptchaSecret)
+	hc = hcaptcha.New(c.HCaptchaSiteSecret)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./www"))))
 
@@ -25,7 +28,7 @@ func serve() {
 }
 
 type HomeTemplate struct {
-	RecaptchaKey string
+	HCaptchaSiteKey string
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +39,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = tmpl.Execute(w, HomeTemplate{
-		RecaptchaKey: c.RecaptchaKey,
+		HCaptchaSiteKey: c.HCaptchaSiteKey,
 	})
 	if err != nil {
 		log.Println(err)
@@ -57,14 +60,15 @@ func handleInvite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recaptchaResponse, responseFound := r.Form["g-recaptcha-response"]
-	if !responseFound || len(recaptchaResponse) == 0 {
+	hcaptchaResponse, responseFound := r.Form["h-captcha-response"]
+	if !responseFound || len(hcaptchaResponse) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if !verifyCaptcha(ip, recaptchaResponse[0]) {
+	if !verifyCaptcha(ip, hcaptchaResponse[0]) {
 		// todo: add error page
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -82,10 +86,10 @@ func handleInvite(w http.ResponseWriter, r *http.Request) {
 }
 
 func verifyCaptcha(ip, cResponse string) bool {
-	ok, err := recaptcha.Confirm(ip, cResponse)
+	resp, err := hc.Verify(cResponse, ip)
 	if err != nil {
 		log.Println(err)
 		return false
 	}
-	return ok
+	return resp.Success
 }

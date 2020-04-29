@@ -27,13 +27,13 @@ func init() {
 func sayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	embed := helpMenu()
 
-	c, err := s.UserChannelCreate(m.Author.ID)
+	ch, err := s.UserChannelCreate(m.Author.ID)
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, "Cannot DM user")
 		return
 	}
 
-	if c.ID != m.ChannelID {
+	if ch.ID != m.ChannelID && m.Message.Content == fmt.Sprintf("%s!help", c.Prefix) {
 		s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
 	}
 
@@ -42,15 +42,15 @@ func sayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 		ints = append(ints, int(category))
 	}
 
-	em, err := s.ChannelMessageSendEmbed(c.ID, embed.MessageEmbed)
+	em, err := s.ChannelMessageSendEmbed(ch.ID, embed.MessageEmbed)
 	if err != nil {
-		log.Printf("Cannot send embed to %q \n", c.ID)
+		log.Printf("Cannot send embed to %q \n", ch.ID)
 		return
 	}
 
 	sort.Ints(ints)
 	for _, i := range ints {
-		err := s.MessageReactionAdd(c.ID, em.ID, intToEmoji(i))
+		err := s.MessageReactionAdd(ch.ID, em.ID, intToEmoji(i))
 		if err != nil {
 			log.Println(err)
 		}
