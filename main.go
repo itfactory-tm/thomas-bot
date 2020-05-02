@@ -99,6 +99,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		return
 	}
+	defer ha.Unlock(m)
 	go checkMessage(s, m)
 
 	// Ignore all messages created by the bot itself
@@ -111,9 +112,6 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 			c.Handler(s, m)
 		}
 	}
-	if err := ha.Unlock(m); err != nil {
-		log.Println(err)
-	}
 }
 
 func onMessageEdit(s *discordgo.Session, u *discordgo.MessageUpdate) {
@@ -123,14 +121,12 @@ func onMessageEdit(s *discordgo.Session, u *discordgo.MessageUpdate) {
 		}
 		return
 	}
+	defer ha.Unlock(u)
 	m := &discordgo.MessageCreate{
 		u.Message,
 	}
 
 	go checkMessage(s, m)
-	if err := ha.Unlock(u); err != nil {
-		log.Println(err)
-	}
 }
 
 func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
@@ -140,11 +136,9 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		}
 		return
 	}
+	defer ha.Unlock(r)
 	go checkReaction(s, r)
 	handleHelpReaction(s, r)
-	if err := ha.Unlock(r); err != nil {
-		log.Println(err)
-	}
 }
 
 func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
@@ -154,6 +148,7 @@ func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 		}
 		return
 	}
+	defer ha.Unlock(g)
 	if g.GuildID != itfDiscord {
 		return
 	}
@@ -188,9 +183,6 @@ func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	s.ChannelMessageSend(c.ID, "Let op, ik kan enkel antwoorden op commandos die starten met `tm!` niet op gewone berichten.")
 	time.Sleep(5 * time.Second)
 	s.ChannelMessageSend(c.ID, "Klaar voor de virtuele opendeurdag? Je kan best starten in <#693046715665874944>")
-	if err := ha.Unlock(g); err != nil {
-		log.Println(err)
-	}
 }
 
 func registerCommand(c command.Command) {

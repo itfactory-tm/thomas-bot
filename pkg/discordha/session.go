@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -74,6 +73,7 @@ func New(c Config) (*HA, error) {
 	}
 
 	go s.lockUpdateLoop()
+	go s.logLoop()
 
 	return s, nil
 }
@@ -90,6 +90,15 @@ func (h *HA) lockUpdateLoop() {
 				}
 			}(lease)
 		}
+		h.locksMutex.Unlock()
+	}
+}
+
+func (h *HA) logLoop() {
+	for {
+		time.Sleep(time.Minute)
+		h.locksMutex.Lock()
+		log.Printf("I own %d locks\n", len(h.locks))
 		h.locksMutex.Unlock()
 	}
 }
@@ -178,7 +187,9 @@ func (h *HA) Unlock(obj interface{}) error {
 func (h *HA) unlockKey(key string) error {
 	_, err := h.etcd.Put(context.TODO(), key, statusOk, clientv3.WithLease(h.locks[key]))
 	if err != nil {
-		return err
+		log.Printf("Failed to set status OK: %q retrying", err)
+		time.Sleep(5 * time.Second)
+		return h.unlockKey(key)
 	}
 	time.Sleep(300 * time.Millisecond)
 
@@ -187,6 +198,11 @@ func (h *HA) unlockKey(key string) error {
 	h.locksMutex.Unlock()
 
 	_, err = h.etcd.Delete(context.TODO(), key)
+	if err != nil {
+		log.Printf("Failed to delete key: %q retrying", err)
+		time.Sleep(5 * time.Second)
+		return h.unlockKey(key)
+	}
 	return err
 }
 
@@ -203,76 +219,4 @@ func (h *HA) getObjectHash(v interface{}) (string, error) {
 	hasher := sha256.New()
 	hasher.Write(jsonData)
 	return base64.URLEncoding.EncodeToString(hasher.Sum(nil)), nil
-}
-
-var ErrorCacheKeyNotExist = errors.New("Cache key does not exist")
-
-func (h *HA) CacheRead(cache, key string, want interface{}) (interface{}, error) {
-	resp, err := h.etcd.Get(context.TODO(), fmt.Sprintf("/cache/%s/%s", cache, key))
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.Count < 1 {
-		return nil, ErrorCacheKeyNotExist
-	}
-
-	err = json.Unmarshal(resp.Kvs[0].Value, &want)
-	if err != nil {
-		return nil, err
-	}
-
-	return want, nil
-}
-
-func (h *HA) CacheWrite(cache, key string, data interface{}, ttl time.Duration) error {
-	grant, err := h.etcd.Grant(context.TODO(), int64(ttl.Seconds()))
-	if err != nil {
-		return err
-	}
-
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-
-	_, err = h.etcd.Put(context.TODO(), fmt.Sprintf("/cache/%s/%s", cache, key), string(jsonData), clientv3.WithLease(grant.ID))
-	return err
-}
-
-func (h *HA) LockVoice(channelID string) (bool, error) {
-	return h.lockKey(fmt.Sprintf("voice-%s", channelID), false)
-}
-
-func (h *HA) UnlockVoice(channelID string) error {
-	return h.unlockKey(fmt.Sprintf("voice-%s", channelID))
-}
-
-func (h *HA) SendVoiceCommand(channelID, command string) error {
-	grant, err := h.etcd.Grant(context.TODO(), int64(30))
-	if err != nil {
-		return err
-	}
-	_, err = h.etcd.Put(context.TODO(), fmt.Sprintf("/voice/command/%s/%d", channelID, rand.Intn(9999999)), command, clientv3.WithLease(grant.ID))
-	return err
-}
-
-func (h *HA) WatchVoiceCommands(ctx context.Context, channelID string) chan string {
-	out := make(chan string)
-	w := h.etcd.Watch(ctx, fmt.Sprintf("/voice/command/%s/", channelID), clientv3.WithPrefix())
-	go func() {
-		for wresp := range w {
-			if wresp.Canceled {
-				close(out)
-				break
-			}
-			for _, ev := range wresp.Events {
-				if ev.IsCreate() {
-					out <- string(ev.Kv.Value)
-				}
-			}
-		}
-	}()
-
-	return out
 }
