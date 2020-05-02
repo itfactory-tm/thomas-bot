@@ -37,6 +37,10 @@ func postHashtagTweets(s *discordgo.Session) {
 
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {
+		if gotLock, err := ha.Lock(tweet); err != nil || !gotLock {
+			return
+		}
+		defer ha.Unlock(tweet)
 		if tweet.Retweeted {
 			return
 		}
