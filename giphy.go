@@ -48,7 +48,7 @@ func clap(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			err := ha.SendVoiceCommand(audioChannel, "./sounds/clapping2.wav")
 			if err != nil {
-				log.Println(err)
+				log.Printf("Error sending voice command: %q\n", err)
 			}
 		}(connected)
 	}

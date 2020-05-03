@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 
 const whatsupChannel = "697150309482496082"
 
-func postHashtagTweets(s *discordgo.Session) {
+func postHashtagTweets(s *discordgo.Session, ctx context.Context) {
 	if !c.TwitterEnabled {
 		log.Println("Twitter posting disabled")
 		return
@@ -26,7 +27,7 @@ func postHashtagTweets(s *discordgo.Session) {
 	client := twitter.NewClient(httpClient)
 
 	params := &twitter.StreamFilterParams{
-		Track:         []string{"#ITFactory"},
+		Track:         []string{"#ITFactory", "#itfactory"},
 		StallWarnings: twitter.Bool(true),
 	}
 	stream, err := client.Streams.Filter(params)
@@ -81,9 +82,15 @@ func postHashtagTweets(s *discordgo.Session) {
 		}
 	}
 
-	for {
-		log.Println("Starting Twitter listener")
-		demux.HandleChan(stream.Messages)
-		time.Sleep(10 * time.Second) // backoff in case of crash
-	}
+	go func() {
+		for {
+			log.Println("Starting Twitter listener")
+			demux.HandleChan(stream.Messages)
+			stream.Stop()
+			time.Sleep(10 * time.Second) // backoff in case of crash
+		}
+	}()
+
+	<-ctx.Done()
+	stream.Stop()
 }

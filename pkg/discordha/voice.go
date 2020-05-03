@@ -8,14 +8,18 @@ import (
 	"go.etcd.io/etcd/clientv3"
 )
 
+// LockVoice locks a voice channel ID, returns true if successful
 func (h *HA) LockVoice(channelID string) (bool, error) {
 	return h.lockKey(fmt.Sprintf("voice-%s", channelID), false)
 }
 
+// UnlockVoice unlocks a voice channel ID
 func (h *HA) UnlockVoice(channelID string) error {
 	return h.unlockKey(fmt.Sprintf("voice-%s", channelID))
 }
 
+// SendVoiceCommand sends a string command to the instance handling the voice channel
+// These can be received using WatchVoiceCommands
 func (h *HA) SendVoiceCommand(channelID, command string) error {
 	grant, err := h.etcd.Grant(context.TODO(), int64(30))
 	if err != nil {
@@ -25,6 +29,7 @@ func (h *HA) SendVoiceCommand(channelID, command string) error {
 	return err
 }
 
+// WatchVoiceCommands gives a channel with commands transmitted by SendVoiceCommand
 func (h *HA) WatchVoiceCommands(ctx context.Context, channelID string) chan string {
 	out := make(chan string)
 	w := h.etcd.Watch(ctx, fmt.Sprintf("/voice/command/%s/", channelID), clientv3.WithPrefix())

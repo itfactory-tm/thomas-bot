@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -42,9 +43,12 @@ var dg *discordgo.Session
 var ha *discordha.HA
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	err := envconfig.Process("thomasbot", &c)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error processing envvars: %q\n", err)
 	}
 	if c.Token == "" {
 		log.Fatal("No token specified")
@@ -61,6 +65,7 @@ func main() {
 		Session:       dg,
 		HA:            len(c.EtcdEndpoints) > 0,
 		EtcdEndpoints: c.EtcdEndpoints,
+		Context:       ctx,
 	})
 	if err != nil {
 		log.Fatal("error creating Discord HA,", err)
@@ -76,20 +81,17 @@ func main() {
 	if err != nil {
 		log.Fatal("error opening connection,", err)
 	}
-	// TODO: add connection error handlers
+	defer dg.Close()
 
 	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bot rev. %s", revision), "")
 
-	go postHashtagTweets(dg)
+	go postHashtagTweets(dg, ctx)
 	go serve()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
-
-	// Cleanly close down the Discord session.
-	dg.Close()
 }
 
 func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -117,7 +119,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 func onMessageEdit(s *discordgo.Session, u *discordgo.MessageUpdate) {
 	if ok, err := ha.Lock(u); !ok {
 		if err != nil {
-			log.Println(err)
+			log.Printf("Error locking message edit: %q\n", err)
 		}
 		return
 	}
@@ -130,9 +132,12 @@ func onMessageEdit(s *discordgo.Session, u *discordgo.MessageUpdate) {
 }
 
 func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	if r.UserID == s.State.User.ID {
+		return
+	}
 	if ok, err := ha.Lock(r); !ok {
 		if err != nil {
-			log.Println(err)
+			log.Printf("Error locking reaction add: %q\n", err)
 		}
 		return
 	}
@@ -144,7 +149,7 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	if ok, err := ha.Lock(g); !ok {
 		if err != nil {
-			log.Println(err)
+			log.Printf("Error lockin on new memner: %q\n", err)
 		}
 		return
 	}
@@ -154,7 +159,7 @@ func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	}
 	err := s.GuildMemberRoleAdd(g.GuildID, g.Member.User.ID, "687568536356257890") // gast role
 	if err != nil {
-		log.Printf("Cannot set rolr for user %s: %q\n", g.Member.User.ID, err)
+		log.Printf("Cannot set role for user %s: %q\n", g.Member.User.ID, err)
 	}
 
 	s.ChannelMessageSend(itfWelcome, fmt.Sprintf("Welkom <@%s> op de **IT Factory Official** Discord server. Je wordt automatisch toegevoegd als **gast**. Indien je student of alumnus bent en  toegang wil tot de studenten- of alumnikanalen, gelieve dan een van de moderatoren te contacteren om de juiste rol te krijgen. Indien je graag informatie hebt over onze opleiding, neem dan gerust een kijkje op ons <#693046715665874944>.", g.User.ID))

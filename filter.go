@@ -56,7 +56,7 @@ func checkMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 func checkReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	user, err := getUser(r.GuildID, r.UserID)
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error getting user %s, %q\n", r.UserID, err)
 		return
 	}
 
@@ -69,7 +69,7 @@ func checkReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	if errors.Is(err, discordha.ErrorCacheKeyNotExist) {
 		obj = 0
 	} else if err != nil {
-		log.Println(err)
+		log.Printf("Error reading reaction cache for user %s, %q\n", r.UserID, err)
 		return // ignoring here
 	}
 

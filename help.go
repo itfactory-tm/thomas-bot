@@ -52,7 +52,7 @@ func sayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	for _, i := range ints {
 		err := s.MessageReactionAdd(ch.ID, em.ID, intToEmoji(i))
 		if err != nil {
-			log.Println(err)
+			log.Printf("Error adding help emoji: %q\n", err)
 		}
 	}
 }

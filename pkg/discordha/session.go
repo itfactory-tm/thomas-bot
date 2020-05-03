@@ -32,6 +32,7 @@ type HA struct {
 	etcd       *clientv3.Client
 	locksMutex sync.Mutex
 	locks      map[string]clientv3.LeaseID
+	bgContext  context.Context
 }
 
 // Config contains the configuration for HA
@@ -41,6 +42,7 @@ type Config struct {
 	LockUpdateInterval time.Duration
 	LockTTL            time.Duration
 	EtcdEndpoints      []string
+	Context            context.Context
 }
 
 // New gives a HA instance for a given configuration
@@ -67,9 +69,10 @@ func New(c Config) (*HA, error) {
 	}
 
 	var s = &HA{
-		config: c,
-		etcd:   client,
-		locks:  map[string]clientv3.LeaseID{},
+		config:    c,
+		etcd:      client,
+		locks:     map[string]clientv3.LeaseID{},
+		bgContext: c.Context,
 	}
 
 	go s.lockUpdateLoop()
@@ -83,12 +86,10 @@ func (h *HA) lockUpdateLoop() {
 		time.Sleep(h.config.LockUpdateInterval)
 		h.locksMutex.Lock()
 		for _, lease := range h.locks {
-			go func(l clientv3.LeaseID) {
-				err := h.keepAlive(lease)
-				if err != nil {
-					log.Println(err)
-				}
-			}(lease)
+			err := h.keepAlive(lease)
+			if err != nil {
+				log.Printf("Etcd keepalive error: %q\n", err)
+			}
 		}
 		h.locksMutex.Unlock()
 	}
@@ -113,6 +114,7 @@ func (h *HA) Lock(obj interface{}) (bool, error) {
 
 	hash, err := h.getObjectHash(obj)
 	if err != nil {
+		log.Printf("Hash error:%q\n", err)
 		return false, err
 	}
 	key := fmt.Sprintf("/locks/%s", hash)
@@ -120,12 +122,12 @@ func (h *HA) Lock(obj interface{}) (bool, error) {
 }
 
 func (h *HA) lockKey(key string, waitForFailure bool) (bool, error) {
-	grant, err := h.etcd.Grant(context.TODO(), int64(h.config.LockTTL.Seconds()))
+	grant, err := h.etcd.Grant(h.bgContext, int64(h.config.LockTTL.Seconds()))
 	if err != nil {
 		return false, err
 	}
 
-	txn, err := h.etcd.Txn(context.TODO()).
+	txn, err := h.etcd.Txn(h.bgContext).
 		// txn value comparisons are lexical
 		If(clientv3.Compare(clientv3.Value(key), ">", statusNone)).
 		Else(clientv3.OpPut(key, statusHandling, clientv3.WithLease(grant.ID))).
@@ -140,7 +142,7 @@ func (h *HA) lockKey(key string, waitForFailure bool) (bool, error) {
 		if !waitForFailure {
 			return false, nil
 		}
-		ctx, cancel := context.WithCancel(context.TODO())
+		ctx, cancel := context.WithCancel(h.bgContext)
 
 		w := h.etcd.Watch(ctx, key)
 		for wresp := range w {
@@ -153,7 +155,7 @@ func (h *HA) lockKey(key string, waitForFailure bool) (bool, error) {
 					return false, nil
 				}
 				if ev.Type == clientv3.EventTypeDelete {
-					return h.Lock(key) // re-lock!
+					return h.lockKey(key, waitForFailure) // re-lock!
 				}
 			}
 		}
@@ -177,6 +179,7 @@ func (h *HA) Unlock(obj interface{}) error {
 
 	hash, err := h.getObjectHash(obj)
 	if err != nil {
+		log.Printf("Hash error:%q\n", err)
 		return err
 	}
 	key := fmt.Sprintf("/locks/%s", hash)
@@ -185,7 +188,7 @@ func (h *HA) Unlock(obj interface{}) error {
 }
 
 func (h *HA) unlockKey(key string) error {
-	_, err := h.etcd.Put(context.TODO(), key, statusOk, clientv3.WithLease(h.locks[key]))
+	_, err := h.etcd.Put(h.bgContext, key, statusOk, clientv3.WithLease(h.locks[key]))
 	if err != nil {
 		log.Printf("Failed to set status OK: %q retrying", err)
 		time.Sleep(5 * time.Second)
@@ -193,22 +196,23 @@ func (h *HA) unlockKey(key string) error {
 	}
 	time.Sleep(300 * time.Millisecond)
 
-	h.locksMutex.Lock()
-	delete(h.locks, key)
-	h.locksMutex.Unlock()
-
-	_, err = h.etcd.Delete(context.TODO(), key)
+	_, err = h.etcd.Delete(h.bgContext, key)
 	if err != nil {
 		log.Printf("Failed to delete key: %q retrying", err)
 		time.Sleep(5 * time.Second)
 		return h.unlockKey(key)
 	}
-	return err
+
+	h.locksMutex.Lock()
+	delete(h.locks, key)
+	h.locksMutex.Unlock()
+
+	return nil
 }
 
 func (h *HA) keepAlive(leaseID clientv3.LeaseID) error {
-	h.etcd.KeepAlive(context.TODO(), leaseID)
-	return nil
+	_, err := h.etcd.KeepAlive(h.bgContext, leaseID)
+	return err
 }
 
 func (h *HA) getObjectHash(v interface{}) (string, error) {
