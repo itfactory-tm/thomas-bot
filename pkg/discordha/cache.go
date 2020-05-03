@@ -10,6 +10,7 @@ import (
 	"go.etcd.io/etcd/clientv3"
 )
 
+// ErrorCacheKeyNotExist is the error the cache returns if a key does not exist
 var ErrorCacheKeyNotExist = errors.New("Cache key does not exist")
 
 // CacheRead reads a key from a specific cache, returns ErrorCacheKeyNotExist if not found

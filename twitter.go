@@ -13,7 +13,7 @@ import (
 
 const whatsupChannel = "697150309482496082"
 
-func postHashtagTweets(s *discordgo.Session, ctx context.Context) {
+func postHashtagTweets(ctx context.Context, s *discordgo.Session) {
 	if !c.TwitterEnabled {
 		log.Println("Twitter posting disabled")
 		return

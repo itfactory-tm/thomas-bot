@@ -85,7 +85,7 @@ func main() {
 
 	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bot rev. %s", revision), "")
 
-	go postHashtagTweets(dg, ctx)
+	go postHashtagTweets(ctx, dg)
 	go serve()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")

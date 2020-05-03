@@ -4,6 +4,7 @@ import (
 	"strings"
 )
 
+// Category is an enumeration type of the categories
 type Category int
 
 const (
