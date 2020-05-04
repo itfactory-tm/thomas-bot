@@ -15,6 +15,9 @@ var ErrorCacheKeyNotExist = errors.New("Cache key does not exist")
 
 // CacheRead reads a key from a specific cache, returns ErrorCacheKeyNotExist if not found
 func (h *HA) CacheRead(cache, key string, want interface{}) (interface{}, error) {
+	if !h.config.HA {
+		return nil, ErrorCacheKeyNotExist
+	}
 	resp, err := h.etcd.Get(context.TODO(), fmt.Sprintf("/cache/%s/%s", cache, key))
 	if err != nil {
 		return nil, err
@@ -34,6 +37,9 @@ func (h *HA) CacheRead(cache, key string, want interface{}) (interface{}, error)
 
 // CacheWrite writes an object to a specific cache with a specific key, will be purged after TTL expires
 func (h *HA) CacheWrite(cache, key string, data interface{}, ttl time.Duration) error {
+	if !h.config.HA {
+		return nil
+	}
 	grant, err := h.etcd.Grant(context.TODO(), int64(ttl.Seconds()))
 	if err != nil {
 		return err
