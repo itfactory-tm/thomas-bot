@@ -4,18 +4,27 @@ import (
 	"strings"
 )
 
+// Category is an enumeration type of the categories
 type Category int
 
 const (
+	// CategoryInfodagen is the category for Infodagen commands
 	CategoryInfodagen Category = iota
-	CategoryLinks     Category = iota
-	CategoryAlgemeen  Category = iota
-	CategoryFun       Category = iota
+	// CategoryLinks is the category for link commands
+	CategoryLinks Category = iota
+	// CategoryAlgemeen is the category for general commands
+	CategoryAlgemeen Category = iota
+	// CategoryFun is the category for funny commands
+	CategoryFun Category = iota
+	// CategoryModeratie is the category for moderation commands
 	CategoryModeratie Category = iota
+	// CategoryStudenten is the category for student commands
 	CategoryStudenten Category = iota
-	CategoryOverige   Category = iota
+	// CategoryOverige is the category for other commands
+	CategoryOverige Category = iota
 )
 
+// CategoryToString converts a Category to the string of the name
 func CategoryToString(in Category) string {
 	switch in {
 	case CategoryFun:
@@ -37,6 +46,7 @@ func CategoryToString(in Category) string {
 	return "" // empty is not found
 }
 
+// StringToCategory gets the Category of string, case insensitive
 func StringToCategory(in string) Category {
 	switch strings.ToLower(in) {
 	case "fun":

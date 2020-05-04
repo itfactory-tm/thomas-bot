@@ -27,7 +27,7 @@ func serve() {
 	}
 }
 
-type HomeTemplate struct {
+type homeTemplate struct {
 	HCaptchaSiteKey string
 }
 
@@ -38,7 +38,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, HomeTemplate{
+	err = tmpl.Execute(w, homeTemplate{
 		HCaptchaSiteKey: c.HCaptchaSiteKey,
 	})
 	if err != nil {

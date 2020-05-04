@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"time"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+
 	"github.com/bwmarrin/discordgo"
-	"github.com/patrickmn/go-cache"
 )
 
 type checkFn func(s *discordgo.Session, m *discordgo.MessageCreate) bool
@@ -17,29 +19,15 @@ var checks = []checkFn{
 
 const itfGuestRole = "687568536356257890"
 
-var userCache *cache.Cache
-var notifyCache *cache.Cache
-var reactionNotifyCache *cache.Cache
-var reactionCache *cache.Cache
-var checkCache *cache.Cache
-
-func init() {
-	userCache = cache.New(5*time.Minute, 10*time.Minute)
-	notifyCache = cache.New(time.Minute, 5*time.Minute)
-	reactionCache = cache.New(2*time.Minute, 5*time.Minute)
-	reactionNotifyCache = cache.New(time.Minute, 5*time.Minute)
-	checkCache = cache.New(time.Minute, 5*time.Minute)
-}
-
 func checkMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author == nil {
 		// reactions are also edit events
 		return
 	}
-	if _, exist := checkCache.Get(fmt.Sprintf("%s%s%s", m.ChannelID, m.Author.ID, m.Content)); exist {
+	if _, err := ha.CacheRead("check", fmt.Sprintf("%s%s%s", m.ChannelID, m.Author.ID, m.Content), ""); err != nil {
 		return
 	}
-	checkCache.Set(fmt.Sprintf("%s%s%s", m.ChannelID, m.Author.ID, m.Content), true, cache.DefaultExpiration)
+	ha.CacheWrite("check", fmt.Sprintf("%s%s%s", m.ChannelID, m.Author.ID, m.Content), "true", time.Minute)
 	user, err := getUser(m.GuildID, m.Author.ID)
 	if err != nil {
 		return
@@ -68,6 +56,7 @@ func checkMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 func checkReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	user, err := getUser(r.GuildID, r.UserID)
 	if err != nil {
+		log.Printf("Error getting user %s, %q\n", r.UserID, err)
 		return
 	}
 
@@ -75,29 +64,41 @@ func checkReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		return
 	}
 
-	obj, exists := reactionCache.Get(r.GuildID + r.UserID)
-	if !exists {
+	var num int
+	obj, err := ha.CacheRead("reaction", r.GuildID+r.UserID, num)
+	if errors.Is(err, discordha.ErrorCacheKeyNotExist) {
 		obj = 0
+	} else if err != nil {
+		log.Printf("Error reading reaction cache for user %s, %q\n", r.UserID, err)
+		return // ignoring here
 	}
 
-	i := obj.(int)
+	var i int
+	switch obj.(type) {
+	case int:
+		i = obj.(int)
+	case float64:
+		i = int(obj.(float64))
+	}
+
 	i++
 	if i > 3 {
 		s.MessageReactionRemove(r.ChannelID, r.MessageID, r.Emoji.APIName(), r.UserID)
 		notifyUserReaction(r.UserID)
 	}
-	reactionCache.Set(r.GuildID+r.UserID, i, cache.DefaultExpiration)
+
+	ha.CacheWrite("reaction", r.GuildID+r.UserID, i, 2*time.Minute)
 }
 
 func getUser(gid, uid string) (*discordgo.Member, error) {
-	obj, found := userCache.Get(gid + uid)
-	if !found {
+	obj, err := ha.CacheRead("user", gid+uid, &discordgo.Member{})
+	if err != nil {
 		user, err := dg.GuildMember(gid, uid)
 		if err != nil {
 			return nil, err
 		}
 
-		userCache.Set(gid+uid, user, cache.DefaultExpiration)
+		ha.CacheWrite("user", gid+uid, user, 2*time.Minute)
 		return user, nil
 	}
 
@@ -117,8 +118,8 @@ func isUserSafe(m *discordgo.Member) bool {
 }
 
 func notifyUser(id string) {
-	_, hasBeenNotifiedBefore := notifyCache.Get(id)
-	if hasBeenNotifiedBefore {
+	_, err := ha.CacheRead("notify", id, "")
+	if !errors.Is(err, discordha.ErrorCacheKeyNotExist) {
 		// limit self spam
 		return
 	}
@@ -128,12 +129,12 @@ func notifyUser(id string) {
 	}
 
 	dg.ChannelMessageSend(c.ID, "Hallo! Ik heb een bericht van je verwijderd omdat het inging tegen de Thomas More ITFactory Discord regels.")
-	notifyCache.Add(id, true, cache.DefaultExpiration)
+	ha.CacheWrite("notify", id, "", 3*time.Minute)
 }
 
 func notifyUserReaction(id string) {
-	_, hasBeenNotifiedBefore := reactionNotifyCache.Get(id)
-	if hasBeenNotifiedBefore {
+	_, err := ha.CacheRead("reactionnotify", id, "")
+	if !errors.Is(err, discordha.ErrorCacheKeyNotExist) {
 		// limit self spam
 		return
 	}
@@ -143,5 +144,5 @@ func notifyUserReaction(id string) {
 	}
 
 	dg.ChannelMessageSend(c.ID, "Hallo! Ik heb je reactie van je verwijderd omdat het inging tegen de Thomas More ITFactory Discord regels.")
-	reactionNotifyCache.Add(id, true, cache.DefaultExpiration)
+	ha.CacheWrite("reactionnotify", id, "", 3*time.Minute)
 }

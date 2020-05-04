@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -8,6 +9,8 @@ import (
 	"regexp"
 	"syscall"
 	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 
@@ -22,25 +25,30 @@ type config struct {
 	Token                    string
 	Prefix                   string `default:"tm"`
 	GiphyKey                 string
-	TwitterEnabled           bool   `envconfig:"TWITTER_ENABLED"`
-	TwitterConsumerKey       string `envconfig:"TWITTER_CONSUMER_KEY"`
-	TwitterConsumerSecret    string `envconfig:"TWITTER_CONSUMER_SECRET"`
-	TwitterAccessToken       string `envconfig:"TWITTER_ACCESS_TOKEN"`
-	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
-	HCaptchaSiteKey          string `envconfig:"HCAPTCHA_SITE_KEY"`
-	HCaptchaSiteSecret       string `envconfig:"HCAPTCHA_SITE_SECRET"`
-	BindAddr                 string `default:":8080" envconfig:"BIND_ADDR"`
+	TwitterEnabled           bool     `envconfig:"TWITTER_ENABLED"`
+	TwitterConsumerKey       string   `envconfig:"TWITTER_CONSUMER_KEY"`
+	TwitterConsumerSecret    string   `envconfig:"TWITTER_CONSUMER_SECRET"`
+	TwitterAccessToken       string   `envconfig:"TWITTER_ACCESS_TOKEN"`
+	TwitterAccessTokenSecret string   `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
+	HCaptchaSiteKey          string   `envconfig:"HCAPTCHA_SITE_KEY"`
+	HCaptchaSiteSecret       string   `envconfig:"HCAPTCHA_SITE_SECRET"`
+	BindAddr                 string   `default:":8080" envconfig:"BIND_ADDR"`
+	EtcdEndpoints            []string `envconfig:"ETCD_ENDPOINTS"`
 }
 
 var c config
 var handlers = map[string]command.Command{}
 var commandRegex *regexp.Regexp
 var dg *discordgo.Session
+var ha *discordha.HA
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	err := envconfig.Process("thomasbot", &c)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error processing envvars: %q\n", err)
 	}
 	if c.Token == "" {
 		log.Fatal("No token specified")
@@ -53,6 +61,16 @@ func main() {
 		log.Fatal("error creating Discord session,", err)
 	}
 
+	ha, err = discordha.New(discordha.Config{
+		Session:       dg,
+		HA:            len(c.EtcdEndpoints) > 0,
+		EtcdEndpoints: c.EtcdEndpoints,
+		Context:       ctx,
+	})
+	if err != nil {
+		log.Fatal("error creating Discord HA,", err)
+	}
+
 	// Register handlers
 	dg.AddHandler(onMessage)
 	dg.AddHandler(onMessageEdit)
@@ -63,23 +81,27 @@ func main() {
 	if err != nil {
 		log.Fatal("error opening connection,", err)
 	}
-	// TODO: add connection error handlers
+	defer dg.Close()
 
 	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bot rev. %s", revision), "")
 
-	go postHashtagTweets(dg)
+	go postHashtagTweets(ctx, dg)
 	go serve()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
-
-	// Cleanly close down the Discord session.
-	dg.Close()
 }
 
 func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if ok, err := ha.Lock(m); !ok {
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+	defer ha.Unlock(m)
 	go checkMessage(s, m)
 
 	// Ignore all messages created by the bot itself
@@ -95,6 +117,13 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func onMessageEdit(s *discordgo.Session, u *discordgo.MessageUpdate) {
+	if ok, err := ha.Lock(u); !ok {
+		if err != nil {
+			log.Printf("Error locking message edit: %q\n", err)
+		}
+		return
+	}
+	defer ha.Unlock(u)
 	m := &discordgo.MessageCreate{
 		u.Message,
 	}
@@ -103,17 +132,34 @@ func onMessageEdit(s *discordgo.Session, u *discordgo.MessageUpdate) {
 }
 
 func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	if r.UserID == s.State.User.ID {
+		return
+	}
+	if ok, err := ha.Lock(r); !ok {
+		if err != nil {
+			log.Printf("Error locking reaction add: %q\n", err)
+		}
+		return
+	}
+	defer ha.Unlock(r)
 	go checkReaction(s, r)
 	handleHelpReaction(s, r)
 }
 
 func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
+	if ok, err := ha.Lock(g); !ok {
+		if err != nil {
+			log.Printf("Error lockin on new memner: %q\n", err)
+		}
+		return
+	}
+	defer ha.Unlock(g)
 	if g.GuildID != itfDiscord {
 		return
 	}
 	err := s.GuildMemberRoleAdd(g.GuildID, g.Member.User.ID, "687568536356257890") // gast role
 	if err != nil {
-		log.Printf("Cannot set rolr for user %s: %q\n", g.Member.User.ID, err)
+		log.Printf("Cannot set role for user %s: %q\n", g.Member.User.ID, err)
 	}
 
 	s.ChannelMessageSend(itfWelcome, fmt.Sprintf("Welkom <@%s> op de **IT Factory Official** Discord server. Je wordt automatisch toegevoegd als **gast**. Indien je student of alumnus bent en  toegang wil tot de studenten- of alumnikanalen, gelieve dan een van de moderatoren te contacteren om de juiste rol te krijgen. Indien je graag informatie hebt over onze opleiding, neem dan gerust een kijkje op ons <#693046715665874944>.", g.User.ID))
@@ -140,6 +186,8 @@ func onNewMember(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	s.ChannelMessageSend(c.ID, "Heb je hulp nodig zeg dan tm!help")
 	time.Sleep(time.Second)
 	s.ChannelMessageSend(c.ID, "Let op, ik kan enkel antwoorden op commandos die starten met `tm!` niet op gewone berichten.")
+	time.Sleep(5 * time.Second)
+	s.ChannelMessageSend(c.ID, "Klaar voor de virtuele opendeurdag? Je kan best starten in <#693046715665874944>")
 }
 
 func registerCommand(c command.Command) {

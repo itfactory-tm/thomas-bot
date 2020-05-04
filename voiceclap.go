@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/mixer"
@@ -14,15 +16,35 @@ const itfDiscord = "687565213943332875"
 const audioChannel = "688370622228725848"
 
 var audioConnected = false
-var voiceQueueChan = make(chan string)
 
-func connectVoice(dg *discordgo.Session) {
+func connectVoice(dg *discordgo.Session, connected chan struct{}) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if audioConnected {
+		connected <- struct{}{}
+		return
+	}
+	gotLock, err := ha.LockVoice(audioChannel)
+	if err != nil {
+		connected <- struct{}{}
+		log.Println(err)
+		return
+	}
+	if !gotLock {
+		connected <- struct{}{}
+		return
+	}
+
 	audioConnected = true
+	voiceQueueChan := ha.WatchVoiceCommands(ctx, audioChannel)
+
 	dgv, err := dg.ChannelVoiceJoin(itfDiscord, audioChannel, false, true)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	connected <- struct{}{}
 
 	encoder := mixer.NewEncoder()
 	encoder.VC = dgv
@@ -34,9 +56,11 @@ func connectVoice(dg *discordgo.Session) {
 		for {
 			select {
 			case f := <-voiceQueueChan:
+				log.Println(f)
 				go encoder.Queue(uint64(i), f)
 				i++
 			case <-doneChan:
+				ha.UnlockVoice(audioChannel)
 				return
 			}
 		}
@@ -48,9 +72,11 @@ func connectVoice(dg *discordgo.Session) {
 	}
 
 	// Close connections once all are played
-	doneChan <- struct{}{}
+
 	dgv.Disconnect()
 	dgv.Close()
 	encoder.Stop()
 	audioConnected = false
+	ha.UnlockVoice(audioChannel)
+	doneChan <- struct{}{}
 }

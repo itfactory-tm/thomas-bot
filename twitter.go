@@ -1,19 +1,19 @@
 package main
 
 import (
+	"context"
 	"log"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/dghubble/oauth1"
 
 	"github.com/dghubble/go-twitter/twitter"
-
-	"github.com/bwmarrin/discordgo"
 )
 
 const whatsupChannel = "697150309482496082"
 
-func postHashtagTweets(s *discordgo.Session) {
+func postHashtagTweets(ctx context.Context, s *discordgo.Session) {
 	if !c.TwitterEnabled {
 		log.Println("Twitter posting disabled")
 		return
@@ -27,7 +27,7 @@ func postHashtagTweets(s *discordgo.Session) {
 	client := twitter.NewClient(httpClient)
 
 	params := &twitter.StreamFilterParams{
-		Track:         []string{"#ITFactory"},
+		Track:         []string{"#ITFactory", "#itfactory"},
 		StallWarnings: twitter.Bool(true),
 	}
 	stream, err := client.Streams.Filter(params)
@@ -38,6 +38,10 @@ func postHashtagTweets(s *discordgo.Session) {
 
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {
+		if gotLock, err := ha.Lock(tweet); err != nil || !gotLock {
+			return
+		}
+		defer ha.Unlock(tweet)
 		if tweet.Retweeted {
 			return
 		}
@@ -78,9 +82,15 @@ func postHashtagTweets(s *discordgo.Session) {
 		}
 	}
 
-	for {
-		log.Println("Starting Twitter listener")
-		demux.HandleChan(stream.Messages)
-		time.Sleep(10 * time.Second) // backoff in case of crash
-	}
+	go func() {
+		for {
+			log.Println("Starting Twitter listener")
+			demux.HandleChan(stream.Messages)
+			stream.Stop()
+			time.Sleep(10 * time.Second) // backoff in case of crash
+		}
+	}()
+
+	<-ctx.Done()
+	stream.Stop()
 }

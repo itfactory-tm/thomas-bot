@@ -31,6 +31,7 @@ func init() {
 	registerInfoDagCommand("oho", "Link naar OHO", "Werken en studeren combineren? Dat kan zeker! https://www.thomasmore.be/opleidingen/professionele-bachelor/toegepaste-informatica/toegepaste-informatica-combinatie-werken-en-studeren-oho")
 	registerInfoDagCommand("centen", "Link naar financiële informatie", "Wil je het financiële aspect van verder studeren bekijken? https://centenvoorstudenten.be/")
 	registerInfoDagCommand("studenten", "Link naar studenten info", "Op zoek naar meer algemene info rondom verder studeren? https://www.thomasmore.be/studenten")
+	registerLinkCommand("template", "Link naar TM huisstijl templates", "Hier vind je de TM huisstijl templates: https://thomasmore365.sharepoint.com/sites/James/NL/marcom/Paginas/Huisstijl-templates.aspx")
 }
 
 func registerLinkCommand(name, helpText, response string) {
