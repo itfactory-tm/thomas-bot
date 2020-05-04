@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/command"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -12,6 +14,14 @@ func init() {
 	registerCommandDEPRECATED("partners", "links", "Link naar partners", sayPartners)
 	registerCommandDEPRECATED("love", "fun", "Toon wat liefde aan elkaar <3", sayLove)
 	registerCommandDEPRECATED("loesje", "fun", "'Een fan van loesje' heeft wijze spreuken", sayLoesje)
+
+	registerCommand(command.Command{
+		Name:        "geit",
+		Category:    command.CategoryFun,
+		Description: "De E-F-blok geiten nu ook online",
+		Hidden:      false,
+		Handler:     sayGeit,
+	})
 }
 
 func sayErasmus(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -40,5 +50,12 @@ func sayLoesje(s *discordgo.Session, m *discordgo.MessageCreate) {
 	i := rand.Intn(7)
 	embed := NewEmbed()
 	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/loesje%d.png", i+1))
+	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
+}
+
+func sayGeit(s *discordgo.Session, m *discordgo.MessageCreate) {
+	i := rand.Intn(4)
+	embed := NewEmbed()
+	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/geit%d.png", i+1))
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
