@@ -22,6 +22,14 @@ func init() {
 		Hidden:      false,
 		Handler:     sayGeit,
 	})
+
+	registerCommand(command.Command{
+		Name:        "paard",
+		Category:    command.CategoryFun,
+		Description: "De E-F-blok paardjes nu ook online",
+		Hidden:      false,
+		Handler:     sayPaard,
+	})
 }
 
 func sayErasmus(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -54,8 +62,15 @@ func sayLoesje(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func sayGeit(s *discordgo.Session, m *discordgo.MessageCreate) {
-	i := rand.Intn(4)
+	i := rand.Intn(9)
 	embed := NewEmbed()
 	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/geit%d.png", i+1))
+	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
+}
+
+func sayPaard(s *discordgo.Session, m *discordgo.MessageCreate) {
+	i := rand.Intn(3)
+	embed := NewEmbed()
+	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/paard%d.png", i+1))
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
