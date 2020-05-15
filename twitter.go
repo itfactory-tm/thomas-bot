@@ -27,7 +27,7 @@ func postHashtagTweets(ctx context.Context, s *discordgo.Session) {
 	client := twitter.NewClient(httpClient)
 
 	params := &twitter.StreamFilterParams{
-		Track:         []string{"#ITFactory", "#itfactory"},
+		Track:         []string{"#ITFactory", "#itfactory", "#ITfactory"},
 		StallWarnings: twitter.Bool(true),
 	}
 	stream, err := client.Streams.Filter(params)
