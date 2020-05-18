@@ -24,6 +24,7 @@ func init() {
 	registerGiphyCommand("cat", "Voor de kattenmensen", "cat")
 	registerGiphyCommand("dog", "Voor de honden fans", "dog")
 	registerGiphyCommand("bunny", "Voor de niet katten of hondenmensen", "bunny")
+	registerGiphyCommand("honk", "Peace was never an option", "untitled goose game")
 }
 
 func registerGiphyCommand(name, description, keyword string) {
