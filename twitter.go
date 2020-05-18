@@ -45,11 +45,13 @@ func postHashtagTweets(ctx context.Context, s *discordgo.Session) {
 		if tweet.Retweeted {
 			return
 		}
-
-		if tweet.User.FollowersCount < 5 {
-			// we do not take people with less than 5 followers seriously
-			return
-		}
+		
+		// keuzeproject 2 is here, let's ignore for a while
+		//if tweet.User.FollowersCount < 5 {
+		//	// we do not take people with less than 5 followers seriously
+		//	return
+		//}
+		
 		embed := NewEmbed()
 		embed.AddField("Tweet", tweet.Text)
 
