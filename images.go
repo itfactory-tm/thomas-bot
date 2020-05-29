@@ -38,6 +38,14 @@ func init() {
 		Hidden:      false,
 		Handler:     saySchaap,
 	})
+	
+	registerCommand(command.Command{
+		Name:        "steun",
+		Category:    command.CategoryFun,
+		Description: "Examens? We komen er samen door!",
+		Hidden:      false,
+		Handler:     saySteun,
+	})
 }
 
 func sayErasmus(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -87,5 +95,13 @@ func saySchaap(s *discordgo.Session, m *discordgo.MessageCreate) {
 	i := rand.Intn(9)
 	embed := NewEmbed()
 	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/schaap%d.png", i+1))
+	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
+}
+
+
+func saySteun(s *discordgo.Session, m *discordgo.MessageCreate) {
+	i := rand.Intn(40)
+	embed := NewEmbed()
+	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/examensteun/%02d.png", i+1))
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
