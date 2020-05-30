@@ -103,5 +103,6 @@ func saySteun(s *discordgo.Session, m *discordgo.MessageCreate) {
 	i := rand.Intn(40)
 	embed := NewEmbed()
 	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/examensteun/%02d.png", i+1))
+	log.Println(fmt.Sprintf("https://static.eyskens.me/thomas-bot/examensteun/%02d.png", i+1))
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
