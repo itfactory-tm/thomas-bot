@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
@@ -38,7 +39,7 @@ func init() {
 		Hidden:      false,
 		Handler:     saySchaap,
 	})
-	
+
 	registerCommand(command.Command{
 		Name:        "steun",
 		Category:    command.CategoryFun,
@@ -97,7 +98,6 @@ func saySchaap(s *discordgo.Session, m *discordgo.MessageCreate) {
 	embed.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/schaap%d.png", i+1))
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
-
 
 func saySteun(s *discordgo.Session, m *discordgo.MessageCreate) {
 	i := rand.Intn(40)
