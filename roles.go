@@ -119,7 +119,7 @@ func handleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReac
 	userID := matches[0][1]
 	roleID := matches[0][2]
 
-	if r.Emoji.MessageFormat() != "☝️" {
+	if r.Emoji.MessageFormat() == "☝️" {
 		member, err := s.GuildMember(itfDiscord, userID)
 		if err != nil {
 			s.ChannelMessageSend(roleChannelID, fmt.Sprintf("Error getting roles of <@%s>, aborting operation: %q\n", userID, err))
