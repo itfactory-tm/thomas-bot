@@ -18,8 +18,8 @@ Select the following emoji(s) for roles you want to request, note that our moder
 1️⃣: 1ITF Student
 2️⃣: 2ITF Student
 3️⃣: 3ITF Student
-👩‍🎓: Alumni
 👩‍💻: OHO Student
+👩‍🎓: Alumni
 👩‍🏫: Teacher`
 
 var userIDRoleIDRegex = *regexp.MustCompile(`<@(.*)> wants role <@&(.*)>.*`)
@@ -39,9 +39,9 @@ func init() {
 	roleEmoji.Set("1️⃣", "687567949795557386") // 1ITF
 	roleEmoji.Set("2️⃣", "687568334379679771") // 2ITF
 	roleEmoji.Set("3️⃣", "687568470820388864") // 3ITF
+	roleEmoji.Set("👩‍💻", "689844328528478262") // OHO
 	roleEmoji.Set("👩‍🎓", "688368287255494702") // Alumni
 	roleEmoji.Set("👩‍🏫", "687567374198767617") // Teacher
-	roleEmoji.Set("👩‍💻", "689844328528478262") // OHO
 }
 
 func sayRole(s *discordgo.Session, m *discordgo.MessageCreate) {
