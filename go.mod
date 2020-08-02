@@ -17,6 +17,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4 // indirect
+	github.com/elliotchance/orderedmap v1.3.0
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/go-audio/wav v1.0.0
 	github.com/gogo/protobuf v1.3.1 // indirect

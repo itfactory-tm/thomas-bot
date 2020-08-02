@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"time"
+
+	"github.com/elliotchance/orderedmap"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
@@ -24,14 +25,7 @@ Select the following emoji(s) for roles you want to request, note that our moder
 var userIDRoleIDRegex = *regexp.MustCompile(`<@(.*)> wants role <@&(.*)>.*`)
 
 // very upset Discord does not support non-binary emoji
-var roleEmoji = map[string]string{
-	"1️⃣": "687567949795557386", // 1ITF
-	"2️⃣": "687568334379679771", // 2ITF
-	"3️⃣": "687568470820388864", // 3ITF
-	"👩‍🎓": "688368287255494702", // Alumni
-	"👩‍🏫": "687567374198767617", // Teacher
-	"👩‍💻": "689844328528478262", // OHO
-}
+var roleEmoji = orderedmap.NewOrderedMap()
 
 func init() {
 	registerCommand(command.Command{
@@ -41,6 +35,12 @@ func init() {
 		Hidden:      false,
 		Handler:     sayRole,
 	})
+	roleEmoji.Set("1️⃣", "687567949795557386") // 1ITF
+	roleEmoji.Set("2️⃣", "687568334379679771") // 2ITF
+	roleEmoji.Set("3️⃣", "687568470820388864") // 3ITF
+	roleEmoji.Set("👩‍🎓", "688368287255494702") // Alumni
+	roleEmoji.Set("👩‍🏫", "687567374198767617") // Teacher
+	roleEmoji.Set("👩‍💻", "689844328528478262") // OHO
 }
 
 func sayRole(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -60,12 +60,11 @@ func sayRole(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	for emoji := range roleEmoji {
-		err := s.MessageReactionAdd(ch.ID, msg.ID, emoji)
+	for _, emoji := range roleEmoji.Keys() {
+		err := s.MessageReactionAdd(ch.ID, msg.ID, emoji.(string))
 		if err != nil {
 			log.Printf("Error adding help emoji: %q\n", err)
 		}
-		time.Sleep(600 * time.Millisecond)
 	}
 }
 
@@ -92,7 +91,7 @@ func handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		return // not the role message
 	}
 
-	wantedRole, roleExists := roleEmoji[r.Emoji.MessageFormat()]
+	wantedRole, roleExists := roleEmoji.Get(r.Emoji.MessageFormat())
 	if !roleExists {
 		log.Printf("Role emoji %s not found", r.Emoji.MessageFormat())
 	}
