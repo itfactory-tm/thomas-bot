@@ -111,7 +111,6 @@ func (e *Embed) SetImage(args ...string) *Embed {
 //SetVideo ...
 func (e *Embed) SetVideo(args ...string) *Embed {
 	var URL string
-	var proxyURL string
 
 	if len(args) == 0 {
 		return e
@@ -119,12 +118,8 @@ func (e *Embed) SetVideo(args ...string) *Embed {
 	if len(args) > 0 {
 		URL = args[0]
 	}
-	if len(args) > 1 {
-		proxyURL = args[1]
-	}
 	e.Video = &discordgo.MessageEmbedVideo{
-		URL:      URL,
-		ProxyURL: proxyURL,
+		URL: URL,
 	}
 	return e
 }
