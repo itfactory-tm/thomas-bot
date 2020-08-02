@@ -188,17 +188,10 @@ func (h *HA) Unlock(obj interface{}) error {
 }
 
 func (h *HA) unlockKey(key string) error {
+	h.keepAlive(h.locks[key]) // keep lock in etcd till it expires so all servers catch up
 	_, err := h.etcd.Put(h.bgContext, key, statusOk, clientv3.WithLease(h.locks[key]))
 	if err != nil {
 		log.Printf("Failed to set status OK: %q retrying", err)
-		time.Sleep(5 * time.Second)
-		return h.unlockKey(key)
-	}
-	time.Sleep(300 * time.Millisecond)
-
-	_, err = h.etcd.Delete(h.bgContext, key)
-	if err != nil {
-		log.Printf("Failed to delete key: %q retrying", err)
 		time.Sleep(5 * time.Second)
 		return h.unlockKey(key)
 	}
