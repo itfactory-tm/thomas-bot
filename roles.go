@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
@@ -64,6 +65,7 @@ func sayRole(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err != nil {
 			log.Printf("Error adding help emoji: %q\n", err)
 		}
+		time.Sleep(600 * time.Millisecond)
 	}
 }
 
