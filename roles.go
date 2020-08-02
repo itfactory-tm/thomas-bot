@@ -24,7 +24,6 @@ Select the following emoji(s) for roles you want to request, note that our moder
 
 var userIDRoleIDRegex = *regexp.MustCompile(`<@(.*)> wants role <@&(.*)>.*`)
 
-// very upset Discord does not support non-binary emoji
 var roleEmoji = orderedmap.NewOrderedMap()
 
 func init() {
@@ -35,6 +34,8 @@ func init() {
 		Hidden:      false,
 		Handler:     sayRole,
 	})
+
+	// very upset Discord does not support non-binary emoji
 	roleEmoji.Set("1️⃣", "687567949795557386") // 1ITF
 	roleEmoji.Set("2️⃣", "687568334379679771") // 2ITF
 	roleEmoji.Set("3️⃣", "687568470820388864") // 3ITF
