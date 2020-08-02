@@ -95,16 +95,17 @@ func handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		log.Printf("Role emoji %s not found", r.Emoji.MessageFormat())
 	}
 
-	msg, err := s.ChannelMessageSend(roleChannelID, fmt.Sprintf("<@%s> wants role <@&%s>\n Allow or Deny?", r.UserID, wantedRole))
+	msg, err := s.ChannelMessageSend(roleChannelID, fmt.Sprintf("<@%s> wants role <@&%s>\n Allow/Deny or Remove all others and assign requested role?", r.UserID, wantedRole))
 	if err != nil {
 		return // let's handle this later
 	}
 	s.MessageReactionAdd(roleChannelID, msg.ID, "✅")
 	s.MessageReactionAdd(roleChannelID, msg.ID, "❌")
+	s.MessageReactionAdd(roleChannelID, msg.ID, "☝️")
 }
 
 func handleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd, message *discordgo.Message) {
-	if r.Emoji.MessageFormat() != "✅" {
+	if r.Emoji.MessageFormat() != "✅" && r.Emoji.MessageFormat() != "☝️" {
 		return
 	}
 	matches := userIDRoleIDRegex.FindAllStringSubmatch(message.Content, -1)
@@ -117,6 +118,17 @@ func handleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReac
 
 	userID := matches[0][1]
 	roleID := matches[0][2]
+
+	if r.Emoji.MessageFormat() != "☝️" {
+		member, err := s.GuildMember(itfDiscord, userID)
+		if err != nil {
+			s.ChannelMessageSend(roleChannelID, fmt.Sprintf("Error getting roles of <@%s>, aborting operation: %q\n", userID, err))
+			return
+		}
+		for _, role := range member.Roles {
+			s.GuildMemberRoleRemove(itfDiscord, userID, role)
+		}
+	}
 
 	err := s.GuildMemberRoleAdd(itfDiscord, userID, roleID)
 	if err != nil {
