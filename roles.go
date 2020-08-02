@@ -96,6 +96,27 @@ func handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		log.Printf("Role emoji %s not found", r.Emoji.MessageFormat())
 	}
 
+	ch, err := s.UserChannelCreate(r.UserID)
+	if err != nil {
+		log.Printf("Cannot DM user", err)
+		return
+	}
+
+	member, err := s.GuildMember(itfDiscord, r.UserID)
+	if err == nil {
+		for _, role := range member.Roles {
+			if role == wantedRole {
+				s.ChannelMessageSend(ch.ID, "Oopsie! You already have the role you requested!")
+				return
+			}
+		}
+	}
+
+	s.ChannelMessageSend(ch.ID, "Thank you! I have asked our moderators for permissions to assign the role you asked.")
+	if r.Emoji.MessageFormat() == "👩‍🏫" {
+		s.ChannelMessageSend(ch.ID, "Not already working at Thomas More? We're hiring! http://werkenbij.thomasmore.be/")
+	}
+
 	msg, err := s.ChannelMessageSend(roleChannelID, fmt.Sprintf("<@%s> wants role <@&%s>\n Allow/Deny or Remove all others and assign requested role?", r.UserID, wantedRole))
 	if err != nil {
 		return // let's handle this later
