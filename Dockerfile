@@ -6,7 +6,7 @@ COPY ./ /go/src/github.com/itfactory-tm/thomas-bot
 
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot
 
-RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./
+RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./cmd/thomas/
 
 FROM ubuntu:18.04
 
@@ -17,6 +17,7 @@ WORKDIR /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 COPY ./sounds /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/sounds
 COPY ./www /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/www
 
-COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot /usr/local/bin/
+COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/thomas /usr/local/bin/
 
-ENTRYPOINT /usr/local/bin/thomas-bot
+ENTRYPOINT /usr/local/bin/thomas
+CMD ["serve"]

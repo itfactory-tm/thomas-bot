@@ -8,5 +8,19 @@ type Command struct {
 	Category    Category
 	Description string
 	Hidden      bool
-	Handler     func(*discordgo.Session, *discordgo.MessageCreate)
+	// deprecated
+	Handler func(*discordgo.Session, *discordgo.MessageCreate)
+}
+
+type Registry interface {
+	// if command is "" all messages will be sent
+	RegisterMessageCreateHandler(command string, fn func(*discordgo.Session, *discordgo.MessageCreate))
+	RegisterMessageEditHandler(command string, fn func(*discordgo.Session, *discordgo.MessageUpdate))
+	RegisterMessageReactionAddHandler(fn func(*discordgo.Session, *discordgo.MessageReactionAdd))
+	RegisterGuildMemberAddHandler(fn func(*discordgo.Session, *discordgo.GuildMemberAdd))
+}
+
+type Interface interface {
+	Info() []Command
+	Register(registry Registry)
 }
