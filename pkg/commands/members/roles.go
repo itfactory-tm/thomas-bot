@@ -1,58 +1,33 @@
-package main
+package members
 
 import (
 	"fmt"
 	"log"
-	"regexp"
-
-	"github.com/elliotchance/orderedmap"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
 
-const roleChannelID = "739512119338467449" // one day we need to stop doing these...
+// TODO: add ability for commands to query config
+const prefix = "tm"
 
-const roleMessage = `We need to assign you a role inside our Discord which will help you  gain access to the class specific channels.
-Select the following emoji(s) for roles you want to request, note that our moderation team has to approve these first.
-1️⃣: 1ITF Student
-2️⃣: 2ITF Student
-3️⃣: 3ITF Student
-👩‍💻: OHO Student
-👩‍🎓: Alumni
-👩‍🏫: Teacher`
-
-var userIDRoleIDRegex = *regexp.MustCompile(`<@(.*)> wants role <@&(.*)>.*`)
-
-var roleEmoji = orderedmap.NewOrderedMap()
-
-func init() {
-	registerCommand(command.Command{
-		Name:        "role",
-		Category:    command.CategoryAlgemeen,
-		Description: "Modify your ITFactory Discord role",
-		Hidden:      false,
-		Handler:     sayRole,
-	})
-
-	// very upset Discord does not support non-binary emoji
-	roleEmoji.Set("1️⃣", "687567949795557386") // 1ITF
-	roleEmoji.Set("2️⃣", "687568334379679771") // 2ITF
-	roleEmoji.Set("3️⃣", "687568470820388864") // 3ITF
-	roleEmoji.Set("👩‍💻", "689844328528478262") // OHO
-	roleEmoji.Set("👩‍🎓", "688368287255494702") // Alumni
-	roleEmoji.Set("👩‍🏫", "687567374198767617") // Teacher
-}
-
-func sayRole(s *discordgo.Session, m *discordgo.MessageCreate) {
-	ch, err := s.UserChannelCreate(m.Author.ID)
+func (m *MemberCommands) sayRole(s *discordgo.Session, msg *discordgo.MessageCreate) {
+	ch, err := s.UserChannelCreate(msg.Author.ID)
 	if err != nil {
-		s.ChannelMessageSend(m.ChannelID, "Cannot DM user")
+		s.ChannelMessageSend(msg.ChannelID, "Cannot DM user")
 		return
 	}
+	if ch.ID != msg.ChannelID && msg.Message.Content == fmt.Sprintf("%s!role", prefix) {
+		s.ChannelMessageDelete(msg.ChannelID, msg.Message.ID)
+	}
 
-	if ch.ID != m.ChannelID && m.Message.Content == fmt.Sprintf("%s!role", c.Prefix) {
-		s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
+	m.SendRoleDM(s, msg.Author.ID)
+}
+
+// SendRoleDM sends a role selection DM to the user
+func (m *MemberCommands) SendRoleDM(s *discordgo.Session, userID string) {
+	ch, err := s.UserChannelCreate(userID)
+	if err != nil {
+		return
 	}
 
 	msg, err := s.ChannelMessageSend(ch.ID, roleMessage)
@@ -69,7 +44,7 @@ func sayRole(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+func (m *MemberCommands) handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	message, err := s.ChannelMessage(r.ChannelID, r.MessageID)
 	if err != nil {
 		return
@@ -77,15 +52,6 @@ func handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 
 	if message.Author.ID != s.State.User.ID {
 		return // not the bot user
-	}
-
-	if r.UserID == s.State.User.ID {
-		return // the bot itself reacted
-	}
-
-	if r.ChannelID == roleChannelID {
-		handleRolePermissionReaction(s, r, message)
-		return
 	}
 
 	if message.Content != roleMessage {
@@ -127,7 +93,16 @@ func handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	s.MessageReactionAdd(roleChannelID, msg.ID, "☝️")
 }
 
-func handleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd, message *discordgo.Message) {
+func (m *MemberCommands) handleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	if r.ChannelID != roleChannelID {
+		return
+	}
+
+	message, err := s.ChannelMessage(r.ChannelID, r.MessageID)
+	if err != nil {
+		return
+	}
+
 	if r.Emoji.MessageFormat() != "✅" && r.Emoji.MessageFormat() != "☝️" {
 		return
 	}
@@ -153,7 +128,7 @@ func handleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReac
 		}
 	}
 
-	err := s.GuildMemberRoleAdd(itfDiscord, userID, roleID)
+	err = s.GuildMemberRoleAdd(itfDiscord, userID, roleID)
 	if err != nil {
 		s.ChannelMessageSend(roleChannelID, fmt.Sprintf("Error assigning role %q\n", err))
 		log.Printf("Error assigning role %q\n", err)

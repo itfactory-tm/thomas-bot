@@ -1,4 +1,6 @@
-package main
+package sudo
+
+// TODO: make this a dynamic configurable solution
 
 var admins = map[string]bool{
 	"687715371255463972": true, // Maartje Eyskens
@@ -10,7 +12,8 @@ var admins = map[string]bool{
 	"177531421152247809": true, // Dirk Mervis
 }
 
-func isAdmin(userID string) bool {
+// IsAdmin checks if a user has admin privileges
+func IsAdmin(userID string) bool {
 	if b, exists := admins[userID]; exists {
 		return b
 	}

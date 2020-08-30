@@ -1,22 +1,23 @@
-FROM golang:1.14 as build
+FROM golang:1.15-alpine as build
 
-RUN apt-get update && apt-get install -y libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev git
+RUN apk add --no-cache git
 
 COPY ./ /go/src/github.com/itfactory-tm/thomas-bot
 
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot
 
-RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./
+RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./cmd/thomas/
 
-FROM ubuntu:18.04
+FROM alpine:3.12
 
-RUN apt-get update && apt-get install -y libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev curl
+RUN apk add --no-cache ca-certificates
 
 RUN mkdir -p /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 COPY ./sounds /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/sounds
 COPY ./www /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/www
 
-COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot /usr/local/bin/
+COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/thomas /usr/local/bin/
 
-ENTRYPOINT /usr/local/bin/thomas-bot
+ENTRYPOINT /usr/local/bin/thomas
+CMD ["serve"]

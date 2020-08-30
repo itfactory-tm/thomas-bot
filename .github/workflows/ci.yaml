@@ -10,4 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
-        run: docker build . --file Dockerfile
+        run: docker build . --file Dockerfile --tag registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA
+      - name: Build the Twitter Docker image
+        run: docker build . --file Dockerfile.twitter --build-arg src=registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA
+      - name: Build the John Docker image
+        run: docker build . --file Dockerfile.voice
