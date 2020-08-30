@@ -10,7 +10,7 @@ RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./cmd/tho
 
 FROM alpine:3.12
 
-RUN apk add --no-cache ca-certifictes
+RUN apk add --no-cache ca-certificates
 
 RUN mkdir -p /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
