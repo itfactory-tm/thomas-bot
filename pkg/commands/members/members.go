@@ -24,11 +24,12 @@ func NewMemberCommand() *MemberCommands {
 	return &MemberCommands{}
 }
 
+// Register registers the handlers
 func (m *MemberCommands) Register(registry command.Registry, server command.Server) {
-	registry.RegisterMessageCreateHandler("role", m.SayRole)
+	registry.RegisterMessageCreateHandler("role", m.sayRole)
 	registry.RegisterGuildMemberAddHandler(m.onGuildMemberAdd)
-	registry.RegisterMessageReactionAddHandler(m.HandleRolePermissionReaction)
-	registry.RegisterMessageReactionAddHandler(m.HandleRoleReaction)
+	registry.RegisterMessageReactionAddHandler(m.handleRolePermissionReaction)
+	registry.RegisterMessageReactionAddHandler(m.handleRoleReaction)
 }
 
 func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
@@ -71,7 +72,8 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 	m.SendRoleDM(s, g.Member.User.ID)
 }
 
-func (h *MemberCommands) Info() []command.Command {
+// Info return the commands in this package
+func (m *MemberCommands) Info() []command.Command {
 	return []command.Command{
 		command.Command{
 			Name:        "role",

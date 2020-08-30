@@ -13,14 +13,17 @@ func NewHelloCommand() *HelloCommand {
 	return &HelloCommand{}
 }
 
+// Register registers the handlers
 func (h *HelloCommand) Register(registry command.Registry, server command.Server) {
 	registry.RegisterMessageCreateHandler("hello", h.SayHello)
 }
 
+// SayHello sends an hello message
 func (h *HelloCommand) SayHello(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Beep bop boop! I am Thomas Bot, fork me on GitHub!")
 }
 
+// Info return the commands in this package
 func (h *HelloCommand) Info() []command.Command {
 	return []command.Command{
 		command.Command{

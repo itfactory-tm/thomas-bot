@@ -27,13 +27,15 @@ func NewHelpCommand() *HelpCommand {
 	return &HelpCommand{}
 }
 
+// Register registers the handlers
 func (h *HelpCommand) Register(registry command.Registry, server command.Server) {
-	registry.RegisterMessageCreateHandler("help", h.SayHelp)
+	registry.RegisterMessageCreateHandler("help", h.sayHelp)
 	registry.RegisterMessageReactionAddHandler(h.handleHelpReaction)
 
 	h.server = server
 }
 
+// PopulateHelpData populates the internal help data in memory
 func (h *HelpCommand) PopulateHelpData() {
 	commands := h.server.GetAllCommandInfos()
 	h.helpData = map[command.Category]map[string]command.Command{}
@@ -48,7 +50,7 @@ func (h *HelpCommand) PopulateHelpData() {
 	}
 }
 
-func (h *HelpCommand) SayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (h *HelpCommand) sayHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if h.helpData == nil {
 		h.PopulateHelpData()
 	}
@@ -84,6 +86,7 @@ func (h *HelpCommand) SayHelp(s *discordgo.Session, m *discordgo.MessageCreate) 
 	}
 }
 
+// Info return the commands in this package
 func (h *HelpCommand) Info() []command.Command {
 	return []command.Command{
 		command.Command{

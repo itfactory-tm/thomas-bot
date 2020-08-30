@@ -18,6 +18,7 @@ func NewLinkCommands() *LinkCommands {
 	}
 }
 
+// Register registers the handlers
 func (l *LinkCommands) Register(registry command.Registry, server command.Server) {
 	l.registry = registry
 
@@ -80,10 +81,7 @@ func (l *LinkCommands) registerInfoDagCommand(name, helpText, response string) {
 	})
 }
 
-func (l *LinkCommands) SayHello(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSend(m.ChannelID, "Beep bop boop! I am Thomas Bot, fork me on GitHub!")
-}
-
+// Info return the commands in this package
 func (l *LinkCommands) Info() []command.Command {
 	return l.infos
 }

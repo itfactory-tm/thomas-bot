@@ -19,6 +19,7 @@ func NewImagesCommands() *ImagesCommands {
 	return &ImagesCommands{}
 }
 
+// Register registers the handlers
 func (i *ImagesCommands) Register(registry command.Registry, server command.Server) {
 	registry.RegisterMessageCreateHandler("erasmus", i.sayErasmus)
 	registry.RegisterMessageCreateHandler("partners", i.sayPartners)
@@ -30,10 +31,7 @@ func (i *ImagesCommands) Register(registry command.Registry, server command.Serv
 	registry.RegisterMessageCreateHandler("command", i.saySteun)
 }
 
-func (i *ImagesCommands) SayHello(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSend(m.ChannelID, "Beep bop boop! I am Thomas Bot, fork me on GitHub!")
-}
-
+// Info return the commands in this package
 func (i *ImagesCommands) Info() []command.Command {
 	return []command.Command{
 		command.Command{

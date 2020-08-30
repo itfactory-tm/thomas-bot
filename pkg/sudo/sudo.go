@@ -12,6 +12,7 @@ var admins = map[string]bool{
 	"177531421152247809": true, // Dirk Mervis
 }
 
+// IsAdmin checks if a user has admin privileges
 func IsAdmin(userID string) bool {
 	if b, exists := admins[userID]; exists {
 		return b

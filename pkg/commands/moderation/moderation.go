@@ -15,6 +15,7 @@ func NewModerationCommands() *ModerationCommands {
 	return &ModerationCommands{}
 }
 
+// Register registers the handlers
 func (m *ModerationCommands) Register(registry command.Registry, server command.Server) {
 	registry.RegisterMessageCreateHandler("mute", m.muteUser)
 	registry.RegisterMessageCreateHandler("unmute", m.unmuteUser)
@@ -44,6 +45,7 @@ func (m *ModerationCommands) checkMessageReactionAddAsync(s *discordgo.Session, 
 	go m.checkReaction(s, msg)
 }
 
+// Info return the commands in this package
 func (m *ModerationCommands) Info() []command.Command {
 	return []command.Command{
 		command.Command{

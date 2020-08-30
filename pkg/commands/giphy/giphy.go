@@ -27,8 +27,9 @@ func NewGiphyCommands() *GiphyCommands {
 	return &GiphyCommands{}
 }
 
+// Register registers the handlers
 func (g *GiphyCommands) Register(registry command.Registry, server command.Server) {
-	registry.RegisterMessageCreateHandler("clap", g.Clap)
+	registry.RegisterMessageCreateHandler("clap", g.clap)
 
 	registry.RegisterMessageCreateHandler("hug", func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		g.postRandomGif(s, m, "hug")
@@ -49,7 +50,7 @@ func (g *GiphyCommands) Register(registry command.Registry, server command.Serve
 	g.server = server
 }
 
-func (g *GiphyCommands) Clap(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (g *GiphyCommands) clap(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.ChannelID == discordTalksVragen {
 		err := g.server.GetDiscordHA().SendVoiceCommand(audioChannel, "./sounds/clapping2.wav")
 		if err != nil {
@@ -77,6 +78,7 @@ func (g *GiphyCommands) postRandomGif(s *discordgo.Session, m *discordgo.Message
 	s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
 
+// Info return the commands in this package
 func (g *GiphyCommands) Info() []command.Command {
 	return []command.Command{
 		command.Command{

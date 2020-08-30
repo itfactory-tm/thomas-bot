@@ -10,7 +10,7 @@ import (
 // TODO: add ability for commands to query config
 const prefix = "tm"
 
-func (m *MemberCommands) SayRole(s *discordgo.Session, msg *discordgo.MessageCreate) {
+func (m *MemberCommands) sayRole(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	ch, err := s.UserChannelCreate(msg.Author.ID)
 	if err != nil {
 		s.ChannelMessageSend(msg.ChannelID, "Cannot DM user")
@@ -23,6 +23,7 @@ func (m *MemberCommands) SayRole(s *discordgo.Session, msg *discordgo.MessageCre
 	m.SendRoleDM(s, msg.Author.ID)
 }
 
+// SendRoleDM sends a role selection DM to the user
 func (m *MemberCommands) SendRoleDM(s *discordgo.Session, userID string) {
 	ch, err := s.UserChannelCreate(userID)
 	if err != nil {
@@ -43,7 +44,7 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, userID string) {
 	}
 }
 
-func (m *MemberCommands) HandleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+func (m *MemberCommands) handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	message, err := s.ChannelMessage(r.ChannelID, r.MessageID)
 	if err != nil {
 		return
@@ -92,7 +93,7 @@ func (m *MemberCommands) HandleRoleReaction(s *discordgo.Session, r *discordgo.M
 	s.MessageReactionAdd(roleChannelID, msg.ID, "☝️")
 }
 
-func (m *MemberCommands) HandleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+func (m *MemberCommands) handleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	if r.ChannelID != roleChannelID {
 		return
 	}
