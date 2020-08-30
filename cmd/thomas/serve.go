@@ -10,17 +10,19 @@ import (
 	"regexp"
 	"syscall"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
-
-	"github.com/itfactory-tm/thomas-bot/pkg/command"
-
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/hello"
-
-	"github.com/kelseyhightower/envconfig"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/images"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/command"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/giphy"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/hello"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/moderation"
+	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
 )
 
 func init() {
@@ -40,6 +42,7 @@ type serveCmdOptions struct {
 	commandRegex *regexp.Regexp
 	dg           *discordgo.Session
 	ha           *discordha.HA
+	handlers     []command.Interface
 
 	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
 	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
@@ -131,12 +134,16 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 }
 
 func (s *serveCmdOptions) RegisterHandlers() {
-	handlers := []command.Interface{
+	s.handlers = []command.Interface{
 		hello.NewHelloCommand(),
 		members.NewMemberCommand(),
+		moderation.NewModerationCommands(),
+		help.NewHelpCommand(),
+		giphy.NewGiphyCommands(),
+		images.NewImagesCommands(),
 	}
 
-	for _, handler := range handlers {
+	for _, handler := range s.handlers {
 		handler.Register(s, s)
 	}
 }
@@ -171,6 +178,10 @@ func (s *serveCmdOptions) onMessage(sess *discordgo.Session, m *discordgo.Messag
 }
 
 func (s *serveCmdOptions) onMessageUpdate(sess *discordgo.Session, m *discordgo.MessageUpdate) {
+	// Ignore reactions here
+	if m.Author == nil {
+		return
+	}
 	// Ignore all messages created by the bot itself
 	if m.Author.ID == sess.State.User.ID {
 		return
@@ -271,4 +282,13 @@ func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Sessi
 
 func (s *serveCmdOptions) GetDiscordHA() *discordha.HA {
 	return s.ha
+}
+
+func (s *serveCmdOptions) GetAllCommandInfos() []command.Command {
+	out := []command.Command(nil)
+	for _, handler := range s.handlers {
+		out = append(out, handler.Info()...)
+	}
+
+	return out
 }

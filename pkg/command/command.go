@@ -30,4 +30,5 @@ type Interface interface {
 
 type Server interface {
 	GetDiscordHA() *discordha.HA
+	GetAllCommandInfos() []Command
 }
