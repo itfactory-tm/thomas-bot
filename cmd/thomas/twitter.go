@@ -21,7 +21,7 @@ import (
 const whatsupChannel = "697150309482496082"
 
 func init() {
-	rootCmd.AddCommand(NewVoiceCmd())
+	rootCmd.AddCommand(NewTwitterCmd())
 }
 
 type twitterCmdOptions struct {
