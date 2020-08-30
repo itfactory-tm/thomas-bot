@@ -24,7 +24,7 @@
     <h1>Nice to meet you!</h1>
     <div class="container">
         <div class="speech-bubble">
-            <p>You're just one stem removed fron joining the ITFactory Discord! Thomas Bot is the only robot who may enter. Can you confirm you're not a fellow robot?</p>
+            <p>You're just one step removed from joining the ITFactory Discord! Thomas Bot is the only robot who may enter. Can you confirm you're not a fellow robot?</p>
             <form action="/invite" method="POST" id="invite">
                 <div class="h-captcha" data-sitekey="{{.HCaptchaSiteKey}}" data-callback="verifyCallback"></div>
             </form>
