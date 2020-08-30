@@ -19,5 +19,4 @@ COPY ./www /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/www
 
 COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/john /usr/local/bin/
 
-ENTRYPOINT /usr/local/bin/john
-CMD ["voice"]
+CMD [ "/usr/local/bin/john", "voice" ]

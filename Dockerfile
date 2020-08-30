@@ -19,5 +19,4 @@ COPY ./www /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/www
 
 COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/thomas /usr/local/bin/
 
-ENTRYPOINT /usr/local/bin/thomas
-CMD ["serve"]
+CMD [ "/usr/local/bin/thomas", "serve" ]

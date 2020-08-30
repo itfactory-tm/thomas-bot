@@ -1,4 +1,4 @@
 ARG src
 FROM $src
 
-CMD ["twitter"]
+CMD [ "/usr/local/bin/thomas", "twitter" ]
