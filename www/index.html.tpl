@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +24,7 @@
     <h1>Nice to meet you!</h1>
     <div class="container">
         <div class="speech-bubble">
-            <p>Je bent nog 1 stap weg van de ITFactory Discord! Thomas Bot is de enige robot die binnen mag. Wil je daarom even bevestigen dat jij geen collega robot bent?</p>
+            <p>You're just one stem removed fron joining the ITFactory Discord! Thomas Bot is the only robot who may enter. Can you confirm you're not a fellow robot?</p>
             <form action="/invite" method="POST" id="invite">
                 <div class="h-captcha" data-sitekey="{{.HCaptchaSiteKey}}" data-callback="verifyCallback"></div>
             </form>
