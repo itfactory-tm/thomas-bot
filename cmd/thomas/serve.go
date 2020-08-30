@@ -10,8 +10,6 @@ import (
 	"regexp"
 	"syscall"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/images"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
@@ -20,6 +18,8 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/giphy"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/hello"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/images"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/links"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/moderation"
 	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
@@ -141,6 +141,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		help.NewHelpCommand(),
 		giphy.NewGiphyCommands(),
 		images.NewImagesCommands(),
+		links.NewLinkCommands(),
 	}
 
 	for _, handler := range s.handlers {
