@@ -36,9 +36,9 @@ type voiceCmdOptions struct {
 
 // NewVoiceCmd generates the `serve` command
 func NewVoiceCmd() *cobra.Command {
-	s := serveHTTPCmdOptions{}
+	s := voiceCmdOptions{}
 	c := &cobra.Command{
-		Use:     "serve-http",
+		Use:     "voice",
 		Short:   "Run the voice server",
 		Long:    `This is a separate instance for voice services. This can only run in a single replica`,
 		RunE:    s.RunE,

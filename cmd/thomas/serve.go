@@ -28,18 +28,14 @@ func init() {
 }
 
 type serveCmdOptions struct {
-	Token                    string
-	Prefix                   string `default:"tm"`
-	GiphyKey                 string
-	TwitterEnabled           bool     `envconfig:"TWITTER_ENABLED"`
-	TwitterConsumerKey       string   `envconfig:"TWITTER_CONSUMER_KEY"`
-	TwitterConsumerSecret    string   `envconfig:"TWITTER_CONSUMER_SECRET"`
-	TwitterAccessToken       string   `envconfig:"TWITTER_ACCESS_TOKEN"`
-	TwitterAccessTokenSecret string   `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
-	HCaptchaSiteKey          string   `envconfig:"HCAPTCHA_SITE_KEY"`
-	HCaptchaSiteSecret       string   `envconfig:"HCAPTCHA_SITE_SECRET"`
-	BindAddr                 string   `default:":8080" envconfig:"BIND_ADDR"`
-	EtcdEndpoints            []string `envconfig:"ETCD_ENDPOINTS"`
+	Token    string
+	Prefix   string `default:"tm"`
+	GiphyKey string
+
+	HCaptchaSiteKey    string   `envconfig:"HCAPTCHA_SITE_KEY"`
+	HCaptchaSiteSecret string   `envconfig:"HCAPTCHA_SITE_SECRET"`
+	BindAddr           string   `default:":8080" envconfig:"BIND_ADDR"`
+	EtcdEndpoints      []string `envconfig:"ETCD_ENDPOINTS"`
 
 	commandRegex *regexp.Regexp
 	dg           *discordgo.Session
