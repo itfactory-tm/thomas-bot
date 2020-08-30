@@ -1,0 +1,4 @@
+ARG src
+FROM $src
+
+CMD ["voice"]

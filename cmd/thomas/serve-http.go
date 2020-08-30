@@ -19,7 +19,7 @@ import (
 const itfWelcome = "687588438886842373"
 
 func init() {
-	rootCmd.AddCommand(NewServeCmd())
+	rootCmd.AddCommand(NewServeHTTPCmd())
 }
 
 type serveHTTPCmdOptions struct {
