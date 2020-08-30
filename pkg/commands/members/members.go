@@ -24,7 +24,7 @@ func NewMemberCommand() *MemberCommands {
 	return &MemberCommands{}
 }
 
-func (m *MemberCommands) Register(registry command.Registry) {
+func (m *MemberCommands) Register(registry command.Registry, server command.Server) {
 	registry.RegisterMessageCreateHandler("role", m.SayRole)
 	registry.RegisterGuildMemberAddHandler(m.onGuildMemberAdd)
 	registry.RegisterMessageReactionAddHandler(m.HandleRolePermissionReaction)

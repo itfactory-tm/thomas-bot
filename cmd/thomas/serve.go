@@ -141,7 +141,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 	}
 
 	for _, handler := range handlers {
-		handler.Register(s)
+		handler.Register(s, s)
 	}
 }
 
@@ -271,4 +271,8 @@ func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Sessi
 	}
 
 	s.onGuildMemberAddHandler = append(s.onGuildMemberAddHandler, fn)
+}
+
+func (s *serveCmdOptions) GetDiscordHA() *discordha.HA {
+	return s.ha
 }

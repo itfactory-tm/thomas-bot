@@ -13,7 +13,7 @@ func NewHelloCommand() *HelloCommand {
 	return &HelloCommand{}
 }
 
-func (h *HelloCommand) Register(registry command.Registry) {
+func (h *HelloCommand) Register(registry command.Registry, server command.Server) {
 	registry.RegisterMessageCreateHandler("hello", h.SayHello)
 }
 
