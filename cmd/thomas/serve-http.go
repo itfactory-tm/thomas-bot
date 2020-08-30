@@ -31,7 +31,7 @@ type serveHTTPCmdOptions struct {
 	hc *hcaptcha.HCaptcha
 }
 
-// NewServeCmd generates the `serve` command
+// NewServeHTTPCmd generates the `serve-http` command
 func NewServeHTTPCmd() *cobra.Command {
 	s := serveHTTPCmdOptions{}
 	c := &cobra.Command{

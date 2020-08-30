@@ -33,7 +33,7 @@ type twitterCmdOptions struct {
 	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
 }
 
-// NewVoiceCmd generates the `serve` command
+// NewTwitterCmd generates the `twitter` command
 func NewTwitterCmd() *cobra.Command {
 	s := twitterCmdOptions{}
 	c := &cobra.Command{
