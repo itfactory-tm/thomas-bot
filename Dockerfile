@@ -1,5 +1,7 @@
 FROM golang:1.15-alpine as build
 
+RUN apk add --no-cache git
+
 COPY ./ /go/src/github.com/itfactory-tm/thomas-bot
 
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot
