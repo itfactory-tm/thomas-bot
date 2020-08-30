@@ -19,7 +19,7 @@ const guestRole = "687568536356257890"
 // MemberCommands contains the tm!role command and welcome messages
 type MemberCommands struct{}
 
-// NewMemberCommands gives a new MemberCommands
+// NewMemberCommand gives a new MemberCommands
 func NewMemberCommand() *MemberCommands {
 	return &MemberCommands{}
 }
