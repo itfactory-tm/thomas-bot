@@ -97,6 +97,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
+	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
 	s.ha, err = discordha.New(discordha.Config{
 		Session:       dg,
