@@ -54,7 +54,7 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 	time.Sleep(time.Second)
 	s.ChannelMessageSend(c.ID, "Welcome to the ITFactory Discord!")
 	time.Sleep(time.Second)
-	s.ChannelMessageSend(c.ID, "My name is Thomas Bot, i am a bot who can help you!")
+	s.ChannelMessageSend(c.ID, "My name is Thomas Bot, I am a bot who can help you!")
 	time.Sleep(time.Second)
 	s.ChannelMessageSend(c.ID, "New to Discord? No problem we got a manual for you: https://itf.to/discord-help")
 	embed := embed.NewEmbed()
@@ -67,7 +67,8 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 	time.Sleep(time.Second)
 	s.ChannelMessageSend(c.ID, "Warning, i am only able to reply to messages starting with `tm!`, not to normal questions.")
 	time.Sleep(5 * time.Second)
-	s.ChannelMessageSend(c.ID, "")
+	s.ChannelMessageSend(c.ID, "Please set your name for our Discord server to your actual name, this will help us to identify you and let you in! Thank you!")
+	time.Sleep(3 * time.Second)
 
 	m.SendRoleDM(s, g.Member.User.ID)
 }
