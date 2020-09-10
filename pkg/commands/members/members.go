@@ -42,7 +42,7 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 		log.Printf("Cannot set role for user %s: %q\n", g.Member.User.ID, err)
 	}
 
-	s.ChannelMessageSend(itfWelcome, fmt.Sprintf("Welcone <@%s> to the **IT Factory Official** Discord server. We will send you a DM in a moment to get you set up!", g.User.ID))
+	s.ChannelMessageSend(itfWelcome, fmt.Sprintf("Welcome <@%s> to the **IT Factory Official** Discord server. We will send you a DM in a moment to get you set up!", g.User.ID))
 
 	c, err := s.UserChannelCreate(g.Member.User.ID)
 	if err != nil {
