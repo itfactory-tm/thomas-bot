@@ -232,13 +232,13 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 }
 
 func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo.GuildMemberAdd) {
-	if ok, err := s.ha.Lock(m); !ok {
+	if ok, err := s.ha.Lock("onGuildMemberAdd" + m.User.ID); !ok {
 		if err != nil {
 			log.Println(err)
 		}
 		return
 	}
-	defer s.ha.Unlock(m)
+	defer s.ha.Unlock("onGuildMemberAdd" + m.User.ID)
 
 	for _, handler := range s.onGuildMemberAddHandler {
 		handler(sess, m)
