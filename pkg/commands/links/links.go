@@ -40,7 +40,7 @@ func (l *LinkCommands) buildLinks() {
 	l.registerInfoDagCommand("laptop", "Link naar info over laptops", "Welk materiaal heb ik nodig om in de IT-Factory te kunnen starten? https://www.thomasmore.be/sites/www.thomasmore.be/files/Laptopspecificaties%20voor%20IT%20Factory-studenten%202019-2020.pdf")
 	l.registerLinkCommand("sinners", "Link naar Sinners", "Wat is Sinners? https://sinners.be/")
 	l.registerInfoDagCommand("emt", "Link naar EMT", "Heeft de IT-Factory een eigen studentenvereniging? Jazeker: https://www.facebook.com/StudentenverenigingEMT")
-	l.registerLinkCommand("wallet", "Link naar wallet", "Hoeveel staat er nog op mijn studentenkaart? https://wallet.thomasmore.be/Account/Login?ReturnUrl=%2F")
+	l.registerLinkCommand("wallet", "Link naar wallet", "Hoeveel staat er nog op mijn studentenkaart? https://thomasmore.mynetpay.be/")
 	l.registerLinkCommand("kuloket", "Link naar KUloket", "Kuloket raadplegen? https://kuloket.be")
 	l.registerLinkCommand("printen", "Link naar printbeheer", "Je print gegevens bekijken? https://printbeheer.thomasmore.be/")
 	l.registerLinkCommand("campusshop", "Link naar campusshop", "Een kijkje nemen in de campusshop? https://www.campiniamedia.be/mvc/index.jsp")
