@@ -53,6 +53,7 @@ func (l *LinkCommands) buildLinks() {
 	l.registerInfoDagCommand("studenten", "Link naar studenten info", "Op zoek naar meer algemene info rondom verder studeren? https://www.thomasmore.be/studenten")
 	l.registerLinkCommand("template", "Link naar TM huisstijl templates", "Hier vind je de TM huisstijl templates: https://thomasmore365.sharepoint.com/sites/James/NL/marcom/Paginas/Huisstijl-templates.aspx")
 	l.registerLinkCommand("onlineexamen", "Link naar info over online examens", "Instructies voor het online examen vind je hier: https://thomasmore365.sharepoint.com/sites/James/NL/ict/Paginas/Instructies-bij-digitaal-examineren.aspx\nFAQ over digitaal examineren: https://thomasmore365.sharepoint.com/sites/James/NL/ict/Paginas/FAQ-digitaal-examineren.aspx\nTIP: bekijk zeker ook de canvas cursus voor vak specifieke info")
+	l.registerLinkCommand("twitch", "Link naar ITF Twitch kanaal", "Af en toe livestreamen we wat games op ons Twitch kanaal: https://www.twitch.tv/itfactorygaming")
 }
 
 func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
