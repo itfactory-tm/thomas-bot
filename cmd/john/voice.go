@@ -70,6 +70,8 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
 
+	dg.VoiceConnections = map[string]*discordgo.VoiceConnection{} // fixing a nil pointer?
+
 	v.ha, err = discordha.New(discordha.Config{
 		Session:       dg,
 		HA:            len(v.EtcdEndpoints) > 0,

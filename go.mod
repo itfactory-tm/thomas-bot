@@ -3,7 +3,7 @@ module github.com/itfactory-tm/thomas-bot
 go 1.14
 
 require (
-	github.com/bwmarrin/discordgo v0.22.0
+	github.com/bwmarrin/discordgo v0.22.1-0.20200825144245-8c5ca3de95d7
 	github.com/coreos/etcd v3.3.20+incompatible // indirect
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
@@ -29,9 +29,9 @@ require (
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.etcd.io/etcd v3.3.20+incompatible
 	go.uber.org/zap v1.15.0 // indirect
-	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
+	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0 // indirect
-	golang.org/x/sys v0.0.0-20200828194041-157a740278f4 // indirect
+	golang.org/x/sys v0.0.0-20201006155630-ac719f4daadf // indirect
 	google.golang.org/genproto v0.0.0-20200424135956-bca184e23272 // indirect
 	google.golang.org/grpc v1.29.1 // indirect
 	mvdan.cc/xurls/v2 v2.2.0
