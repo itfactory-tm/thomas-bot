@@ -84,6 +84,12 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 	voiceQueueChan := v.ha.WatchVoiceCommands(ctx, audioChannel)
 
+	err = dg.Open()
+	if err != nil {
+		return fmt.Errorf("error opening connection: %w", err)
+	}
+	defer dg.Close()
+
 	for {
 		q := <-voiceQueueChan
 		if audioConnected {
