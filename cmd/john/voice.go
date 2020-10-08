@@ -96,7 +96,7 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			continue
 		}
 		connected := make(chan struct{})
-		v.connectVoice(dg, connected)
+		go v.connectVoice(dg, connected)
 		<-connected
 		// send again for voice to pick up
 		v.ha.SendVoiceCommand(audioChannel, q)
