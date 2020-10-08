@@ -104,8 +104,6 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bob rev. %s", revision), "")
 
-	// TODO: go serve()
-
 	log.Println("Thomas Bob is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
