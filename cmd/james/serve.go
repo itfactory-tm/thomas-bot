@@ -24,10 +24,10 @@ func init() {
 }
 
 type serveCmdOptions struct {
-	Token    string
-	Prefix   string `default:"bob"`
+	Token  string
+	Prefix string `default:"bob"`
 
-	EtcdEndpoints      []string `envconfig:"ETCD_ENDPOINTS"`
+	EtcdEndpoints []string `envconfig:"ETCD_ENDPOINTS"`
 
 	commandRegex *regexp.Regexp
 	dg           *discordgo.Session
@@ -102,9 +102,8 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	}
 	defer dg.Close()
 
-	dg.UpdateStreamingStatus(0, fmt.Sprintf("Awaiting your command, use me with bob!"), "")
+	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bob rev. %s", revision), "")
 
-	// TODO: go postHashtagTweets(ctx, dg)
 	// TODO: go serve()
 
 	log.Println("Thomas Bob is now running.  Press CTRL-C to exit.")
