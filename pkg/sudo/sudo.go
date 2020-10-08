@@ -19,3 +19,16 @@ func IsAdmin(userID string) bool {
 	}
 	return false
 }
+
+var itfGameAdmins = map[string]bool{
+	"161504618017325057": true, // Victor Welters
+	"434499632765075456": true, // Ward Beyens
+	"249632139228741632": true, // Brent (Allen?)
+}
+
+func IsItfAdmin(userID string) bool {
+	if value, exists := itfGameAdmins[userID]; exists {
+		return value
+	}
+	return false
+}
