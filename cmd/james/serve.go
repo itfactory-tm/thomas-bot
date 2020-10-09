@@ -52,8 +52,6 @@ func NewServeCmd() *cobra.Command {
 		PreRunE: s.Validate,
 	}
 
-	s.Token = "NzYyMjg4NTE3OTY2NTk0MDU5.X3m-gQ.tTZLnXWgtFatt2fALXRy9l9d494"
-
 	// TODO: switch to viper
 	err := envconfig.Process("thomasbob", &s)
 	if err != nil {
