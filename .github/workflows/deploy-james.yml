@@ -1,0 +1,17 @@
+name: Docker Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile.james --build-arg src=registry.dispatch.sh/maartje/thomas-bot-james:$GITHUB_SHA --tag registry.dispatch.sh/maartje/thomas-bot-james:$GITHUB_SHA
+    - name: Log in to registry
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login registry.dispatch.sh -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Push image
+      run: docker push registry.dispatch.sh/maartje/thomas-bot-james:$GITHUB_SHA

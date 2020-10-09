@@ -115,7 +115,7 @@ func (h *HelpCommand) helpMenu() *embed.Embed {
 func (h *HelpCommand) handleHelpReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	message, err := s.ChannelMessage(r.ChannelID, r.MessageID)
 	if err != nil {
-		s.ChannelMessageSend(r.ChannelID, "Cannot get message of reaction")
+		log.Println("Cannot get message of reaction", r.ChannelID)
 		return
 	}
 

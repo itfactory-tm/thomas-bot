@@ -17,7 +17,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "james",
 		Short: "james is a seperate bot for all gaming related commands in the itf server",
-		Long:  `james is the fifth red engine! He's the brightest red engine on Sodor, admire his beautiful paintwork!
+		Long: `james is the fifth red engine! He's the brightest red engine on Sodor, admire his beautiful paintwork!
 				He's also our seperate gaming bot for all gaming related commands in the itf server, but whatever`,
 	}
 )
