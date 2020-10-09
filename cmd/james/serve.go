@@ -10,12 +10,13 @@ import (
 	"regexp"
 	"syscall"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/hello"
 	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
 )
 
@@ -50,6 +51,8 @@ func NewServeCmd() *cobra.Command {
 		RunE:    s.RunE,
 		PreRunE: s.Validate,
 	}
+
+	s.Token = "NzYyMjg4NTE3OTY2NTk0MDU5.X3m-gQ.tTZLnXWgtFatt2fALXRy9l9d494"
 
 	// TODO: switch to viper
 	err := envconfig.Process("thomasbob", &s)
@@ -114,7 +117,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 func (s *serveCmdOptions) RegisterHandlers() {
 	s.handlers = []command.Interface{
-		hello.NewHelloCommand(),
+		game.NewHelloCommand(),
 	}
 
 	for _, handler := range s.handlers {
