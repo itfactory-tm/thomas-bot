@@ -10,35 +10,34 @@ import (
 )
 
 // adduser contains the bob!adduser and bob!remuser command
-type AddUserCommand struct{}
+type UserCommand struct{}
 
-// NewAddUserCommand gives a new AddUserCommand
-func NewAddUserCommand() *AddUserCommand {
-	return &AddUserCommand{}
+// NewUserCommand gives a new UserCommand
+func NewUserCommand() *UserCommand {
+	return &UserCommand{}
 }
 
 // Register registers the handlers
-func (m *AddUserCommand) Register(registry command.Registry, server command.Server) {
+func (m *UserCommand) Register(registry command.Registry, server command.Server) {
 	registry.RegisterMessageCreateHandler("adduser", m.addUser)
 	registry.RegisterMessageCreateHandler("remuser", m.remUser)
 }
 
-func (m *AddUserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
-	if !(sudo.IsItfAdmin(msg.Author.ID) || sudo.IsAdmin(msg.Author.ID)) {
+func (m *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
+	if !sudo.IsItfAdmin(msg.Author.ID) {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", msg.Author.ID))
 		return
 	}
 
-	matched := msg.Message.Mentions
-	if len(matched) < 1 {
+	mentions := msg.Message.Mentions
+	if len(mentions) < 1 {
 		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user")
 		return
 	}
-	user := matched[0].ID
 
 	roles, err := s.GuildRoles(msg.GuildID)
 	if err != nil {
-		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error: %v", err))
+		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error getting guild roles: %v", err))
 		return
 	}
 
@@ -49,32 +48,36 @@ func (m *AddUserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCre
 		}
 	}
 
-	err = s.GuildMemberRoleAdd(msg.GuildID, user, gameRoleID)
-	if err != nil {
-		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error: %v", err))
-		return
+	//Adds role of single or multiple users
+	affectedUsers := ""
+	for _, user := range mentions {
+		userID := user.ID
+		err = s.GuildMemberRoleAdd(msg.GuildID, userID, gameRoleID)
+		if err != nil {
+			s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error adding role: %v", err))
+			return
+		}
+		affectedUsers += fmt.Sprintf("<@%s> ", userID)
 	}
 
-	s.ChannelMessageSend(msg.ChannelID, ("User added! <@" + user + ">"))
+	s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("User added! %s", affectedUsers))
 }
 
-func (m *AddUserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
-	if !(sudo.IsItfAdmin(msg.Author.ID) || sudo.IsAdmin(msg.Author.ID)) {
+func (m *UserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
+	if !sudo.IsItfAdmin(msg.Author.ID) {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", msg.Author.ID))
 		return
 	}
 
-	matched := msg.Message.Mentions
-	if len(matched) < 1 {
+	mentions := msg.Message.Mentions
+	if len(mentions) < 1 {
 		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user")
 		return
 	}
 
-	user := matched[0].ID
-
 	roles, err := s.GuildRoles(msg.GuildID)
 	if err != nil {
-		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error: %v", err))
+		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error getting guild roles: %v", err))
 		return
 	}
 
@@ -85,28 +88,34 @@ func (m *AddUserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCre
 		}
 	}
 
-	err = s.GuildMemberRoleRemove(msg.GuildID, user, gameRoleID)
-	if err != nil {
-		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error: %v", err))
-		return
+	//Removes role of single or multiple users
+	affectedUsers := ""
+	for _, user := range mentions {
+		userID := user.ID
+		err = s.GuildMemberRoleRemove(msg.GuildID, userID, gameRoleID)
+		if err != nil {
+			s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error removing role: %v", err))
+			return
+		}
+		affectedUsers += fmt.Sprintf("<@%s> ", userID)
 	}
 
-	s.ChannelMessageSend(msg.ChannelID, ("User removed! <@" + user + ">"))
+	s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("User removed! %s", affectedUsers))
 }
 
 // Info return the commands in this package
-func (m *AddUserCommand) Info() []command.Command {
+func (m *UserCommand) Info() []command.Command {
 	return []command.Command{
 		command.Command{
 			Name:        "adduser",
 			Category:    command.CategoryModeratie,
-			Description: "Add a user to the ITF Gamer role (ITF admin only)",
+			Description: "Add a user to the ITF Gamer role (ITF Game admin only)",
 			Hidden:      false,
 		},
 		command.Command{
 			Name:        "remuser",
 			Category:    command.CategoryModeratie,
-			Description: "Remove a user from the ITF Gamer role (ITF admin only)",
+			Description: "Remove a user from the ITF Gamer role (ITF Game admin only)",
 			Hidden:      false,
 		}}
 }

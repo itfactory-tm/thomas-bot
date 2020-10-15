@@ -117,7 +117,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 func (s *serveCmdOptions) RegisterHandlers() {
 	s.handlers = []command.Interface{
 		hello.NewHelloCommand(),
-		game.NewAddUserCommand(),
+		game.NewUserCommand(),
 	}
 
 	for _, handler := range s.handlers {
