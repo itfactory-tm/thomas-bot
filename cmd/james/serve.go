@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/hello"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
@@ -115,7 +116,8 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 func (s *serveCmdOptions) RegisterHandlers() {
 	s.handlers = []command.Interface{
-		game.NewHelloCommand(),
+		hello.NewHelloCommand(),
+		game.NewAddUserCommand(),
 	}
 
 	for _, handler := range s.handlers {
