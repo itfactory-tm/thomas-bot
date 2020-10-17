@@ -18,12 +18,12 @@ func NewUserCommand() *UserCommand {
 }
 
 // Register registers the handlers
-func (m *UserCommand) Register(registry command.Registry, server command.Server) {
-	registry.RegisterMessageCreateHandler("adduser", m.addUser)
-	registry.RegisterMessageCreateHandler("remuser", m.remUser)
+func (u *UserCommand) Register(registry command.Registry, server command.Server) {
+	registry.RegisterMessageCreateHandler("adduser", u.addUser)
+	registry.RegisterMessageCreateHandler("remuser", u.remUser)
 }
 
-func (m *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
+func (u *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	if !sudo.IsItfAdmin(msg.Author.ID) {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", msg.Author.ID))
 		return
@@ -63,7 +63,7 @@ func (m *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate
 	s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("User added! %s", affectedUsers))
 }
 
-func (m *UserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
+func (u *UserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	if !sudo.IsItfAdmin(msg.Author.ID) {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", msg.Author.ID))
 		return
@@ -104,7 +104,7 @@ func (m *UserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate
 }
 
 // Info return the commands in this package
-func (m *UserCommand) Info() []command.Command {
+func (u *UserCommand) Info() []command.Command {
 	return []command.Command{
 		command.Command{
 			Name:        "adduser",
