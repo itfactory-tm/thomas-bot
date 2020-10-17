@@ -97,6 +97,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 	// TODO: Register handlers
 	dg.AddHandler(s.onMessage)
+	dg.AddHandler(s.onMessageReactionAdd)
 
 	err = dg.Open()
 	if err != nil {
@@ -118,6 +119,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 	s.handlers = []command.Interface{
 		hello.NewHelloCommand(),
 		game.NewUserCommand(),
+		game.NewMuteCommand(),
 	}
 
 	for _, handler := range s.handlers {
@@ -150,6 +152,24 @@ func (s *serveCmdOptions) onMessage(sess *discordgo.Session, m *discordgo.Messag
 	}
 
 	for _, handler := range matchedHandlers {
+		handler(sess, m)
+	}
+}
+func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *discordgo.MessageReactionAdd) {
+	// Ignore all reactions created by the bot itself
+	if m.UserID == sess.State.User.ID {
+		return
+	}
+
+	if ok, err := s.ha.Lock(m); !ok {
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+	defer s.ha.Unlock(m)
+
+	for _, handler := range s.onMessageReactionAddHandler {
 		handler(sess, m)
 	}
 }
