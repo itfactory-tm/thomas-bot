@@ -40,13 +40,17 @@ func (m *MuteCommand) mutevc(s *discordgo.Session, msg *discordgo.MessageCreate)
 		return
 	}
 
-	channelId := strings.TrimPrefix(msg.Content, "bob!mutevc")
+	channelId := strings.Trim(msg.Content, "bob!mutevc ")
 	if len(channelId) > 1 {
-		channelId = strings.TrimPrefix(channelId, " ")
 		//ChannelID specified, check if channel exists
 		for _, channel := range g.Channels {
+			//Check if type channel is a voice channel
 			if channel.ID == channelId && channel.Type == 2 {
-				embedMsg, _ := s.ChannelMessageSendEmbed(msg.ChannelID, m.muteMenu(channel.ID, s).MessageEmbed)
+				embedMsg, err := s.ChannelMessageSendEmbed(msg.ChannelID, m.muteMenu(channel.ID, s).MessageEmbed)
+				if err != nil {
+					s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error sending embed message: %v", err))
+					return
+				}
 				s.MessageReactionAdd(embedMsg.ChannelID, embedMsg.ID, "🔈")
 				s.MessageReactionAdd(embedMsg.ChannelID, embedMsg.ID, "🔇")
 				return
@@ -58,7 +62,11 @@ func (m *MuteCommand) mutevc(s *discordgo.Session, msg *discordgo.MessageCreate)
 		//ChannelID NOT specified, joining author channel
 		for _, user := range g.VoiceStates {
 			if user.UserID == msg.Author.ID {
-				embedMsg, _ := s.ChannelMessageSendEmbed(msg.ChannelID, m.muteMenu(user.ChannelID, s).MessageEmbed)
+				embedMsg, err := s.ChannelMessageSendEmbed(msg.ChannelID, m.muteMenu(user.ChannelID, s).MessageEmbed)
+				if err != nil {
+					s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error sending embed message: %v", err))
+					return
+				}
 				s.MessageReactionAdd(embedMsg.ChannelID, embedMsg.ID, "🔈")
 				s.MessageReactionAdd(embedMsg.ChannelID, embedMsg.ID, "🔇")
 				return
@@ -88,8 +96,6 @@ func (m *MuteCommand) muteMenu(id string, s *discordgo.Session) *embed.Embed {
 	embed.AddField("Channel", channel.Name)
 	embed.AddField("ChannelID", channel.ID)
 	embed.InlineAllFields()
-	embed.SetColor(3066993)
-	embed.AddField("Status", "Unmuted!")
 	return embed
 }
 
@@ -104,10 +110,6 @@ func (m *MuteCommand) handleMuteReaction(s *discordgo.Session, r *discordgo.Mess
 		return // not the bot user
 	}
 
-	if !sudo.IsItfAdmin(r.UserID) {
-		return //Is not an Itf Admin
-	}
-
 	if len(message.Embeds) < 1 {
 		return // not the mute message
 	}
@@ -116,10 +118,19 @@ func (m *MuteCommand) handleMuteReaction(s *discordgo.Session, r *discordgo.Mess
 		return //Not the mute message
 	}
 
+	if !sudo.IsItfAdmin(r.UserID) {
+		return //Is not an Itf Admin
+	}
+
 	// Get the guild status
 	g, err := s.State.Guild(r.GuildID)
 	if err != nil {
 		s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("Error getting guild: %v", err))
+		return
+	}
+
+	if message.Embeds[0].Fields[1] == nil {
+		s.ChannelMessageSend(r.ChannelID, "Error getting embed fields")
 		return
 	}
 
@@ -133,6 +144,8 @@ func (m *MuteCommand) handleMuteReaction(s *discordgo.Session, r *discordgo.Mess
 				s.GuildMemberMute(user.GuildID, user.UserID, false)
 			}
 		}
+		embed.SetColor(3066993)
+		embed.AddField("Status", "Unmuted!")
 	}
 
 	if r.Emoji.MessageFormat() == "🔇" {
