@@ -32,7 +32,7 @@ func (u *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate
 
 	userId := strings.Trim(msg.Content, "bob!adduser ")
 	if len(userId) < 1 {
-		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user")
+		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user by userid")
 		return
 	}
 	userArray := strings.Fields(userId)
@@ -72,7 +72,7 @@ func (u *UserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate
 
 	userId := strings.Trim(msg.Content, "bob!remuser ")
 	if len(userId) < 1 {
-		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user")
+		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user by userid")
 		return
 	}
 	userArray := strings.Fields(userId)
