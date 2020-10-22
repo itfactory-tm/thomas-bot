@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 
@@ -29,11 +30,12 @@ func (u *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate
 		return
 	}
 
-	mentions := msg.Message.Mentions
-	if len(mentions) < 1 {
-		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user")
+	userId := strings.Trim(msg.Content, "bob!adduser ")
+	if len(userId) < 1 {
+		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user by userid")
 		return
 	}
+	userArray := strings.Fields(userId)
 
 	roles, err := s.GuildRoles(msg.GuildID)
 	if err != nil {
@@ -50,14 +52,13 @@ func (u *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate
 
 	//Adds role of single or multiple users
 	affectedUsers := ""
-	for _, user := range mentions {
-		userID := user.ID
-		err = s.GuildMemberRoleAdd(msg.GuildID, userID, gameRoleID)
+	for _, user := range userArray {
+		err = s.GuildMemberRoleAdd(msg.GuildID, user, gameRoleID)
 		if err != nil {
 			s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error adding role: %v", err))
 			return
 		}
-		affectedUsers += fmt.Sprintf("<@%s> ", userID)
+		affectedUsers += fmt.Sprintf("<@%s> ", user)
 	}
 
 	s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("User added! %s", affectedUsers))
@@ -69,11 +70,12 @@ func (u *UserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate
 		return
 	}
 
-	mentions := msg.Message.Mentions
-	if len(mentions) < 1 {
-		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user")
+	userId := strings.Trim(msg.Content, "bob!remuser ")
+	if len(userId) < 1 {
+		s.ChannelMessageSend(msg.ChannelID, "You need to specify a user by userid")
 		return
 	}
+	userArray := strings.Fields(userId)
 
 	roles, err := s.GuildRoles(msg.GuildID)
 	if err != nil {
@@ -90,14 +92,13 @@ func (u *UserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate
 
 	//Removes role of single or multiple users
 	affectedUsers := ""
-	for _, user := range mentions {
-		userID := user.ID
-		err = s.GuildMemberRoleRemove(msg.GuildID, userID, gameRoleID)
+	for _, user := range userArray {
+		err = s.GuildMemberRoleRemove(msg.GuildID, user, gameRoleID)
 		if err != nil {
 			s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error removing role: %v", err))
 			return
 		}
-		affectedUsers += fmt.Sprintf("<@%s> ", userID)
+		affectedUsers += fmt.Sprintf("<@%s> ", user)
 	}
 
 	s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("User removed! %s", affectedUsers))
