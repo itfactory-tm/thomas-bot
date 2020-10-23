@@ -102,10 +102,12 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
 	s.ha, err = discordha.New(discordha.Config{
-		Session:       dg,
-		HA:            len(s.EtcdEndpoints) > 0,
-		EtcdEndpoints: s.EtcdEndpoints,
-		Context:       ctx,
+		Session:            dg,
+		HA:                 len(s.EtcdEndpoints) > 0,
+		EtcdEndpoints:      s.EtcdEndpoints,
+		Context:            ctx,
+		LockTTL:            1 * time.Second,
+		LockUpdateInterval: 500 * time.Millisecond,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating Discord HA: %w", err)
@@ -236,7 +238,7 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 	defer s.ha.Unlock(lockObject)
 
 	for _, handler := range s.onMessageReactionAddHandler {
-		handler(sess, m)
+		go handler(sess, m)
 	}
 }
 
