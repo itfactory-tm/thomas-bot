@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
 
 	libgiphy "github.com/sanzaru/go-giphy"
@@ -52,7 +54,11 @@ func (g *GiphyCommands) Register(registry command.Registry, server command.Serve
 
 func (g *GiphyCommands) clap(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.ChannelID == discordTalksVragen {
-		err := g.server.GetDiscordHA().SendVoiceCommand(audioChannel, "./sounds/clapping2.wav")
+		err := g.server.GetDiscordHA().SendVoiceCommand("thomasbot", discordha.VoiceCommand{
+			ChannelID: audioChannel,
+			File:      "clapping2.wav",
+			UserID:    m.Author.ID,
+		})
 		if err != nil {
 			log.Printf("Error sending voice command: %q\n", err)
 		}
