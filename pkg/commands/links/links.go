@@ -55,6 +55,7 @@ func (l *LinkCommands) buildLinks() {
 	l.registerLinkCommand("onlineexamen", "Link naar info over online examens", "Instructies voor het online examen vind je hier: https://thomasmore365.sharepoint.com/sites/s-icts/SitePages/Digitaal-schriftelijk-examen.aspx\nFAQ over digitaal examineren: https://thomasmore365.sharepoint.com/sites/s-icts/SitePages/FAQ-digitaal-examineren.aspx\nTIP: bekijk zeker ook de canvas cursus voor vak specifieke info")
 	l.registerLinkCommand("examen", "Link naar info over examens", "Alles over de examens vind je hier: https://thomasmore365.sharepoint.com/sites/s.itfactory/SitePages/Examens.aspx")
 	l.registerLinkCommand("twitch", "Link naar ITF Twitch kanaal", "Af en toe livestreamen we wat games op ons Twitch kanaal: https://www.twitch.tv/itfactorygaming")
+	l.registerLinkCommand("positief", "Link naar covid 19 meld formulier","Heb je een bevestigde covid-19 besmetting? Laat dit dan hier weten: https://thomasmore365.sharepoint.com/sites/s-Studentenadministratie/SitePages/Melden-van-een-bevestigde-COVID-19-besmetting.aspx")
 }
 
 func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
