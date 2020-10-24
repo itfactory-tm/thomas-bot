@@ -64,6 +64,8 @@ func (v *voiceCmdOptions) Validate(cmd *cobra.Command, args []string) error {
 }
 
 func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
+	log.Println("Starting John...")
+
 	ctx := context.TODO()
 
 	dg, err := discordgo.New("Bot " + v.Token)
@@ -83,7 +85,8 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord HA: %w", err)
 	}
 
-	voiceQueueChan := v.ha.WatchVoiceCommands(ctx, audioChannel)
+	log.Println("Watching etcd...")
+	voiceQueueChan := v.ha.WatchVoiceCommands(ctx, "thomasbot")
 
 	err = dg.Open()
 	if err != nil {
