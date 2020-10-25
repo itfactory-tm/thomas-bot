@@ -56,7 +56,7 @@ func (g *GiphyCommands) clap(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.ChannelID == discordTalksVragen {
 		err := g.server.GetDiscordHA().SendVoiceCommand("thomasbot", discordha.VoiceCommand{
 			ChannelID: audioChannel,
-			File:      "clapping2.wav",
+			File:      "clappingmono.wav",
 			UserID:    m.Author.ID,
 		})
 		if err != nil {
