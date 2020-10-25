@@ -12,6 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/shout"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
@@ -147,6 +149,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		giphy.NewGiphyCommands(),
 		images.NewImagesCommands(),
 		links.NewLinkCommands(),
+		shout.NewShoutCommand(),
 	}
 
 	for _, handler := range s.handlers {
