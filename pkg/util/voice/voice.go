@@ -7,7 +7,7 @@ import (
 )
 
 func FindVoiceUser(dg *discordgo.Session, guildID, userID string) (string, error) {
-	g, err := dg.State.Guild(guildID)
+	g, err := dg.Guild(guildID)
 	if err != nil {
 		return "", err
 	}
