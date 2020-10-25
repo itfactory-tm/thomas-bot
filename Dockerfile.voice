@@ -21,6 +21,7 @@ RUN mkdir -p /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 COPY --from=steunaudio /steun/audio /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/sounds
 COPY ./sounds/clapping2.wav /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/sounds/clapping2.wav
+COPY ./sounds/clappingmono.wav /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/sounds/clappingmono.wav
 COPY ./www /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/www
 
 COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/john /usr/local/bin/
