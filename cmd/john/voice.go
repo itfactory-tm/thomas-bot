@@ -20,7 +20,9 @@ import (
 
 // TODO: automate these
 const itfDiscord = "687565213943332875"
-const audioChannel = "688370622228725848"
+
+// default channel
+const discordTalksChannel = "688370622228725848"
 
 var audioConnected = false
 
@@ -100,6 +102,7 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			continue
 		}
 		connected := make(chan struct{})
+		fmt.Printf("Connecting to %s\n", q.ChannelID)
 		go v.connectVoice(dg, connected, q.ChannelID, q.UserID)
 		<-connected
 		// send again for voice to pick up
@@ -111,7 +114,7 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan struct{}, channelID, userID string) {
 	if channelID == "" {
-		channelID = audioChannel
+		channelID = discordTalksChannel
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
