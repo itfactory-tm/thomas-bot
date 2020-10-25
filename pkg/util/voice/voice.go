@@ -6,8 +6,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+const itfDiscord = "687565213943332875"
+
 func FindVoiceUser(dg *discordgo.Session, guildID, userID string) (string, error) {
-	g, err := dg.Guild(guildID)
+	// may regret this
+	if guildID == "" {
+		guildID = itfDiscord
+	}
+	g, err := dg.State.Guild(guildID)
 	if err != nil {
 		return "", err
 	}
