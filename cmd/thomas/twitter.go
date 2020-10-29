@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
 
@@ -114,6 +115,13 @@ func (t *twitterCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		if tweet.User.ScreenName == "paardemeis" {
 			// because lack of a better system
 			return
+		}
+
+		if t, err := time.Parse("Mon Jan 2 15:04:05 -0700 2006", tweet.User.CreatedAt); err != nil {
+			if time.Since(t) < 30*24*time.Hour {
+				// accounts need to be 30 days old
+				return
+			}
 		}
 
 		embed := embed.NewEmbed()
