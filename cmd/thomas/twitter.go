@@ -106,11 +106,15 @@ func (t *twitterCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			return
 		}
 
-		// keuzeproject 2 is here, let's ignore for a while
-		//if tweet.User.FollowersCount < 5 {
-		//	// we do not take people with less than 5 followers seriously
-		//	return
-		//}
+		if tweet.User.FollowersCount < 5 {
+			// we do not take people with less than 5 followers seriously
+			return
+		}
+
+		if tweet.User.ScreenName == "paardemeis" {
+			// because lack of a better system
+			return
+		}
 
 		embed := embed.NewEmbed()
 		embed.AddField("Tweet", tweet.Text)
