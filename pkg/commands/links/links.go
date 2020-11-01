@@ -58,7 +58,7 @@ func (l *LinkCommands) buildLinks() {
 	l.registerLinkCommand("positief", "Link naar covid 19 meld formulier", "Heb je een bevestigde covid-19 besmetting? Laat dit dan hier weten: https://thomasmore365.sharepoint.com/sites/s-Studentenadministratie/SitePages/Melden-van-een-bevestigde-COVID-19-besmetting.aspx")
 	l.registerLinkCommand("studentenraad", "Contact opnemen met de studentenraad", "Wil je contact opnemen met de studentenraad? Stuur ze een mailtje via: studentenraad.itfactory@thomasmore.be")
 	l.registerLinkCommand("coderood", "Meer info over code rood", "Heb je meer info over code rood nodig? https://www.thomasmore.be/update-code-rood")
-	l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\n Geitjes: https://www.twitch.tv/tmgeitlive")
+	l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\nGeitjes: https://www.twitch.tv/tmgeitlive")
 }
 
 func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
