@@ -22,6 +22,7 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/giphy"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/hello"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/images"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/links"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
@@ -151,6 +152,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		images.NewImagesCommands(),
 		links.NewLinkCommands(),
 		shout.NewShoutCommand(),
+		hive.NewHiveCommand(),
 	}
 
 	for _, handler := range s.handlers {
