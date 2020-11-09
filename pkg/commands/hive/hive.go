@@ -28,7 +28,7 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// check of in the request channel to apply limits
-	if m.ChannelID != "775437139714244618" {
+	if m.ChannelID != "775453791801049119" {
 		s.ChannelMessageSend(m.ChannelID, "This command only works in the The Hive Requests channel")
 		return
 	}
