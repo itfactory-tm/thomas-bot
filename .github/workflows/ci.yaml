@@ -15,3 +15,5 @@ jobs:
         run: docker build . --file Dockerfile.twitter --build-arg src=registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA
       - name: Build the John Docker image
         run: docker build . --file Dockerfile.voice
+      - name: Build the Alf Docker image
+        run: docker build . --file Dockerfile.alf --tag registry.dispatch.sh/maartje/thomas-bot-alf:$GITHUB_SHA
