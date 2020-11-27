@@ -22,6 +22,7 @@ func (m *ModerationCommands) Register(registry command.Registry, server command.
 	registry.RegisterMessageCreateHandler("alert", m.sayAlert)
 	registry.RegisterMessageCreateHandler("choochoo", m.choochoo)
 	registry.RegisterMessageCreateHandler("clean", m.cleanChannel)
+	registry.RegisterMessageCreateHandler("membercount", m.membercount)
 
 	registry.RegisterMessageCreateHandler("", m.checkMessageCreateAsync)
 	registry.RegisterMessageEditHandler("", m.checkMessageUpdateAsync)
@@ -76,6 +77,12 @@ func (m *ModerationCommands) Info() []command.Command {
 			Name:        "clean",
 			Category:    command.CategoryModeratie,
 			Description: "Delete all messages in a channel (admin only)",
+			Hidden:      false,
+		},
+		command.Command{
+			Name:        "membercount",
+			Category:    command.CategoryModeratie,
+			Description: "Count the users in all roles",
 			Hidden:      false,
 		},
 	}

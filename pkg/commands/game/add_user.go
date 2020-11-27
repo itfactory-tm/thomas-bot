@@ -25,7 +25,7 @@ func (u *UserCommand) Register(registry command.Registry, server command.Server)
 }
 
 func (u *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
-	if !sudo.IsItfAdmin(msg.Author.ID) {
+	if !sudo.IsItfGameAdmin(msg.Author.ID) {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", msg.Author.ID))
 		return
 	}
@@ -65,7 +65,7 @@ func (u *UserCommand) addUser(s *discordgo.Session, msg *discordgo.MessageCreate
 }
 
 func (u *UserCommand) remUser(s *discordgo.Session, msg *discordgo.MessageCreate) {
-	if !sudo.IsItfAdmin(msg.Author.ID) {
+	if !sudo.IsItfGameAdmin(msg.Author.ID) {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", msg.Author.ID))
 		return
 	}
