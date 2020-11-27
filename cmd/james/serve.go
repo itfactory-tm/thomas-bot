@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"os/signal"
 	"regexp"
 	"syscall"
+	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
 
@@ -160,13 +162,20 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 		return
 	}
 
-	if ok, err := s.ha.Lock(m); !ok {
+	lockObject := map[string]interface{}{
+		"event": m,
+		// time in seconds mathematically rounded to be the same when messages arrive
+		// to different servers few milliseconds appart
+		"time": math.Round(float64(time.Now().UnixNano()) / float64(1e9)),
+	}
+
+	if ok, err := s.ha.Lock(lockObject); !ok {
 		if err != nil {
 			log.Println(err)
 		}
 		return
 	}
-	defer s.ha.Unlock(m)
+	defer s.ha.Unlock(lockObject)
 
 	for _, handler := range s.onMessageReactionAddHandler {
 		handler(sess, m)

@@ -96,10 +96,15 @@ func (h *HA) lockUpdateLoop() {
 }
 
 func (h *HA) logLoop() {
+	c := 0
 	for {
 		time.Sleep(time.Minute)
 		h.locksMutex.Lock()
-		log.Printf("I own %d locks\n", len(h.locks))
+		c++
+		if c > 100 {
+			log.Printf("I own %d locks\n", len(h.locks))
+			c = 0
+		}
 		h.locksMutex.Unlock()
 	}
 }

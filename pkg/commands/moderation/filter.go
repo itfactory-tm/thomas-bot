@@ -55,6 +55,16 @@ func (m *ModerationCommands) checkMessage(s *discordgo.Session, msg *discordgo.M
 }
 
 func (m *ModerationCommands) checkReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	c, err := s.UserChannelCreate(r.UserID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// is DM, no moderation needed
+	if c.ID == r.ChannelID {
+		return
+	}
 	user, err := m.getUser(s, r.GuildID, r.UserID)
 	if err != nil {
 		log.Printf("Error getting user %s, %q\n", r.UserID, err)

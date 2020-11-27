@@ -87,7 +87,7 @@ func (is *InputStream) Read(b []int16) (n int, err error) {
 
 // NewEncoder gives a new Encoder
 func NewEncoder() *Encoder {
-	enc, err := opus.NewEncoder(48000, 2, opus.AppAudio)
+	enc, err := opus.NewEncoder(48000, 1, opus.AppAudio)
 	if err != nil {
 		panic("Failed creating encoder: " + err.Error())
 	}
@@ -133,9 +133,9 @@ func (e *Encoder) Run() {
 
 func (e *Encoder) processQueue() {
 	e.queueLock.Lock()
-	mixedPCM := make([]int16, 48*20*2)
+	mixedPCM := make([]int16, 48*20*1)
 	for _, st := range e.inputStreams {
-		userPCM := make([]int16, 48*20*2)
+		userPCM := make([]int16, 48*20*1)
 		n, _ := st.Read(userPCM)
 		if n < 1 {
 			continue

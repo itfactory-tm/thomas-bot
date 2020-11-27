@@ -5,10 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"os/signal"
 	"regexp"
 	"syscall"
+	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/shout"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
@@ -18,6 +22,7 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/giphy"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/hello"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/images"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/links"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
@@ -98,12 +103,15 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
+	dg.State.TrackVoice = true
 
 	s.ha, err = discordha.New(discordha.Config{
-		Session:       dg,
-		HA:            len(s.EtcdEndpoints) > 0,
-		EtcdEndpoints: s.EtcdEndpoints,
-		Context:       ctx,
+		Session:            dg,
+		HA:                 len(s.EtcdEndpoints) > 0,
+		EtcdEndpoints:      s.EtcdEndpoints,
+		Context:            ctx,
+		LockTTL:            1 * time.Second,
+		LockUpdateInterval: 500 * time.Millisecond,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating Discord HA: %w", err)
@@ -143,6 +151,8 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		giphy.NewGiphyCommands(),
 		images.NewImagesCommands(),
 		links.NewLinkCommands(),
+		shout.NewShoutCommand(),
+		hive.NewHiveCommand(),
 	}
 
 	for _, handler := range s.handlers {
@@ -218,16 +228,23 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 		return
 	}
 
-	if ok, err := s.ha.Lock(m); !ok {
+	lockObject := map[string]interface{}{
+		"event": m,
+		// time in seconds mathematically rounded to be the same when messages arrive
+		// to different servers few milliseconds appart
+		"time": math.Round(float64(time.Now().UnixNano()) / float64(1e9)),
+	}
+
+	if ok, err := s.ha.Lock(lockObject); !ok {
 		if err != nil {
 			log.Println(err)
 		}
 		return
 	}
-	defer s.ha.Unlock(m)
+	defer s.ha.Unlock(lockObject)
 
 	for _, handler := range s.onMessageReactionAddHandler {
-		handler(sess, m)
+		go handler(sess, m)
 	}
 }
 

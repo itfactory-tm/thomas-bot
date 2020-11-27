@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"path"
 	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
@@ -19,7 +20,9 @@ import (
 
 // TODO: automate these
 const itfDiscord = "687565213943332875"
-const audioChannel = "688370622228725848"
+
+// default channel
+const discordTalksChannel = "688370622228725848"
 
 var audioConnected = false
 
@@ -63,6 +66,8 @@ func (v *voiceCmdOptions) Validate(cmd *cobra.Command, args []string) error {
 }
 
 func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
+	log.Println("Starting John...")
+
 	ctx := context.TODO()
 
 	dg, err := discordgo.New("Bot " + v.Token)
@@ -82,7 +87,8 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord HA: %w", err)
 	}
 
-	voiceQueueChan := v.ha.WatchVoiceCommands(ctx, audioChannel)
+	log.Println("Watching etcd...")
+	voiceQueueChan := v.ha.WatchVoiceCommands(ctx, "thomasbot")
 
 	err = dg.Open()
 	if err != nil {
@@ -96,16 +102,20 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			continue
 		}
 		connected := make(chan struct{})
-		go v.connectVoice(dg, connected)
+		fmt.Printf("Connecting to %s\n", q.ChannelID)
+		go v.connectVoice(dg, connected, q.ChannelID, q.UserID)
 		<-connected
 		// send again for voice to pick up
-		v.ha.SendVoiceCommand(audioChannel, q)
+		v.ha.SendVoiceCommand("thomasbot", q)
 	}
 
 	return nil
 }
 
-func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan struct{}) {
+func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan struct{}, channelID, userID string) {
+	if channelID == "" {
+		channelID = discordTalksChannel
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if audioConnected {
@@ -114,9 +124,9 @@ func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan str
 	}
 
 	audioConnected = true
-	voiceQueueChan := v.ha.WatchVoiceCommands(ctx, audioChannel)
+	voiceQueueChan := v.ha.WatchVoiceCommands(ctx, "thomasbot")
 
-	dgv, err := dg.ChannelVoiceJoin(itfDiscord, audioChannel, false, true)
+	dgv, err := dg.ChannelVoiceJoin(itfDiscord, channelID, false, true)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -135,7 +145,7 @@ func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan str
 			select {
 			case f := <-voiceQueueChan:
 				log.Println(f)
-				go encoder.Queue(uint64(i), f)
+				go encoder.Queue(uint64(i), path.Join("./sounds/", f.File))
 				i++
 			case <-doneChan:
 				return
