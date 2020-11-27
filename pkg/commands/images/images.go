@@ -24,11 +24,11 @@ func (i *ImagesCommands) Register(registry command.Registry, server command.Serv
 	registry.RegisterMessageCreateHandler("erasmus", i.sayErasmus)
 	registry.RegisterMessageCreateHandler("partners", i.sayPartners)
 	registry.RegisterMessageCreateHandler("love", i.sayLove)
-	registry.RegisterMessageCreateHandler("loesje", i.sayGeit)
-	registry.RegisterMessageCreateHandler("geit", i.sayErasmus)
+	registry.RegisterMessageCreateHandler("loesje", i.sayLoesje)
+	registry.RegisterMessageCreateHandler("geit", i.sayGeit)
 	registry.RegisterMessageCreateHandler("paard", i.sayPaard)
 	registry.RegisterMessageCreateHandler("schaap", i.saySchaap)
-	registry.RegisterMessageCreateHandler("command", i.saySteun)
+	registry.RegisterMessageCreateHandler("steun", i.saySteun)
 }
 
 // Info return the commands in this package

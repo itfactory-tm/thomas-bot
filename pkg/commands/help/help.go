@@ -153,6 +153,9 @@ func (h *HelpCommand) handleHelpReaction(s *discordgo.Session, r *discordgo.Mess
 		embed := h.helpMenu()
 		embed.AddField(command.CategoryToString(category), strings.Join(messages, "\n"))
 
-		s.ChannelMessageEditEmbed(r.ChannelID, r.MessageID, embed.MessageEmbed)
+		_, err := s.ChannelMessageEditEmbed(r.ChannelID, r.MessageID, embed.MessageEmbed)
+		if err != nil {
+			log.Printf("Error editing help: %v", err)
+		}
 	}
 }
