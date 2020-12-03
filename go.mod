@@ -10,7 +10,7 @@ require (
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/elliotchance/orderedmap v1.3.0
 	github.com/go-audio/wav v1.0.0
-	github.com/gogo/protobuf v1.3.1 // indirect
+	github.com/gogo/protobuf v1.3.1
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/protobuf v1.4.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect

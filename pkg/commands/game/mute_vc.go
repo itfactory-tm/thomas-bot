@@ -28,7 +28,7 @@ func (m *MuteCommand) Register(registry command.Registry, server command.Server)
 }
 
 func (m *MuteCommand) mutevc(s *discordgo.Session, msg *discordgo.MessageCreate) {
-	if !sudo.IsItfAdmin(msg.Author.ID) {
+	if !sudo.IsItfGameAdmin(msg.Author.ID) {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", msg.Author.ID))
 		return
 	}
@@ -89,8 +89,8 @@ func (m *MuteCommand) Info() []command.Command {
 	}
 }
 
-func (m *MuteCommand) muteMenu(id string, s *discordgo.Session) *embed.Embed {
-	channel, _ := s.Channel(id)
+func (m *MuteCommand) muteMenu(channelID string, s *discordgo.Session) *embed.Embed {
+	channel, _ := s.Channel(channelID)
 	embed := embed.NewEmbed()
 	embed.SetTitle("Mute")
 	embed.AddField("Channel", channel.Name)
@@ -118,7 +118,7 @@ func (m *MuteCommand) handleMuteReaction(s *discordgo.Session, r *discordgo.Mess
 		return //Not the mute message
 	}
 
-	if !sudo.IsItfAdmin(r.UserID) {
+	if !sudo.IsItfGameAdmin(r.UserID) {
 		return //Is not an Itf Admin
 	}
 

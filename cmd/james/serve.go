@@ -12,10 +12,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/hello"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
 
@@ -84,8 +84,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
 
-	//Creates intent error for some reason
-	//dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
+	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
 	s.ha, err = discordha.New(discordha.Config{
 		Session:       dg,
@@ -119,9 +118,9 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 func (s *serveCmdOptions) RegisterHandlers() {
 	s.handlers = []command.Interface{
-		hello.NewHelloCommand(),
 		game.NewUserCommand(),
 		game.NewMuteCommand(),
+		help.NewHelpCommand(),
 	}
 
 	for _, handler := range s.handlers {
