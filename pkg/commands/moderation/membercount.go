@@ -42,7 +42,7 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	////Print to embed if the role has users
 	for _, role := range g.Roles {
 		userCount := roleMap[role.ID]
-		if userCount != 0 {
+		if userCount > 1 {
 			embed.AddField(role.Name, strconv.Itoa(userCount))
 		}
 	}
