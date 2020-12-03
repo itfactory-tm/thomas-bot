@@ -23,7 +23,7 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 		return
 	}
 
-	//put the roles into a map and count how many users have that role
+	//Put the roles into a map and count how many users have that role
 	roleMap := make(map[string]int)
 	for _, member := range g.Members {
 		for _, role := range member.Roles {
@@ -38,6 +38,7 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	embed := embed.NewEmbed()
 	embed.SetTitle("Membercount")
 	embed.AddField("Totaal", strconv.Itoa(g.MemberCount))
+	embed.AddField("Totaal len", strconv.Itoa(len(g.Members)))
 
 	//Print to embed if the role has more than 1 user (filters bot roles)
 	for _, role := range g.Roles {
@@ -51,6 +52,5 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	_, err = s.ChannelMessageSendEmbed(msg.ChannelID, embed.MessageEmbed)
 	if err != nil {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error sending embed message: %v", err))
-		return
 	}
 }
