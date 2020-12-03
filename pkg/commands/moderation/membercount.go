@@ -39,7 +39,7 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	embed.SetTitle("Membercount")
 	embed.AddField("Totaal", strconv.Itoa(g.MemberCount))
 
-	////Print to embed if the role has more than 1 user (filters bot roles)
+	//Print to embed if the role has more than 1 user (filters bot roles)
 	for _, role := range g.Roles {
 		userCount := roleMap[role.ID]
 		if userCount > 1 {
