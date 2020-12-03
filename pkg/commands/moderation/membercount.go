@@ -52,5 +52,6 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	_, err = s.ChannelMessageSendEmbed(msg.ChannelID, embed.MessageEmbed)
 	if err != nil {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error sending embed message: %v", err))
+		return
 	}
 }
