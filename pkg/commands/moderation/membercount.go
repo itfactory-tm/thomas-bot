@@ -25,13 +25,19 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 
 	//Put the roles into a map and count how many users have that role
 	roleMap := make(map[string]int)
+	//Map for debugging => array for later? doesn't need values to check doubles
+	memberMap := make(map[string]int)
 	for _, member := range g.Members {
-		for _, role := range member.Roles {
-			if _, exists := roleMap[role]; !exists {
-				roleMap[role] = 0
+		if _, exists := memberMap[member.User.ID]; !exists {
+			memberMap[member.User.ID] = 0
+			for _, role := range member.Roles {
+				if _, exists := roleMap[role]; !exists {
+					roleMap[role] = 0
+				}
+				roleMap[role]++
 			}
-			roleMap[role]++
 		}
+		memberMap[member.User.ID]++
 	}
 
 	//Create embed
@@ -54,4 +60,12 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error sending embed message: %v", err))
 		return
 	}
+
+	endString := "Double users:\n"
+	for key, value := range memberMap {
+		if memberMap[key] > 1 {
+			endString = endString + fmt.Sprintf("User: <@%v> => %v \n", key, value)
+		}
+	}
+	s.ChannelMessageSend(msg.GuildID, endString)
 }
