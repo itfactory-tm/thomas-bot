@@ -41,24 +41,28 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	}
 
 	//Create embed
-	embed := embed.NewEmbed()
-	embed.SetTitle("Membercount")
-	embed.AddField("Totaal", strconv.Itoa(g.MemberCount))
-	embed.AddField("Totaal len", strconv.Itoa(len(g.Members)))
+	embedmessage := embed.NewEmbed()
+	embedmessage.SetTitle("Membercount")
+	embedmessage.AddField("Totaal", strconv.Itoa(g.MemberCount))
+	embedmessage.AddField("Totaal len", strconv.Itoa(len(g.Members)))
 
 	//Print to embed if the role has more than 1 user (filters bot roles)
 	for _, role := range g.Roles {
 		userCount := roleMap[role.ID]
 		if userCount > 1 {
-			embed.AddField(role.Name, strconv.Itoa(userCount))
+			embedmessage.AddField(role.Name, strconv.Itoa(userCount))
+			//Discord embeds only allow 25 fields => make new embed
+			if len(embedmessage.Fields) >= 25 {
+				sendEmbed(s, msg, embedmessage)
+				embedmessage = embed.NewEmbed()
+				embedmessage.SetTitle("Membercount")
+			}
 		}
 	}
 
-	embed.InlineAllFields()
-	_, err = s.ChannelMessageSendEmbed(msg.ChannelID, embed.MessageEmbed)
-	if err != nil {
-		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error sending embed message: %v", err))
-		return
+	//Prevent sending empty embed
+	if len(embedmessage.Fields) != 0 {
+		sendEmbed(s, msg, embedmessage)
 	}
 
 	endString := "Double users:\n"
@@ -68,4 +72,13 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 		}
 	}
 	s.ChannelMessageSend(msg.GuildID, endString)
+}
+
+func sendEmbed(s *discordgo.Session, msg *discordgo.MessageCreate, embedmessage *embed.Embed) {
+	embedmessage.InlineAllFields()
+	_, err := s.ChannelMessageSendEmbed(msg.ChannelID, embedmessage.MessageEmbed)
+	if err != nil {
+		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error sending embed message: %v", err))
+		return
+	}
 }
