@@ -25,31 +25,58 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 
 	//Put the roles into a map and count how many users have that role
 	roleMap := make(map[string]int)
+	//Map for debugging => array for later? doesn't need values to check doubles
+	memberMap := make(map[string]int)
 	for _, member := range g.Members {
-		for _, role := range member.Roles {
-			if _, exists := roleMap[role]; !exists {
-				roleMap[role] = 0
+		if _, exists := memberMap[member.User.ID]; !exists {
+			memberMap[member.User.ID] = 0
+			for _, role := range member.Roles {
+				if _, exists := roleMap[role]; !exists {
+					roleMap[role] = 0
+				}
+				roleMap[role]++
 			}
-			roleMap[role]++
 		}
+		memberMap[member.User.ID]++
 	}
 
 	//Create embed
-	embed := embed.NewEmbed()
-	embed.SetTitle("Membercount")
-	embed.AddField("Totaal", strconv.Itoa(g.MemberCount))
-	embed.AddField("Totaal len", strconv.Itoa(len(g.Members)))
+	embedmessage := embed.NewEmbed()
+	embedmessage.SetTitle("Membercount")
+	embedmessage.AddField("Totaal", strconv.Itoa(g.MemberCount))
+	embedmessage.AddField("Totaal len", strconv.Itoa(len(g.Members)))
 
 	//Print to embed if the role has more than 1 user (filters bot roles)
 	for _, role := range g.Roles {
 		userCount := roleMap[role.ID]
 		if userCount > 1 {
-			embed.AddField(role.Name, strconv.Itoa(userCount))
+			embedmessage.AddField(role.Name, strconv.Itoa(userCount))
+			//Discord embeds only allow 25 fields => make new embed
+			if len(embedmessage.Fields) >= 25 {
+				sendEmbed(s, msg, embedmessage)
+				embedmessage = embed.NewEmbed()
+				embedmessage.SetTitle("Membercount")
+			}
 		}
 	}
 
-	embed.InlineAllFields()
-	_, err = s.ChannelMessageSendEmbed(msg.ChannelID, embed.MessageEmbed)
+	//Prevent sending empty embed
+	if len(embedmessage.Fields) != 0 {
+		sendEmbed(s, msg, embedmessage)
+	}
+
+	endString := "Double users:\n"
+	for key, value := range memberMap {
+		if memberMap[key] > 1 {
+			endString = endString + fmt.Sprintf("User: <@%v> => %v \n", key, value)
+		}
+	}
+	s.ChannelMessageSend(msg.GuildID, endString)
+}
+
+func sendEmbed(s *discordgo.Session, msg *discordgo.MessageCreate, embedmessage *embed.Embed) {
+	embedmessage.InlineAllFields()
+	_, err := s.ChannelMessageSendEmbed(msg.ChannelID, embedmessage.MessageEmbed)
 	if err != nil {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error sending embed message: %v", err))
 		return
