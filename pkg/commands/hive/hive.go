@@ -9,7 +9,7 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
 
-var requestRegex = regexp.MustCompile(`!hive ([a-zA-Z0-9-]*) (.*)`)
+var requestRegex = regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*)`)
 
 // HiveCommand contains the tm!hello command
 type HiveCommand struct{}
