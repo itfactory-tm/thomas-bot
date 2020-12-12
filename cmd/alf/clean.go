@@ -21,6 +21,8 @@ const itfDiscord = "687565213943332875"
 // default channel
 const hiveCategoryID = "775436992136871957"
 
+const junkyard = "780775904082395136"
+
 func init() {
 	rootCmd.AddCommand(NewCleanCmd())
 }
@@ -105,6 +107,9 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 				// on first occurance: mark to remove, on second occurance remove
 				if _, wasMarkedAsRemove := shouldRemove[channel.ID]; wasMarkedAsRemove && !inUse {
 					log.Println("Deleting", channel.ID)
+					dg.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
+						ParentID: junkyard,
+					})
 					dg.ChannelDelete(channel.ID)
 				}
 
