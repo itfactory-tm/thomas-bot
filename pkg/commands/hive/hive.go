@@ -2,12 +2,15 @@ package hive
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
+
+const junkyard = "780775904082395136"
 
 var channelToCategory = map[string]string{
 	"775453791801049119": "775436992136871957", // the hive
@@ -26,6 +29,7 @@ func NewHiveCommand() *HiveCommand {
 // Register registers the handlers
 func (h *HiveCommand) Register(registry command.Registry, server command.Server) {
 	registry.RegisterMessageCreateHandler("hive", h.SayHive)
+	registry.RegisterMessageCreateHandler("archive", h.SayArchive)
 }
 
 // SayHive handles the tm!hive command
@@ -57,7 +61,7 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 		}
 	}
 
-	_, err := s.GuildChannelCreateComplex(m.GuildID, discordgo.GuildChannelCreateData{
+	newChan, err := s.GuildChannelCreateComplex(m.GuildID, discordgo.GuildChannelCreateData{
 		Name:      matched[1],
 		Bitrate:   128000,
 		NSFW:      false,
@@ -72,6 +76,33 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 	}
 
 	s.ChannelMessageSend(m.ChannelID, "Channel created! Have fun! Reminder: I will delete it when it stays empty for a while")
+	if chanType == discordgo.ChannelTypeGuildText {
+		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `tm!archive`")
+	}
+}
+
+// SayArchive handles the tm!archive command
+func (h *HiveCommand) SayArchive(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+	// check if this is allowed to be archived
+	channel, err := s.Channel(m.ChannelID)
+	ok := false
+	for _, category := range channelToCategory {
+		if channel.ParentID == category {
+			ok = true
+		}
+	}
+	if !ok {
+		s.ChannelMessageSend(m.ChannelID, "This command only works in hive created channels")
+		return
+	}
+
+	_, err = s.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
+		ParentID: junkyard,
+	})
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 // Info return the commands in this package
@@ -81,6 +112,12 @@ func (h *HiveCommand) Info() []command.Command {
 			Name:        "hive",
 			Category:    command.CategoryFun,
 			Description: "Set up temporary meeting rooms",
+			Hidden:      false,
+		},
+		command.Command{
+			Name:        "archive",
+			Category:    command.CategoryFun,
+			Description: "Archive temporary text meeting rooms",
 			Hidden:      false,
 		},
 	}
