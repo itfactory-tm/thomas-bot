@@ -14,21 +14,39 @@ const junkyard = "780775904082395136"
 
 var channelToCategory = map[string]string{
 	"775453791801049119": "775436992136871957", // the hive
+	"787346218304274483": "787345995105173524", // ITF Gaming
 }
 
-var requestRegex = regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*)`)
-
 // HiveCommand contains the tm!hello command
-type HiveCommand struct{}
+type HiveCommand struct{
+	isBob bool
+	requestRegex *regexp.Regexp
+}
 
 // NewHiveCommand gives a new HiveCommand
 func NewHiveCommand() *HiveCommand {
-	return &HiveCommand{}
+	return &HiveCommand{
+		requestRegex: regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*)`)
+	}
 }
+
+// NewHiveCommand gives a new HiveCommand
+func NewHiveCommandForBob() *HiveCommand {
+	return &HiveCommand{
+		isBob: true,
+		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) (.*)`)
+	}
+}
+
 
 // Register registers the handlers
 func (h *HiveCommand) Register(registry command.Registry, server command.Server) {
-	registry.RegisterMessageCreateHandler("hive", h.SayHive)
+	if h.isBob {
+		registry.RegisterMessageCreateHandler("vc", h.SayHive)
+	} else {
+		registry.RegisterMessageCreateHandler("hive", h.SayHive)
+	}
+
 	registry.RegisterMessageCreateHandler("archive", h.SayArchive)
 }
 
@@ -113,6 +131,23 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, m *discordgo.MessageCreat
 
 // Info return the commands in this package
 func (h *HiveCommand) Info() []command.Command {
+	if h.isBob {
+		return []command.Command{
+			command.Command{
+				Name:        "vc",
+				Category:    command.CategoryFun,
+				Description: "Set up temporary gaming rooms",
+				Hidden:      false,
+			},
+			command.Command{
+				Name:        "archive",
+				Category:    command.CategoryFun,
+				Description: "Archive temporary text gaming rooms",
+				Hidden:      false,
+			},
+		}
+	}
+	
 	return []command.Command{
 		command.Command{
 			Name:        "hive",

@@ -19,7 +19,9 @@ import (
 const itfDiscord = "687565213943332875"
 
 // default channel
-const hiveCategoryID = "775436992136871957"
+var hiveCategories = map[string]bool{
+	"775436992136871957": true,
+}
 
 const junkyard = "780775904082395136"
 
@@ -96,7 +98,7 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		}
 
 		for _, channel := range channels {
-			if channel.ParentID == hiveCategoryID && channel.Type == discordgo.ChannelTypeGuildVoice {
+			if _, isInHiveCat := hiveCategories[channel.ParentID]; isInHiveCat && channel.Type == discordgo.ChannelTypeGuildVoice {
 				inUse := false
 				for _, vs := range state.VoiceStates {
 					if vs.ChannelID == channel.ID {
