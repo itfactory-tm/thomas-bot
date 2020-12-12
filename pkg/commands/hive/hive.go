@@ -18,26 +18,25 @@ var channelToCategory = map[string]string{
 }
 
 // HiveCommand contains the tm!hello command
-type HiveCommand struct{
-	isBob bool
+type HiveCommand struct {
+	isBob        bool
 	requestRegex *regexp.Regexp
 }
 
 // NewHiveCommand gives a new HiveCommand
 func NewHiveCommand() *HiveCommand {
 	return &HiveCommand{
-		requestRegex: regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*)`)
+		requestRegex: regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*)`),
 	}
 }
 
 // NewHiveCommand gives a new HiveCommand
 func NewHiveCommandForBob() *HiveCommand {
 	return &HiveCommand{
-		isBob: true,
-		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) (.*)`)
+		isBob:        true,
+		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) (.*)`),
 	}
 }
-
 
 // Register registers the handlers
 func (h *HiveCommand) Register(registry command.Registry, server command.Server) {
@@ -147,7 +146,7 @@ func (h *HiveCommand) Info() []command.Command {
 			},
 		}
 	}
-	
+
 	return []command.Command{
 		command.Command{
 			Name:        "hive",
