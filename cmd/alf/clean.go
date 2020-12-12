@@ -20,7 +20,8 @@ const itfDiscord = "687565213943332875"
 
 // default channel
 var hiveCategories = map[string]bool{
-	"775436992136871957": true,
+	"775436992136871957": true, // the hive
+	"787345995105173524": true, // ITF gaming
 }
 
 const junkyard = "780775904082395136"
