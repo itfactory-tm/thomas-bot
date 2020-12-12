@@ -97,8 +97,14 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, m *discordgo.MessageCreat
 		return
 	}
 
+	j, err := s.Channel(junkyard)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	_, err = s.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
-		ParentID: junkyard,
+		ParentID:             junkyard,
+		PermissionOverwrites: j.PermissionOverwrites,
 	})
 	if err != nil {
 		log.Println(err)

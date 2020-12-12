@@ -107,8 +107,14 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 				// on first occurance: mark to remove, on second occurance remove
 				if _, wasMarkedAsRemove := shouldRemove[channel.ID]; wasMarkedAsRemove && !inUse {
 					log.Println("Deleting", channel.ID)
-					_, err := dg.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
-						ParentID: junkyard,
+					j, err := dg.Channel(junkyard)
+					if err != nil {
+						log.Println(err)
+						continue
+					}
+					_, err = dg.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
+						ParentID:             junkyard,
+						PermissionOverwrites: j.PermissionOverwrites,
 					})
 					if err != nil {
 						log.Println(err)
