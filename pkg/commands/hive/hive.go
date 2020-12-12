@@ -9,6 +9,10 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
 
+var channelToCategpry = map[string]string {
+	"775453791801049119" : "775436992136871957" // the hive
+}
+
 var requestRegex = regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*)`)
 
 // HiveCommand contains the tm!hello command
@@ -28,8 +32,9 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// check of in the request channel to apply limits
-	if m.ChannelID != "775453791801049119" {
-		s.ChannelMessageSend(m.ChannelID, "This command only works in the The Hive Requests channel")
+	catId, ok := channelToCategory[m.ChannelID]
+	if !ok {
+		s.ChannelMessageSend(m.ChannelID, "This command only works in the Requests channels")
 		return
 	}
 
@@ -56,7 +61,7 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 		Name:      matched[1],
 		Bitrate:   128000,
 		NSFW:      false,
-		ParentID:  "775436992136871957", // The Hive Category, TODO: make flexible
+		ParentID:  catId,
 		Type:      chanType,
 		UserLimit: int(i),
 	})
