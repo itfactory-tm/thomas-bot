@@ -93,8 +93,10 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 	}
 
 	s.ChannelMessageSend(m.ChannelID, "Channel created! Have fun! Reminder: I will delete it when it stays empty for a while")
-	if chanType == discordgo.ChannelTypeGuildText {
+	if chanType == discordgo.ChannelTypeGuildText && h.isBob {
 		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `tm!archive`")
+	} else if chanType == discordgo.ChannelTypeGuildText {
+		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `bob!archive`")
 	}
 }
 
