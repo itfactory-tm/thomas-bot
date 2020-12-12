@@ -39,18 +39,25 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 		return
 	}
 
-	i, err := strconv.ParseInt(matched[2], 10, 64)
-	if err != nil {
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%q is not a number", matched[2]))
-		return
+	var i int64
+	chanType := discordgo.ChannelTypeGuildVoice
+	if matched[2] == "text" {
+		chanType = discordgo.ChannelTypeGuildText
+	} else {
+		var err error
+		i, err = strconv.ParseInt(matched[2], 10, 64)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%q is not a number", matched[2]))
+			return
+		}
 	}
 
-	_, err = s.GuildChannelCreateComplex(m.GuildID, discordgo.GuildChannelCreateData{
+	_, err := s.GuildChannelCreateComplex(m.GuildID, discordgo.GuildChannelCreateData{
 		Name:      matched[1],
 		Bitrate:   128000,
 		NSFW:      false,
 		ParentID:  "775436992136871957", // The Hive Category, TODO: make flexible
-		Type:      discordgo.ChannelTypeGuildVoice,
+		Type:      chanType,
 		UserLimit: int(i),
 	})
 
