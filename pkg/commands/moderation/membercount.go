@@ -23,28 +23,38 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 		return
 	}
 
+	//Get updated memberlist
+	memberList, err := s.GuildMembers(msg.GuildID, "", 1000)
+	if err != nil {
+		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error getting member list: %v", err))
+		return
+	}
+	for len(memberList) < g.MemberCount {
+		members, err := s.GuildMembers(msg.GuildID, memberList[len(memberList)-1].GuildID, 1000)
+		if err != nil {
+			s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error getting member list: %v", err))
+			return
+		}
+		memberList = append(memberList, members...)
+	}
+
 	//Put the roles into a map and count how many users have that role
 	roleMap := make(map[string]int)
-	//Map for debugging => array for later? doesn't need values to check doubles
-	memberMap := make(map[string]int)
-	for _, member := range g.Members {
-		if _, exists := memberMap[member.User.ID]; !exists {
-			memberMap[member.User.ID] = 0
-			for _, role := range member.Roles {
-				if _, exists := roleMap[role]; !exists {
-					roleMap[role] = 0
-				}
-				roleMap[role]++
+	for _, member := range memberList {
+		for _, role := range member.Roles {
+			if _, exists := roleMap[role]; !exists {
+				roleMap[role] = 0
 			}
+			roleMap[role]++
 		}
-		memberMap[member.User.ID]++
 	}
 
 	//Create embed
 	embedmessage := embed.NewEmbed()
 	embedmessage.SetTitle("Membercount")
-	embedmessage.AddField("Totaal", strconv.Itoa(g.MemberCount))
-	embedmessage.AddField("Totaal len", strconv.Itoa(len(g.Members)))
+	embedmessage.SetThumbnail(g.IconURL())
+	embedmessage.SetFooter(fmt.Sprintf("Guild total %v; Members counted: %v", g.MemberCount, len(memberList)))
+	embedmessage.AddField("Total", strconv.Itoa(g.MemberCount))
 
 	//Print to embed if the role has more than 1 user (filters bot roles)
 	for _, role := range g.Roles {
@@ -64,14 +74,6 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	if len(embedmessage.Fields) != 0 {
 		sendEmbed(s, msg, embedmessage)
 	}
-
-	endString := "Double users:\n"
-	for key, value := range memberMap {
-		if memberMap[key] > 1 {
-			endString = endString + fmt.Sprintf("User: <@%v> => %v \n", key, value)
-		}
-	}
-	s.ChannelMessageSend(msg.GuildID, endString)
 }
 
 func sendEmbed(s *discordgo.Session, msg *discordgo.MessageCreate, embedmessage *embed.Embed) {
