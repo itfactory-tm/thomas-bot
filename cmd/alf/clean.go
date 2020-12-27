@@ -19,7 +19,12 @@ import (
 const itfDiscord = "687565213943332875"
 
 // default channel
-const hiveCategoryID = "775436992136871957"
+var hiveCategories = map[string]bool{
+	"775436992136871957": true, // the hive
+	"787345995105173524": true, // ITF gaming
+}
+
+const junkyard = "780775904082395136"
 
 func init() {
 	rootCmd.AddCommand(NewCleanCmd())
@@ -94,7 +99,7 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		}
 
 		for _, channel := range channels {
-			if channel.ParentID == hiveCategoryID && channel.Type == discordgo.ChannelTypeGuildVoice {
+			if _, isInHiveCat := hiveCategories[channel.ParentID]; isInHiveCat && channel.Type == discordgo.ChannelTypeGuildVoice {
 				inUse := false
 				for _, vs := range state.VoiceStates {
 					if vs.ChannelID == channel.ID {
@@ -105,7 +110,18 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 				// on first occurance: mark to remove, on second occurance remove
 				if _, wasMarkedAsRemove := shouldRemove[channel.ID]; wasMarkedAsRemove && !inUse {
 					log.Println("Deleting", channel.ID)
-					dg.ChannelDelete(channel.ID)
+					j, err := dg.Channel(junkyard)
+					if err != nil {
+						log.Println(err)
+						continue
+					}
+					_, err = dg.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
+						ParentID:             junkyard,
+						PermissionOverwrites: j.PermissionOverwrites,
+					})
+					if err != nil {
+						log.Println(err)
+					}
 				}
 
 				if !inUse {

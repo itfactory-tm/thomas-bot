@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
@@ -121,6 +122,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		game.NewUserCommand(),
 		game.NewMuteCommand(),
 		help.NewHelpCommand(),
+		hive.NewHiveCommandForBob(),
 	}
 
 	for _, handler := range s.handlers {
