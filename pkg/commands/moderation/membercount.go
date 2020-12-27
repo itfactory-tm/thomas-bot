@@ -29,13 +29,16 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error getting member list: %v", err))
 		return
 	}
-	for len(memberList) < g.MemberCount {
-		members, err := s.GuildMembers(msg.GuildID, memberList[len(memberList)-1].GuildID, 1000)
+	for {
+		members, err := s.GuildMembers(msg.GuildID, memberList[len(memberList)-1].User.ID, 1000)
 		if err != nil {
 			s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Error getting member list: %v", err))
 			return
 		}
 		memberList = append(memberList, members...)
+		if len(members) == 0 {
+			break
+		}
 	}
 
 	//Put the roles into a map and count how many users have that role
