@@ -171,6 +171,7 @@ func (s *serveCmdOptions) handleReactions() {
 	if !won {
 		s.handleReactions()
 	}
+	log.Println("I am now the reaction handler!")
 	s.dg.AddHandler(s.onMessageReactionAdd)
 }
 
