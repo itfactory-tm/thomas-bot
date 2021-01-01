@@ -248,7 +248,7 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 	}
 
 	if !allowed {
-		s.ChannelMessageSend(r.ChannelID, "Sorry category not allowed, try privilege escalating otherwise!")
+		//s.ChannelMessageSend(r.ChannelID, "Sorry category not allowed, try privilege escalating otherwise!")
 		return
 	}
 
