@@ -27,7 +27,7 @@ type HiveCommand struct {
 // NewHiveCommand gives a new HiveCommand
 func NewHiveCommand() *HiveCommand {
 	return &HiveCommand{
-		requestRegex: regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*) (.*)`),
+		requestRegex: regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) ([a-zA-Z0-9]*) ?(.*)$`),
 	}
 }
 
@@ -36,7 +36,7 @@ func NewHiveCommandForBob() *HiveCommand {
 	return &HiveCommand{
 		isBob:        true,
 		prefix:       "BOB-",
-		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) (.*) (.*)`),
+		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) ([a-zA-Z0-9]*) ?(.*)$`),
 	}
 }
 
