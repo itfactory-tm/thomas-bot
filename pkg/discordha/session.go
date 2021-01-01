@@ -54,7 +54,7 @@ func New(c Config) (*HA, error) {
 	}
 
 	if c.LockUpdateInterval == 0 {
-		c.LockUpdateInterval = time.Second * 3
+		c.LockUpdateInterval = time.Second * 1
 	}
 	if c.LockTTL == 0 {
 		c.LockTTL = time.Second * 10
