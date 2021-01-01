@@ -22,7 +22,7 @@ const itfDiscord = "687565213943332875"
 // default channel with prefixes
 var hiveCategories = map[string]string{
 	"775436992136871957": "",     // the hive
-	"787345995105173524": "BOB-", // ITF gaming
+	"760860082241142790": "BOB-", // ITF gaming
 }
 
 const junkyard = "780775904082395136"
