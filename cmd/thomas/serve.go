@@ -88,7 +88,7 @@ func (s *serveCmdOptions) Validate(cmd *cobra.Command, args []string) error {
 func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	s.commandRegex = regexp.MustCompile(s.Prefix + `!(\w*)\b`)
+	s.commandRegex = regexp.MustCompile(`^` + s.Prefix + `!(\w*)\b`)
 
 	http := NewServeHTTPCmd()
 	err := http.PreRunE(cmd, args)
