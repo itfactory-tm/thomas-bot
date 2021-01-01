@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"os/signal"
 	"regexp"
@@ -29,6 +28,8 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/moderation"
 	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
 )
+
+const REACTION_HANDLER_KEY = "reaction-handling-instance"
 
 func init() {
 	rootCmd.AddCommand(NewServeCmd())
@@ -120,7 +121,6 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	// TODO: Register handlers
 	dg.AddHandler(s.onMessage)
 	dg.AddHandler(s.onMessageUpdate)
-	dg.AddHandler(s.onMessageReactionAdd)
 	dg.AddHandler(s.onGuildMemberAdd)
 
 	err = dg.Open()
@@ -128,11 +128,11 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error opening connection: %w", err)
 	}
 	defer dg.Close()
+	s.dg = dg
 
 	dg.UpdateStreamingStatus(0, fmt.Sprintf("tm!help (version %s)", revision), "")
 
-	// TODO: go postHashtagTweets(ctx, dg)
-	// TODO: go serve()
+	go s.handleReactions()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
@@ -158,6 +158,20 @@ func (s *serveCmdOptions) RegisterHandlers() {
 	for _, handler := range s.handlers {
 		handler.Register(s, s)
 	}
+}
+
+// handleReactions will try to lock to he the server to handle all reactions
+func (s *serveCmdOptions) handleReactions() {
+	won, err := s.ha.Lock(REACTION_HANDLER_KEY)
+	if err != nil {
+		log.Println(err)
+		s.handleReactions()
+		return
+	}
+	if !won {
+		s.handleReactions()
+	}
+	s.dg.AddHandler(s.onMessageReactionAdd)
 }
 
 func (s *serveCmdOptions) onMessage(sess *discordgo.Session, m *discordgo.MessageCreate) {
@@ -227,22 +241,6 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 	if m.UserID == sess.State.User.ID {
 		return
 	}
-
-	lockObject := map[string]interface{}{
-		"event": m,
-		// time in seconds mathematically rounded to be the same when messages arrive
-		// to different servers few milliseconds appart
-		"time": math.Round(float64(time.Now().UnixNano()) / float64(1e9)),
-	}
-
-	if ok, err := s.ha.Lock(lockObject); !ok {
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
-	defer s.ha.Unlock(lockObject)
-
 	for _, handler := range s.onMessageReactionAddHandler {
 		go handler(sess, m)
 	}

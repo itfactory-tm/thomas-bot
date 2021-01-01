@@ -148,10 +148,12 @@ func (h *HA) lockKey(key string, waitForFailure bool) (bool, error) {
 			return false, nil
 		}
 		ctx, cancel := context.WithCancel(h.bgContext)
+		defer cancel()
 
 		w := h.etcd.Watch(ctx, key)
 		for wresp := range w {
 			if wresp.Canceled {
+				return h.lockKey(key, waitForFailure) // attempt watch again!
 				break
 			}
 			for _, ev := range wresp.Events {
@@ -164,7 +166,6 @@ func (h *HA) lockKey(key string, waitForFailure bool) (bool, error) {
 				}
 			}
 		}
-		cancel()
 		return false, nil
 	}
 
