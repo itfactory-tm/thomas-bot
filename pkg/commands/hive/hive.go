@@ -5,6 +5,7 @@ import (
 	"log"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
@@ -15,6 +16,12 @@ const junkyard = "780775904082395136"
 var channelToCategory = map[string]string{
 	"775453791801049119": "775436992136871957", // the hive
 	"787346218304274483": "760860082241142790", // ITF Gaming
+}
+
+// cats with prefixes
+var categoryPrefixes = map[string]string{
+	"775436992136871957": "",     // the hive
+	"760860082241142790": "BOB-", // ITF gaming
 }
 
 // HiveCommand contains the tm!hello command
@@ -134,6 +141,13 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, m *discordgo.MessageCreat
 	if !ok {
 		s.ChannelMessageSend(m.ChannelID, "This command only works in hive created channels")
 		return
+	}
+
+	if categoryPrefixes[channel.ParentID] != "" {
+		if !strings.HasPrefix(channel.Name, categoryPrefixes[channel.ParentID]) {
+			s.ChannelMessageSend(m.ChannelID, "This command only works in hive created channels with correct prefix")
+			return
+		}
 	}
 
 	j, err := s.Channel(junkyard)
