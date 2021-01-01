@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/embed"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
@@ -55,8 +57,8 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 		registry.RegisterMessageCreateHandler("hive", h.SayHive)
 	}
 
+	registry.RegisterMessageReactionAddHandler(h.handleReaction)
 	registry.RegisterMessageCreateHandler("archive", h.SayArchive)
-	registry.RegisterMessageCreateHandler("join", h.SayJoin)
 	registry.RegisterMessageCreateHandler("leave", h.SayLeave)
 }
 
@@ -123,7 +125,17 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 	}
 
 	if hidden {
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("your channel is hidden (alpha!!!!!!!!!!) say `tm!join %s`", newChan.ID))
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("your channel is hidden (alpha!!!!!!!!!!), react 👋 below to join"))
+		e := embed.NewEmbed()
+		e.SetTitle("Hive Channel")
+		e.AddField("name", h.prefix+matched[1])
+		e.AddField("id", newChan.ID)
+
+		msg, err := s.ChannelMessageSendEmbed(m.ChannelID, e.MessageEmbed)
+		if err != nil {
+			log.Println(err)
+		}
+		s.MessageReactionAdd(m.ChannelID, msg.ID, "👋")
 	}
 }
 
@@ -164,42 +176,6 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, m *discordgo.MessageCreat
 	}
 }
 
-// SayJoin handles the tm!join ALPHA command
-func (h *HiveCommand) SayJoin(s *discordgo.Session, m *discordgo.MessageCreate) {
-	matched := regexp.MustCompile(`!join (.*)`).FindStringSubmatch(m.Message.Content)
-	if len(matched) < 2 {
-		s.ChannelMessageSend(m.ChannelID, "Incorrect syntax, idk why")
-		return
-	}
-
-	s.ChannelMessageSend(m.ChannelID, "I'm sorry for the terrible UX it is alpha, hase i told you that yet?")
-
-	channel, _ := s.Channel(matched[1])
-
-	allowed := false
-	for _, catID := range channelToCategory {
-		if channel.ParentID == catID {
-			allowed = true
-			break
-		}
-	}
-
-	if !allowed {
-		s.ChannelMessageSend(m.ChannelID, "Sorry category not allowed, try privilege escalating otherwise!")
-		return
-	}
-
-	// target type 1 is user, yes excellent library...
-	var allow int
-	allow |= discordgo.PermissionReadMessageHistory
-	allow |= discordgo.PermissionViewChannel
-	allow |= discordgo.PermissionSendMessages
-
-	s.ChannelPermissionSet(channel.ID, m.Author.ID, "1", allow, 0)
-
-	s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>", m.Author.ID))
-}
-
 // SayLeave handles the tm!eave command
 func (h *HiveCommand) SayLeave(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// check if this is allowed
@@ -233,6 +209,59 @@ func (h *HiveCommand) SayLeave(s *discordgo.Session, m *discordgo.MessageCreate)
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	message, err := s.ChannelMessage(r.ChannelID, r.MessageID)
+	if err != nil {
+		log.Println("Cannot get message of reaction", r.ChannelID)
+		return
+	}
+
+	if message.Author.ID != s.State.User.ID {
+		return // not the bot user
+	}
+
+	if len(message.Embeds) < 1 {
+		return // not an embed
+	}
+
+	if len(message.Embeds[0].Fields) < 2 {
+		return // not the correct embed
+	}
+
+	if message.Embeds[0].Title != "Hive Channel" {
+		return // not the hive message
+	}
+
+	channel, err := s.Channel(message.Embeds[0].Fields[1].Value)
+	if err != nil {
+		log.Println(err)
+	}
+
+	allowed := false
+	for _, catID := range channelToCategory {
+		if channel.ParentID == catID {
+			allowed = true
+			break
+		}
+	}
+
+	if !allowed {
+		s.ChannelMessageSend(r.ChannelID, "Sorry category not allowed, try privilege escalating otherwise!")
+		return
+	}
+
+	// target type 1 is user, yes excellent library...
+	var allow int
+	allow |= discordgo.PermissionReadMessageHistory
+	allow |= discordgo.PermissionViewChannel
+	allow |= discordgo.PermissionSendMessages
+	allow |= discordgo.PermissionVoiceConnect
+
+	s.ChannelPermissionSet(channel.ID, r.UserID, "1", allow, 0)
+
+	s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>, you can leave any time by saying `tm!leave`", r.UserID))
 }
 
 // Info return the commands in this package
