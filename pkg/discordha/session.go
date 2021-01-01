@@ -142,6 +142,7 @@ func (h *HA) lockKey(key string, waitForFailure bool) (bool, error) {
 		return false, err
 	}
 
+	// if clientv3.Compare(clientv3.Value(key), ">", statusNone) is true
 	if txn.Succeeded {
 		// Lock exists!
 		if !waitForFailure {
@@ -154,10 +155,9 @@ func (h *HA) lockKey(key string, waitForFailure bool) (bool, error) {
 		for wresp := range w {
 			if wresp.Canceled {
 				return h.lockKey(key, waitForFailure) // attempt watch again!
-				break
 			}
 			for _, ev := range wresp.Events {
-				if ev.IsModify() && string(ev.Kv.Value) == statusOk {
+				if string(ev.Kv.Value) == statusOk {
 					// other server succeeded!
 					return false, nil
 				}
