@@ -106,17 +106,19 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 						continue
 					}
 				}
+				log.Println("looking at", channel.Name)
 				inUse := false
 				for _, vs := range state.VoiceStates {
 					if vs.ChannelID == channel.ID {
 						inUse = true
+						log.Println(channel.Name, "is in use")
 						break
 					}
 				}
 
 				// on first occurance: mark to remove, on second occurance remove
 				if wasMarkedAsRemove := shouldRemove[channel.ID]; wasMarkedAsRemove && !inUse {
-					log.Println("Deleting", channel.ID)
+					log.Println("Deleting", channel.ID, channel.Name)
 					j, err := dg.Channel(junkyard)
 					if err != nil {
 						log.Println(err)
