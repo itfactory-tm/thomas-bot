@@ -129,7 +129,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	}
 	defer dg.Close()
 
-	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bot rev. %s", revision), "")
+	dg.UpdateStreamingStatus(0, fmt.Sprintf("tm!help (version %s)", revision), "")
 
 	// TODO: go postHashtagTweets(ctx, dg)
 	// TODO: go serve()
