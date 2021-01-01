@@ -48,6 +48,7 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 
 	registry.RegisterMessageCreateHandler("archive", h.SayArchive)
 	registry.RegisterMessageCreateHandler("join", h.SayJoin)
+	registry.RegisterMessageCreateHandler("leave", h.SayLeave)
 }
 
 // SayHive handles the tm!hive command
@@ -160,7 +161,7 @@ func (h *HiveCommand) SayJoin(s *discordgo.Session, m *discordgo.MessageCreate) 
 	channel, _ := s.Channel(matched[1])
 
 	allowed := false
-	for catID := range channelToCategory {
+	for _, catID := range channelToCategory {
 		if channel.ParentID == catID {
 			allowed = true
 			break
@@ -179,6 +180,43 @@ func (h *HiveCommand) SayJoin(s *discordgo.Session, m *discordgo.MessageCreate) 
 	allow |= discordgo.PermissionSendMessages
 
 	s.ChannelPermissionSet(channel.ID, m.Author.ID, "1", allow, 0)
+
+	s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>", m.Author.ID))
+}
+
+// SayLeave handles the tm!eave command
+func (h *HiveCommand) SayLeave(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// check if this is allowed
+	channel, err := s.Channel(m.ChannelID)
+	ok := false
+	for _, category := range channelToCategory {
+		if channel.ParentID == category {
+			ok = true
+		}
+	}
+	if !ok {
+		s.ChannelMessageSend(m.ChannelID, "This command only works in hive created channels, consider using Discord's mute instead")
+		return
+	}
+
+	info, err := s.Channel(channel.ID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	newPerms := []*discordgo.PermissionOverwrite{}
+	for _, perm := range info.PermissionOverwrites {
+		if perm.ID != m.Author.ID {
+			newPerms = append(newPerms, perm)
+		}
+	}
+	_, err = s.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
+		PermissionOverwrites: newPerms,
+	})
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 // Info return the commands in this package
