@@ -20,6 +20,7 @@ var channelToCategory = map[string]string{
 // HiveCommand contains the tm!hello command
 type HiveCommand struct {
 	isBob        bool
+	prefix       string
 	requestRegex *regexp.Regexp
 }
 
@@ -34,6 +35,7 @@ func NewHiveCommand() *HiveCommand {
 func NewHiveCommandForBob() *HiveCommand {
 	return &HiveCommand{
 		isBob:        true,
+		prefix:       "BOB-",
 		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) (.*) (.*)`),
 	}
 }
@@ -86,7 +88,7 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 	}
 
 	props := discordgo.GuildChannelCreateData{
-		Name:      matched[1],
+		Name:      h.prefix + matched[1],
 		Bitrate:   128000,
 		NSFW:      false,
 		ParentID:  catID,
