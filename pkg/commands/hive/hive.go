@@ -26,7 +26,7 @@ type HiveCommand struct {
 // NewHiveCommand gives a new HiveCommand
 func NewHiveCommand() *HiveCommand {
 	return &HiveCommand{
-		requestRegex: regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*)`),
+		requestRegex: regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) (.*) (.*)`),
 	}
 }
 
@@ -34,7 +34,7 @@ func NewHiveCommand() *HiveCommand {
 func NewHiveCommandForBob() *HiveCommand {
 	return &HiveCommand{
 		isBob:        true,
-		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) (.*)`),
+		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) (.*) (.*)`),
 	}
 }
 
@@ -47,10 +47,12 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 	}
 
 	registry.RegisterMessageCreateHandler("archive", h.SayArchive)
+	registry.RegisterMessageCreateHandler("join", h.SayJoin)
 }
 
 // SayHive handles the tm!hive command
 func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) {
+	hidden := false
 
 	// check of in the request channel to apply limits
 	catID, ok := channelToCategory[m.ChannelID]
@@ -78,15 +80,26 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 		}
 	}
 
-	newChan, err := s.GuildChannelCreateComplex(m.GuildID, discordgo.GuildChannelCreateData{
+	if matched[3] == "hidden" {
+		hidden = true
+	}
+
+	props := discordgo.GuildChannelCreateData{
 		Name:      matched[1],
 		Bitrate:   128000,
 		NSFW:      false,
 		ParentID:  catID,
 		Type:      chanType,
 		UserLimit: int(i),
-	})
+	}
 
+	if hidden {
+		// this is why it is Alpha silly
+		j, _ := s.Channel("780775904082395136")
+		props.PermissionOverwrites = j.PermissionOverwrites
+	}
+
+	newChan, err := s.GuildChannelCreateComplex(m.GuildID, props)
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, err.Error())
 		return
@@ -97,6 +110,10 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `bob!archive`")
 	} else if chanType == discordgo.ChannelTypeGuildText {
 		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `tm!archive`")
+	}
+
+	if hidden {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("your channel is hidden (alpha!!!!!!!!!!) say `tm!join %s`", newChan.ID))
 	}
 }
 
@@ -128,6 +145,40 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, m *discordgo.MessageCreat
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+// SayJoin handles the tm!join ALPHA command
+func (h *HiveCommand) SayJoin(s *discordgo.Session, m *discordgo.MessageCreate) {
+	matched := regexp.MustCompile(`!join (.*)`).FindStringSubmatch(m.Message.Content)
+	if len(matched) < 2 {
+		s.ChannelMessageSend(m.ChannelID, "Incorrect syntax, idk why")
+		return
+	}
+
+	s.ChannelMessageSend(m.ChannelID, "I'm sorry for the terrible UX it is alpha, hase i told you that yet?")
+
+	channel, _ := s.Channel(matched[1])
+
+	allowed := false
+	for catID := range channelToCategory {
+		if channel.ParentID == catID {
+			allowed = true
+			break
+		}
+	}
+
+	if !allowed {
+		s.ChannelMessageSend(m.ChannelID, "Sorry category not allowed, try privilege escalating otherwise!")
+		return
+	}
+
+	// target type 1 is user, yes excellent library...
+	var allow int
+	allow |= discordgo.PermissionReadMessageHistory
+	allow |= discordgo.PermissionViewChannel
+	allow |= discordgo.PermissionSendMessages
+
+	s.ChannelPermissionSet(channel.ID, m.Author.ID, "1", allow, 0)
 }
 
 // Info return the commands in this package
