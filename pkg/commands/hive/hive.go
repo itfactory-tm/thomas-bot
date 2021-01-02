@@ -56,6 +56,7 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 	} else {
 		registry.RegisterMessageCreateHandler("hive", h.SayHive)
 		registry.RegisterMessageCreateHandler("attendance", h.SayAttendance)
+		registry.RegisterMessageCreateHandler("verify", h.SayVerify)
 	}
 
 	registry.RegisterMessageReactionAddHandler(h.handleReaction)

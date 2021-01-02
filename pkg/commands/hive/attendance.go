@@ -5,12 +5,13 @@ import (
 	"log"
 	"strings"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
+
+	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/sudo"
 )
 
-// SayLeave handles the tm!eave command
+// SayAttendance handles the tm!attendance command
 func (h *HiveCommand) SayAttendance(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if !sudo.IsAdmin(m.Author.ID) {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", m.Author.ID))
