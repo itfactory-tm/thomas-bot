@@ -55,6 +55,7 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 		registry.RegisterMessageCreateHandler("vc", h.SayHive)
 	} else {
 		registry.RegisterMessageCreateHandler("hive", h.SayHive)
+		registry.RegisterMessageCreateHandler("attendance", h.SayAttendance)
 	}
 
 	registry.RegisterMessageReactionAddHandler(h.handleReaction)
@@ -191,14 +192,8 @@ func (h *HiveCommand) SayLeave(s *discordgo.Session, m *discordgo.MessageCreate)
 		return
 	}
 
-	info, err := s.Channel(channel.ID)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
 	newPerms := []*discordgo.PermissionOverwrite{}
-	for _, perm := range info.PermissionOverwrites {
+	for _, perm := range channel.PermissionOverwrites {
 		if perm.ID != m.Author.ID {
 			newPerms = append(newPerms, perm)
 		}
