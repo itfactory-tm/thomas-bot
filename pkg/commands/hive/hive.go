@@ -17,12 +17,14 @@ const junkyard = "780775904082395136"
 
 var channelToCategory = map[string]string{
 	"775453791801049119": "775436992136871957", // the hive
+	"794973874634752040": "775436992136871957", // the hive infodesk
 	"787346218304274483": "760860082241142790", // ITF Gaming
 }
 
 // cats with prefixes
 var categoryPrefixes = map[string]string{
 	"775436992136871957": "",     // the hive
+	"794973874634752040": "",     // the hive infodesk
 	"760860082241142790": "BOB-", // ITF gaming
 }
 
