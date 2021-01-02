@@ -106,7 +106,7 @@ func (h *HA) AmLeader(ctx context.Context) bool {
 		// Non HA, development instance probably
 		return true
 	}
-	e := concurrency.NewElection(h.concurrency, "/leader-election/")
+	e := concurrency.NewElection(h.concurrency, "/discordha-election/")
 	resp, err := e.Leader(ctx)
 	if err != nil {
 		log.Println("AmLeader error", err)
