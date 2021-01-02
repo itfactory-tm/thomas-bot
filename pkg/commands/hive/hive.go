@@ -232,7 +232,7 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 		return // not the hive message
 	}
 
-	channel, err := s.Channel(message.Embeds[0].Fields[1].Value)
+	channel, err := s.Channel(message.Embeds[0].Fields[len(message.Embeds[0].Fields)-1].Value)
 	if err != nil {
 		log.Println(err)
 	}
