@@ -1,6 +1,7 @@
 package discordha
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
@@ -12,7 +13,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"go.etcd.io/etcd/clientv3"
+	"github.com/coreos/etcd/clientv3"
+	"go.etcd.io/etcd/clientv3/concurrency"
 )
 
 // etcd states to store in value
@@ -28,11 +30,13 @@ func init() {
 
 // HA is a helper struct for high available discordgo using etcd
 type HA struct {
-	config     Config
-	etcd       *clientv3.Client
-	locksMutex sync.Mutex
-	locks      map[string]clientv3.LeaseID
-	bgContext  context.Context
+	config      Config
+	etcd        *clientv3.Client
+	locksMutex  sync.Mutex
+	locks       map[string]clientv3.LeaseID
+	bgContext   context.Context
+	name        string
+	concurrency *concurrency.Session
 }
 
 // Config contains the configuration for HA
@@ -68,17 +72,47 @@ func New(c Config) (*HA, error) {
 		return nil, err
 	}
 
+	concur, err := concurrency.NewSession(client, concurrency.WithTTL(int(c.LockUpdateInterval.Seconds())))
 	var s = &HA{
-		config:    c,
-		etcd:      client,
-		locks:     map[string]clientv3.LeaseID{},
-		bgContext: c.Context,
+		config:      c,
+		etcd:        client,
+		locks:       map[string]clientv3.LeaseID{},
+		bgContext:   c.Context,
+		name:        fmt.Sprintf("%d", rand.Intn(9999999)),
+		concurrency: concur,
 	}
 
 	go s.lockUpdateLoop()
 	go s.logLoop()
 
 	return s, nil
+}
+
+func (h *HA) ElectLeader(ctx context.Context) error {
+	if !h.config.HA {
+		// Non HA, development instance probably
+		return nil
+	}
+	e := concurrency.NewElection(h.concurrency, "/discordha-election/")
+	if err := e.Campaign(ctx, h.name); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (h *HA) AmLeader(ctx context.Context) bool {
+	if !h.config.HA {
+		// Non HA, development instance probably
+		return true
+	}
+	e := concurrency.NewElection(h.concurrency, "/leader-election/")
+	resp, err := e.Leader(ctx)
+	if err != nil {
+		log.Println("AmLeader error", err)
+		return false
+	}
+	return bytes.Equal(resp.Kvs[0].Value, []byte(h.name))
 }
 
 func (h *HA) lockUpdateLoop() {

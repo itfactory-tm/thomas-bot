@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"go.etcd.io/etcd/clientv3"
+	"github.com/coreos/etcd/clientv3"
 )
 
 // ErrorCacheKeyNotExist is the error the cache returns if a key does not exist

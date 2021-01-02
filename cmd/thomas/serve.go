@@ -29,8 +29,6 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
 )
 
-const REACTION_HANDLER_KEY = "reaction-handling-instance"
-
 func init() {
 	rootCmd.AddCommand(NewServeCmd())
 }
@@ -162,14 +160,11 @@ func (s *serveCmdOptions) RegisterHandlers() {
 
 // handleReactions will try to lock to he the server to handle all reactions
 func (s *serveCmdOptions) handleReactions() {
-	won, err := s.ha.Lock(REACTION_HANDLER_KEY)
+	err := s.ha.ElectLeader(context.TODO())
 	if err != nil {
 		log.Println(err)
 		s.handleReactions()
 		return
-	}
-	if !won {
-		s.handleReactions()
 	}
 	log.Println("I am now the reaction handler!")
 	s.dg.AddHandler(s.onMessageReactionAdd)
@@ -238,6 +233,10 @@ func (s *serveCmdOptions) onMessageUpdate(sess *discordgo.Session, m *discordgo.
 }
 
 func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *discordgo.MessageReactionAdd) {
+	if !s.ha.AmLeader(context.TODO()) {
+		log.Println("Am not the leader?")
+		return
+	}
 	// Ignore all reactions created by the bot itself
 	if m.UserID == sess.State.User.ID {
 		return
