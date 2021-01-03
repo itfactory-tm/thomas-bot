@@ -99,8 +99,8 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord HA: %w", err)
 	}
 
-	s.ha.AddHandler(s.onMessage)()
-	s.ha.AddHandler(s.onMessageReactionAdd)()
+	s.ha.AddHandler(s.onMessage)
+	s.ha.AddHandler(s.onMessageReactionAdd)
 
 	err = dg.Open()
 	if err != nil {
