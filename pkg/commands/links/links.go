@@ -60,7 +60,7 @@ func (l *LinkCommands) buildLinks() {
 	l.registerLinkCommand("coderood", "Meer info over code rood", "Heb je meer info over code rood nodig? https://www.thomasmore.be/update-code-rood")
 	l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\nGeitjes: https://www.twitch.tv/tmgeitlive")
 	l.registerLinkCommand("pictures", "Fotoalbum van IT Factory", "De Flickr-link voor IT Factory: https://www.flickr.com/photos/itfactorygeel/albums/with/72157711381764072")
-			      }
+}
 
 func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
 	l.infos = append(l.infos, command.Command{
