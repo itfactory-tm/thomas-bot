@@ -192,6 +192,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1 h1:4hp9jkHxhMHkqkrB3Ix0j
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/meyskens/discord-ha v0.0.0-20210103125837-eb66b0586c7b h1:airHlSYD0aPZcAvR9trXfNiFP3f299SYdZw2F5ovZts=
 github.com/meyskens/discord-ha v0.0.0-20210103125837-eb66b0586c7b/go.mod h1:SHwTPF5g18rx7hQYvsxw5iLyUeF43RnhQgqy1gTfVCE=
+github.com/meyskens/discord-ha v0.0.0-20210103132843-3fa335d5a712 h1:8GX2Uj6dRGQU7Tb1Zj7faFMsmRW8inNmWdumrrpu2lg=
+github.com/meyskens/discord-ha v0.0.0-20210103132843-3fa335d5a712/go.mod h1:SHwTPF5g18rx7hQYvsxw5iLyUeF43RnhQgqy1gTfVCE=
 github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd h1:n0QVTkt3UwQ9166YyvKgMCXIm02r5ZZZtadIIfkmzbI=
 github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd/go.mod h1:HIolLCBpnd1SJS+7IJSH7C/PjUfJZGOkHraw6N3nuQI=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
