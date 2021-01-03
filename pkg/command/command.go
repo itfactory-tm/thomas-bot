@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+	discordha "github.com/meyskens/discord-ha"
 )
 
 // Command is a struct of a bot command
@@ -32,6 +32,6 @@ type Interface interface {
 
 // Server represents a discord bot server
 type Server interface {
-	GetDiscordHA() *discordha.HA
+	GetDiscordHA() discordha.HA
 	GetAllCommandInfos() []Command
 }
