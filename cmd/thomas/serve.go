@@ -26,7 +26,7 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/links"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/moderation"
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+	discordha "github.com/meyskens/discord-ha"
 )
 
 func init() {
@@ -45,7 +45,7 @@ type serveCmdOptions struct {
 
 	commandRegex *regexp.Regexp
 	dg           *discordgo.Session
-	ha           *discordha.HA
+	ha           discordha.HA
 	handlers     []command.Interface
 
 	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
@@ -104,7 +104,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 	dg.State.TrackVoice = true
 
-	s.ha, err = discordha.New(discordha.Config{
+	s.ha, err = discordha.New(&discordha.Config{
 		Session:            dg,
 		HA:                 len(s.EtcdEndpoints) > 0,
 		EtcdEndpoints:      s.EtcdEndpoints,
@@ -117,9 +117,10 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	}
 
 	// TODO: Register handlers
-	dg.AddHandler(s.onMessage)
-	dg.AddHandler(s.onMessageUpdate)
-	dg.AddHandler(s.onGuildMemberAdd)
+	s.ha.AddHandler(s.onMessage)
+	s.ha.AddHandler(s.onMessageUpdate)
+	s.ha.AddHandler(s.onGuildMemberAdd)
+	s.ha.AddHandler(s.onMessageReactionAdd)
 
 	err = dg.Open()
 	if err != nil {
@@ -129,8 +130,6 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	s.dg = dg
 
 	dg.UpdateStreamingStatus(0, fmt.Sprintf("tm!help (version %s)", revision), "")
-
-	go s.handleReactions()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
@@ -158,31 +157,12 @@ func (s *serveCmdOptions) RegisterHandlers() {
 	}
 }
 
-// handleReactions will try to lock to he the server to handle all reactions
-func (s *serveCmdOptions) handleReactions() {
-	err := s.ha.ElectLeader(context.TODO())
-	if err != nil {
-		log.Println(err)
-		s.handleReactions()
-		return
-	}
-	log.Println("I am now the reaction handler!")
-	s.dg.AddHandler(s.onMessageReactionAdd)
-}
-
 func (s *serveCmdOptions) onMessage(sess *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
 	if m.Author.ID == sess.State.User.ID {
 		return
 	}
 
-	if ok, err := s.ha.Lock(m); !ok {
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
-	defer s.ha.Unlock(m)
 	matchedHandlers := []func(*discordgo.Session, *discordgo.MessageCreate){}
 	if handlers, hasHandlers := s.onMessageCreateHandlers[""]; hasHandlers {
 		matchedHandlers = append(matchedHandlers, handlers...)
@@ -209,13 +189,6 @@ func (s *serveCmdOptions) onMessageUpdate(sess *discordgo.Session, m *discordgo.
 		return
 	}
 
-	if ok, err := s.ha.Lock(m); !ok {
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
-	defer s.ha.Unlock(m)
 	matchedHandlers := []func(*discordgo.Session, *discordgo.MessageUpdate){}
 	if handlers, hasHandlers := s.onMessageEditHandlers[""]; hasHandlers {
 		matchedHandlers = append(matchedHandlers, handlers...)
@@ -233,10 +206,6 @@ func (s *serveCmdOptions) onMessageUpdate(sess *discordgo.Session, m *discordgo.
 }
 
 func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *discordgo.MessageReactionAdd) {
-	if !s.ha.AmLeader(context.TODO()) {
-		log.Println("Am not the leader?")
-		return
-	}
 	// Ignore all reactions created by the bot itself
 	if m.UserID == sess.State.User.ID {
 		return
@@ -247,14 +216,6 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 }
 
 func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo.GuildMemberAdd) {
-	if ok, err := s.ha.Lock("onGuildMemberAdd" + m.User.ID); !ok {
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
-	defer s.ha.Unlock("onGuildMemberAdd" + m.User.ID)
-
 	for _, handler := range s.onGuildMemberAddHandler {
 		handler(sess, m)
 	}
@@ -297,7 +258,7 @@ func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Sessi
 	s.onGuildMemberAddHandler = append(s.onGuildMemberAddHandler, fn)
 }
 
-func (s *serveCmdOptions) GetDiscordHA() *discordha.HA {
+func (s *serveCmdOptions) GetDiscordHA() discordha.HA {
 	return s.ha
 }
 
