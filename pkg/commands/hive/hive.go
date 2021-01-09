@@ -83,48 +83,34 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 		return
 	}
 
-	var i int64
-	chanType := discordgo.ChannelTypeGuildVoice
-	if matched[2] == "text" {
-		chanType = discordgo.ChannelTypeGuildText
-	} else {
-		var err error
-		i, err = strconv.ParseInt(matched[2], 10, 64)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%q is not a number", matched[2]))
-			return
-		}
-	}
-
 	if matched[3] == "hidden" {
 		hidden = true
 	}
 
-	props := discordgo.GuildChannelCreateData{
-		Name:      h.prefix + matched[1],
-		Bitrate:   128000,
-		NSFW:      false,
-		ParentID:  catID,
-		Type:      chanType,
-		UserLimit: int(i),
+	var newChan *discordgo.Channel
+	var err error
+	isText := false
+	if matched[2] == "text" {
+		newChan, err = h.createTextChannel(s, m, matched[1], catID, hidden)
+		isText = true
+	} else {
+		i, err := strconv.ParseInt(matched[2], 10, 64)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%q is not a number", matched[2]))
+			return
+		}
+		newChan, err = h.createVoiceChannel(s, m, matched[1], catID, int(i), hidden)
 	}
 
-	if hidden {
-		// this is why it is Alpha silly
-		j, _ := s.Channel("780775904082395136")
-		props.PermissionOverwrites = j.PermissionOverwrites
-	}
-
-	newChan, err := s.GuildChannelCreateComplex(m.GuildID, props)
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, err.Error())
 		return
 	}
 
 	s.ChannelMessageSend(m.ChannelID, "Channel created! Have fun! Reminder: I will delete it when it stays empty for a while")
-	if chanType == discordgo.ChannelTypeGuildText && h.isBob {
+	if isText && h.isBob {
 		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `bob!archive`")
-	} else if chanType == discordgo.ChannelTypeGuildText {
+	} else if isText {
 		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `tm!archive`")
 	}
 
@@ -141,6 +127,90 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 		}
 		s.MessageReactionAdd(m.ChannelID, msg.ID, "👋")
 	}
+}
+
+func (h *HiveCommand) createTextChannel(s *discordgo.Session, m *discordgo.MessageCreate, name, catID string, hidden bool) (*discordgo.Channel, error) {
+	props := discordgo.GuildChannelCreateData{
+		Name:     h.prefix + name,
+		NSFW:     false,
+		ParentID: catID,
+		Type:     discordgo.ChannelTypeGuildText,
+	}
+
+	if hidden {
+		// this is why it is Alpha silly
+		j, _ := s.Channel("780775904082395136")
+		props.PermissionOverwrites = j.PermissionOverwrites
+	}
+
+	return s.GuildChannelCreateComplex(m.GuildID, props)
+}
+
+// we filled up on junk quickly, we should recycle a voice channel from junkjard
+func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, m *discordgo.MessageCreate, name, catID string, limit int, hidden bool) (*discordgo.Channel, error, bool) {
+	channels, err := s.GuildChannels(m.GuildID)
+	if err != nil {
+		return nil, err, true
+	}
+
+	var toRecycle *discordgo.Channel
+
+	for _, channel := range channels {
+		if channel.ParentID == junkyard && channel.Type == discordgo.ChannelTypeGuildVoice {
+			toRecycle = channel
+			break
+		}
+	}
+
+	// no junk found we can recycle, buy a new one :(
+	if toRecycle == nil {
+		return nil, nil, false
+	}
+
+	cat, err := s.Channel(catID)
+	if err != nil {
+		return nil, err, true
+	}
+
+	edit := &discordgo.ChannelEdit{
+		ParentID:             catID,
+		PermissionOverwrites: cat.PermissionOverwrites,
+		UserLimit:            limit,
+		Name:                 h.prefix + name,
+		Bitrate:              128000,
+	}
+
+	if hidden {
+		// this is why it is Alpha silly
+		j, _ := s.Channel("780775904082395136")
+		edit.PermissionOverwrites = j.PermissionOverwrites
+	}
+	newChan, err := s.ChannelEditComplex(toRecycle.ID, edit)
+
+	return newChan, err, true
+}
+
+func (h *HiveCommand) createVoiceChannel(s *discordgo.Session, m *discordgo.MessageCreate, name, catID string, limit int, hidden bool) (*discordgo.Channel, error) {
+	newChan, err, ok := h.recycleVoiceChannel(s, m, name, catID, limit, hidden)
+	if ok {
+		return newChan, err
+	}
+	props := discordgo.GuildChannelCreateData{
+		Name:      h.prefix + name,
+		Bitrate:   128000,
+		NSFW:      false,
+		ParentID:  catID,
+		Type:      discordgo.ChannelTypeGuildVoice,
+		UserLimit: limit,
+	}
+
+	if hidden {
+		// this is why it is Alpha silly
+		j, _ := s.Channel("780775904082395136")
+		props.PermissionOverwrites = j.PermissionOverwrites
+	}
+
+	return s.GuildChannelCreateComplex(m.GuildID, props)
 }
 
 // SayArchive handles the tm!archive command

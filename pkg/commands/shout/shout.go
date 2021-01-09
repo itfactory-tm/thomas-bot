@@ -6,7 +6,7 @@ import (
 
 	"github.com/itfactory-tm/thomas-bot/pkg/util/voice"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+	discordha "github.com/meyskens/discord-ha"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
