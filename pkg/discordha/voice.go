@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"go.etcd.io/etcd/clientv3"
+	"github.com/coreos/etcd/clientv3"
 )
 
 type VoiceCommand struct {

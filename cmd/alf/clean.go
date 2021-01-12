@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
@@ -18,10 +19,10 @@ import (
 // TODO: automate these
 const itfDiscord = "687565213943332875"
 
-// default channel
-var hiveCategories = map[string]bool{
-	"775436992136871957": true, // the hive
-	"787345995105173524": true, // ITF gaming
+// default channel with prefixes
+var hiveCategories = map[string]string{
+	"775436992136871957": "",     // the hive
+	"760860082241142790": "BOB-", // ITF gaming
 }
 
 const junkyard = "780775904082395136"
@@ -85,7 +86,7 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	shouldRemove := map[string]bool{}
 
 	for {
-		time.Sleep(60 * time.Second)
+		time.Sleep(300 * time.Second)
 
 		state, err := dg.State.Guild(itfDiscord)
 		if err != nil {
@@ -99,17 +100,25 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		}
 
 		for _, channel := range channels {
-			if _, isInHiveCat := hiveCategories[channel.ParentID]; isInHiveCat && channel.Type == discordgo.ChannelTypeGuildVoice {
+			if prefix, isInHiveCat := hiveCategories[channel.ParentID]; isInHiveCat && channel.Type == discordgo.ChannelTypeGuildVoice {
+				if prefix != "" {
+					if !strings.HasPrefix(channel.Name, prefix) {
+						continue
+					}
+				}
+				log.Println("looking at", channel.Name)
 				inUse := false
 				for _, vs := range state.VoiceStates {
 					if vs.ChannelID == channel.ID {
 						inUse = true
+						log.Println(channel.Name, "is in use")
+						break
 					}
 				}
 
 				// on first occurance: mark to remove, on second occurance remove
-				if _, wasMarkedAsRemove := shouldRemove[channel.ID]; wasMarkedAsRemove && !inUse {
-					log.Println("Deleting", channel.ID)
+				if wasMarkedAsRemove := shouldRemove[channel.ID]; wasMarkedAsRemove && !inUse {
+					log.Println("Deleting", channel.ID, channel.Name)
 					j, err := dg.Channel(junkyard)
 					if err != nil {
 						log.Println(err)
@@ -124,11 +133,7 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 					}
 				}
 
-				if !inUse {
-					shouldRemove[channel.ID] = true
-				} else {
-					delete(shouldRemove, channel.ID)
-				}
+				shouldRemove[channel.ID] = !inUse
 			}
 		}
 

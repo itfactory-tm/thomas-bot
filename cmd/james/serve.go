@@ -5,12 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"os/signal"
 	"regexp"
 	"syscall"
-	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
@@ -21,7 +19,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+
+	discordha "github.com/meyskens/discord-ha"
 )
 
 func init() {
@@ -36,7 +35,7 @@ type serveCmdOptions struct {
 
 	commandRegex *regexp.Regexp
 	dg           *discordgo.Session
-	ha           *discordha.HA
+	ha           discordha.HA
 	handlers     []command.Interface
 
 	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
@@ -87,19 +86,21 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
-	s.ha, err = discordha.New(discordha.Config{
+	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bob rev. %s", revision), "")
+	haLogger := log.New(os.Stdout, "discordha: ", log.Ldate|log.Ltime)
+	s.ha, err = discordha.New(&discordha.Config{
 		Session:       dg,
 		HA:            len(s.EtcdEndpoints) > 0,
 		EtcdEndpoints: s.EtcdEndpoints,
 		Context:       ctx,
+		Log:           *haLogger,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating Discord HA: %w", err)
 	}
 
-	// TODO: Register handlers
-	dg.AddHandler(s.onMessage)
-	dg.AddHandler(s.onMessageReactionAdd)
+	s.ha.AddHandler(s.onMessage)
+	s.ha.AddHandler(s.onMessageReactionAdd)
 
 	err = dg.Open()
 	if err != nil {
@@ -107,12 +108,11 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	}
 	defer dg.Close()
 
-	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bob rev. %s", revision), "")
-
 	log.Println("Thomas Bob is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
+	s.ha.Stop()
 
 	return nil
 }
@@ -136,13 +136,6 @@ func (s *serveCmdOptions) onMessage(sess *discordgo.Session, m *discordgo.Messag
 		return
 	}
 
-	if ok, err := s.ha.Lock(m); !ok {
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
-	defer s.ha.Unlock(m)
 	matchedHandlers := []func(*discordgo.Session, *discordgo.MessageCreate){}
 	if handlers, hasHandlers := s.onMessageCreateHandlers[""]; hasHandlers {
 		matchedHandlers = append(matchedHandlers, handlers...)
@@ -163,21 +156,6 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 	if m.UserID == sess.State.User.ID {
 		return
 	}
-
-	lockObject := map[string]interface{}{
-		"event": m,
-		// time in seconds mathematically rounded to be the same when messages arrive
-		// to different servers few milliseconds appart
-		"time": math.Round(float64(time.Now().UnixNano()) / float64(1e9)),
-	}
-
-	if ok, err := s.ha.Lock(lockObject); !ok {
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
-	defer s.ha.Unlock(lockObject)
 
 	for _, handler := range s.onMessageReactionAddHandler {
 		handler(sess, m)
@@ -221,7 +199,7 @@ func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Sessi
 	s.onGuildMemberAddHandler = append(s.onGuildMemberAddHandler, fn)
 }
 
-func (s *serveCmdOptions) GetDiscordHA() *discordha.HA {
+func (s *serveCmdOptions) GetDiscordHA() discordha.HA {
 	return s.ha
 }
 

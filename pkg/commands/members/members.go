@@ -42,7 +42,7 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 		log.Printf("Cannot set role for user %s: %q\n", g.Member.User.ID, err)
 	}
 
-	s.ChannelMessageSend(itfWelcome, fmt.Sprintf("Welcome <@%s> to the **IT Factory Official** Discord server. We will send you a DM in a moment to get you set up!", g.User.ID))
+	welcome, _ := s.ChannelMessageSend(itfWelcome, fmt.Sprintf("Welcome <@%s> to the **IT Factory Official** Discord server. We will send you a DM in a moment to get you set up!", g.User.ID))
 
 	c, err := s.UserChannelCreate(g.Member.User.ID)
 	if err != nil {
@@ -71,6 +71,12 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 	time.Sleep(3 * time.Second)
 
 	m.SendRoleDM(s, g.Member.User.ID)
+
+	time.Sleep(time.Minute)
+	err = s.MessageReactionAdd(itfWelcome, welcome.ID, "797537339613249567")
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 // Info return the commands in this package

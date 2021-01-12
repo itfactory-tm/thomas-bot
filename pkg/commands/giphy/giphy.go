@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+	discordha "github.com/meyskens/discord-ha"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
 
