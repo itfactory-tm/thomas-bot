@@ -79,7 +79,11 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 
 	matched := h.requestRegex.FindStringSubmatch(m.Content)
 	if len(matched) <= 2 {
-		s.ChannelMessageSend(m.ChannelID, "Incorrect syntax, syntax is `tm!hive channel-name <number of participants>`")
+		if h.isBob {
+			s.ChannelMessageSend(m.ChannelID, "Incorrect syntax, syntax is `bob!vc channel-name <number of participants>`")
+		} else{
+			s.ChannelMessageSend(m.ChannelID, "Incorrect syntax, syntax is `tm!hive channel-name <number of participants>`")
+		}
 		return
 	}
 
