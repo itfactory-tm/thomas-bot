@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
-
-	"github.com/itfactory-tm/thomas-bot/pkg/embed"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dghubble/go-twitter/twitter"
@@ -106,10 +103,10 @@ func (t *twitterCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			// is retweet
 			return
 		}
-		
+
 		// it is project season relaxing our requirements
 		// make sure I do not regret this!
-		
+
 		/*if tweet.User.FollowersCount < 10 {
 			// we do not take people with less than 5 followers seriously
 			return
@@ -127,7 +124,11 @@ func (t *twitterCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			}
 		}*/
 
-		embed := embed.NewEmbed()
+		_, err := dg.ChannelMessageSend(whatsupChannel, "https://twitter.com/"+tweet.User.ScreenName+"/status/"+tweet.IDStr)
+		if err != nil {
+			log.Println(err)
+		}
+		/*embed := embed.NewEmbed()
 		embed.AddField("Tweet", tweet.Text)
 
 		images := []string{}
@@ -156,7 +157,7 @@ func (t *twitterCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		_, err := dg.ChannelMessageSendEmbed(whatsupChannel, embed.MessageEmbed)
 		if err != nil {
 			log.Println(err)
-		}
+		}*/
 	}
 
 	log.Println("Starting Twitter listener")
