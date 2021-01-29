@@ -25,7 +25,7 @@ var channelToCategory = map[string]string{
 var categoryPrefixes = map[string]string{
 	"775436992136871957": "",     // the hive
 	"794973874634752040": "",     // the hive infodesk
-	"760860082241142790": "BOB-", // ITF gaming
+	"760860082241142790": "bob-", // ITF gaming
 }
 
 // HiveCommand contains the tm!hello command
@@ -75,7 +75,7 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 	if !ok {
 		if h.isBob {
 			s.ChannelMessageSend(m.ChannelID, "This command only works in the bob-commands channel")
-		} else{
+		} else {
 			s.ChannelMessageSend(m.ChannelID, "This command only works in the Requests channels")
 		}
 		return
@@ -85,7 +85,7 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 	if len(matched) <= 2 {
 		if h.isBob {
 			s.ChannelMessageSend(m.ChannelID, "Incorrect syntax, syntax is `bob!vc channel-name <number of participants>`")
-		} else{
+		} else {
 			s.ChannelMessageSend(m.ChannelID, "Incorrect syntax, syntax is `tm!hive channel-name <number of participants>`")
 		}
 		return
