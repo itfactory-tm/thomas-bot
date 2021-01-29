@@ -46,7 +46,7 @@ func NewHiveCommand() *HiveCommand {
 func NewHiveCommandForBob() *HiveCommand {
 	return &HiveCommand{
 		isBob:        true,
-		prefix:       "BOB-",
+		prefix:       "bob-",
 		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) ([a-zA-Z0-9]*) ?(.*)$`),
 	}
 }
