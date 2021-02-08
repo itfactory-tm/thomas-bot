@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/db"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/shout"
 
 	"github.com/bwmarrin/discordgo"
@@ -41,12 +43,17 @@ type serveCmdOptions struct {
 	HCaptchaSiteKey    string   `envconfig:"HCAPTCHA_SITE_KEY"`
 	HCaptchaSiteSecret string   `envconfig:"HCAPTCHA_SITE_SECRET"`
 	BindAddr           string   `default:":8080" envconfig:"BIND_ADDR"`
+	MongoDBURL         string   `envconfig:"MONGODB_URL"`
+	MongoDBDB          string   `envconfig:"MONGODB_DB"`
+	ConfigPath         string   `default:"./config.json" envconfig:"CONFIG"`
 	EtcdEndpoints      []string `envconfig:"ETCD_ENDPOINTS"`
 
 	commandRegex *regexp.Regexp
 	dg           *discordgo.Session
 	ha           discordha.HA
 	handlers     []command.Interface
+
+	db db.Database
 
 	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
 	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
@@ -78,8 +85,6 @@ func (s *serveCmdOptions) Validate(cmd *cobra.Command, args []string) error {
 	if s.Token == "" {
 		return errors.New("No token specified")
 	}
-
-	s.RegisterHandlers()
 
 	return nil
 }
@@ -116,7 +121,21 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord HA: %w", err)
 	}
 
-	// TODO: Register handlers
+	if s.MongoDBDB != "" {
+		s.db, err = db.NewMongoDB(s.MongoDBURL, s.MongoDBDB)
+		if err != nil {
+			return err
+		}
+	} else {
+		// local fallback
+		s.db, err = db.NewLocalDB(s.ConfigPath)
+		if err != nil {
+			return err
+		}
+	}
+
+	s.RegisterHandlers()
+
 	s.ha.AddHandler(s.onMessage)
 	s.ha.AddHandler(s.onMessageUpdate)
 	s.ha.AddHandler(s.onGuildMemberAdd)
@@ -142,7 +161,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 func (s *serveCmdOptions) RegisterHandlers() {
 	s.handlers = []command.Interface{
 		hello.NewHelloCommand(),
-		members.NewMemberCommand(),
+		members.NewMemberCommand(s.db),
 		moderation.NewModerationCommands(),
 		help.NewHelpCommand(),
 		giphy.NewGiphyCommands(),

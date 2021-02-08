@@ -29,12 +29,14 @@ require (
 	github.com/spf13/viper v1.7.1
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.etcd.io/etcd v3.3.25+incompatible
+	go.mongodb.org/mongo-driver v1.4.6
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
 	golang.org/x/sys v0.0.0-20201231184435-2d18734c6014 // indirect
 	golang.org/x/text v0.3.4 // indirect
+	golang.org/x/tools v0.0.0-20191112195655-aa38f8e97acc
 	google.golang.org/genproto v0.0.0-20201214200347-8c77b98c765d // indirect
 	google.golang.org/grpc v1.34.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
