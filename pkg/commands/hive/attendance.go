@@ -26,7 +26,7 @@ func (h *HiveCommand) SayAttendance(s *discordgo.Session, m *discordgo.MessageCr
 
 	UIDs := []string{}
 	for _, perm := range channel.PermissionOverwrites {
-		if perm.Type == "member" {
+		if perm.Type == discordgo.PermissionOverwriteTypeMember {
 			UIDs = append(UIDs, perm.ID)
 		}
 	}
