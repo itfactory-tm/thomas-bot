@@ -9,7 +9,8 @@
         "junkyardCategoryID": "780775904082395136",
         "textCategoryID": "775436992136871957",
         "voiceCategoryID": "775436992136871957",
-        "prefix": ""
+        "prefix": "",
+        "voiceBitrate": 128000
       }
     ]
   },
@@ -21,6 +22,16 @@
   "808273924600365058": {
     "_JSON_Comment_Hack": "Ice Cube",
     "welcomeText": "Welkom <@{{.User.ID}}> in de  **ICE Cube** Discord server.",
-    "welcomeChannelID": "808395496556986428"
+    "welcomeChannelID": "808395496556986428",
+    "hives": [
+      {
+        "requestChannelIDs": ["808989577204465754", "808989694355570738"],
+        "junkyardCategoryID": "808989859406282792",
+        "textCategoryID": "808989126187679766",
+        "voiceCategoryID": "808989186911895553",
+        "prefix": "",
+        "voiceBitrate": 128000
+      }
+    ]
   }
 }

@@ -12,4 +12,5 @@ type HiveConfiguration struct {
 	TextCategoryID     string   `json:"textCategoryID"`
 	VoiceCategoryID    string   `json:"voiceCategoryID"`
 	Prefix             string   `json:"prefix"`
+	VoiceBitrate       int      `json:"voiceBitrate"`
 }

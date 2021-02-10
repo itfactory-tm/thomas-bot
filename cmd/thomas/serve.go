@@ -168,7 +168,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		images.NewImagesCommands(),
 		links.NewLinkCommands(),
 		shout.NewShoutCommand(),
-		hive.NewHiveCommand(),
+		hive.NewHiveCommand(s.db),
 	}
 
 	for _, handler := range s.handlers {
