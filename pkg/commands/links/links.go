@@ -25,6 +25,11 @@ func (l *LinkCommands) Register(registry command.Registry, server command.Server
 	l.buildLinks()
 }
 
+// InstallSlashCommands registers the slash commands
+func (l *LinkCommands) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 func (l *LinkCommands) buildLinks() {
 	l.registerInfoDagCommand("website", "Link naar Thomas More website", "Bezoek onze website: https://thomasmore.be/opleidingen/professionele-bachelor/it-factory")
 	l.registerLinkCommand("rooster", "Link naar lessenrooster", "Bekijk hier je lessenrooster: https://rooster.thomasmore.be/")

@@ -53,6 +53,69 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 	registry.RegisterMessageCreateHandler("leave", h.SayLeave)
 }
 
+// InstallSlashCommands registers the slash commands handlers
+func (h *HiveCommand) InstallSlashCommands(session *discordgo.Session) error {
+	_, err := session.ApplicationCommandCreate("", "", &discordgo.ApplicationCommand{
+		Name:        "hive",
+		Description: "creates on-remand voice and text channels",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionSubCommandGroup,
+				Name:        "type",
+				Description: "type of channel",
+				Options: []*discordgo.ApplicationCommandOption{
+					{
+						Type:        discordgo.ApplicationCommandOptionSubCommand,
+						Name:        "text",
+						Description: "text channel",
+						Default:     false,
+						Required:    false,
+						Choices:     nil,
+						Options: []*discordgo.ApplicationCommandOption{
+							{
+								Type:        discordgo.ApplicationCommandOptionString,
+								Name:        "name",
+								Description: "name of channel",
+								Required:    true,
+							},
+							{
+								Type:        discordgo.ApplicationCommandOptionBoolean,
+								Name:        "hidden",
+								Description: "is channel not visible for everyone",
+								Required:    true,
+							},
+						},
+					},
+					{
+						Type:        discordgo.ApplicationCommandOptionSubCommand,
+						Name:        "voice",
+						Description: "voice channel",
+						Default:     false,
+						Required:    false,
+						Choices:     nil,
+						Options: []*discordgo.ApplicationCommandOption{
+							{
+								Type:        discordgo.ApplicationCommandOptionString,
+								Name:        "name",
+								Description: "name of channel",
+								Required:    true,
+							},
+							{
+								Type:        discordgo.ApplicationCommandOptionInteger,
+								Name:        "size",
+								Description: "number of allowed users (1-99)",
+								Required:    true,
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+
+	return err
+}
+
 // SayHive handles the tm!hive command
 func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) {
 	hidden := false

@@ -29,6 +29,11 @@ func (s *ShoutCommand) Register(registry command.Registry, server command.Server
 	s.server = server
 }
 
+// InstallSlashCommands registers the slash commands
+func (s *ShoutCommand) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 var shoutRegex = regexp.MustCompile(`^tm!shout (.*)$`)
 
 func (s *ShoutCommand) shout(sess *discordgo.Session, m *discordgo.MessageCreate) {

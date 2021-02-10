@@ -18,6 +18,11 @@ func (h *HelloCommand) Register(registry command.Registry, server command.Server
 	registry.RegisterMessageCreateHandler("hello", h.SayHello)
 }
 
+// InstallSlashCommands registers the slash commands
+func (h *HelloCommand) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 // SayHello sends an hello message
 func (h *HelloCommand) SayHello(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Beep bop boop! I am Thomas Bot, fork me on GitHub!")

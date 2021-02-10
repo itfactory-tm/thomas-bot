@@ -30,6 +30,11 @@ func (m *ModerationCommands) Register(registry command.Registry, server command.
 	m.server = server
 }
 
+// InstallSlashCommands registers the slash commands
+func (m *ModerationCommands) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 func (m *ModerationCommands) checkMessageCreateAsync(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	go m.checkMessage(s, msg)
 }
