@@ -1,10 +1,16 @@
 {
   "687565213943332875": {
     "_JSON_Comment_Hack": "ITF Discord",
-    "hives": {
-      "775453791801049119": {
-
+    "hives": [
+      {
+        "requestChannelIDs": ["775453791801049119", "794973874634752040"],
+        "junkyardCategoryID": "780775904082395136",
+        "textCategoryID": "787346218304274483",
+        "voiceCategoryID": "760860082241142790",
+        "prefix": "bob-",
+        "voiceBitrate": 128000
       }
-    }
+    ]
   }
 }
+
