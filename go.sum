@@ -205,6 +205,8 @@ github.com/meyskens/discord-ha v0.0.0-20210208171611-3db476a3fa82 h1:+re3MWtwPUO
 github.com/meyskens/discord-ha v0.0.0-20210208171611-3db476a3fa82/go.mod h1:SHwTPF5g18rx7hQYvsxw5iLyUeF43RnhQgqy1gTfVCE=
 github.com/meyskens/discord-ha v0.0.0-20210210084328-cd33e2242ae3 h1:NBQt92SEvx92HoW5LQt/JUYjZKepVvSGKCZvYXs0FWk=
 github.com/meyskens/discord-ha v0.0.0-20210210084328-cd33e2242ae3/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
+github.com/meyskens/discord-ha v0.0.0-20210210142358-d85dcbbe8022 h1:tWAz3YCIKzyr3c6ca2IJoWW2JaZPDNQJc1GyOs/JoUw=
+github.com/meyskens/discord-ha v0.0.0-20210210142358-d85dcbbe8022/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
 github.com/meyskens/discordgo v0.23.3-0.20210210083539-d11a0797e600 h1:0m57qpplN+FHJEhW8mOw2OrZsrODWGfAce/Jj5G/On4=
 github.com/meyskens/discordgo v0.23.3-0.20210210083539-d11a0797e600/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+bVyfBG7JE+M=
 github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd h1:n0QVTkt3UwQ9166YyvKgMCXIm02r5ZZZtadIIfkmzbI=

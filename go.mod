@@ -20,7 +20,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/meyskens/discord-ha v0.0.0-20210210084328-cd33e2242ae3
+	github.com/meyskens/discord-ha v0.0.0-20210210142358-d85dcbbe8022
 	github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd
 	github.com/prometheus/client_golang v1.0.0 // indirect
 	github.com/sanzaru/go-giphy v0.0.0-20180211202227-c353d5ec6ee8
