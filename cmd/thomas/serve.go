@@ -59,7 +59,7 @@ type serveCmdOptions struct {
 	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
 	onMessageReactionAddHandler []func(*discordgo.Session, *discordgo.MessageReactionAdd)
 	onGuildMemberAddHandler     []func(*discordgo.Session, *discordgo.GuildMemberAdd)
-	onInteractionCreateHandler  []func(*discordgo.Session, *discordgo.InteractionCreate)
+	onInteractionCreateHandler  map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
 }
 
 // NewServeCmd generates the `serve` command
@@ -250,7 +250,7 @@ func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo
 }
 
 func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
-	for _, handler := range s.onInteractionCreateHandler {
+	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
 		handler(sess, i)
 	}
 }
@@ -292,12 +292,16 @@ func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Sessi
 	s.onGuildMemberAddHandler = append(s.onGuildMemberAddHandler, fn)
 }
 
-func (s *serveCmdOptions) RegisterInteractionCreate(fn func(*discordgo.Session, *discordgo.InteractionCreate)) {
+func (s *serveCmdOptions) RegisterInteractionCreate(command string, fn func(*discordgo.Session, *discordgo.InteractionCreate)) {
 	if s.onInteractionCreateHandler == nil {
-		s.onInteractionCreateHandler = []func(*discordgo.Session, *discordgo.InteractionCreate){}
+		s.onInteractionCreateHandler = map[string][]func(*discordgo.Session, *discordgo.InteractionCreate){}
 	}
 
-	s.onInteractionCreateHandler = append(s.onInteractionCreateHandler, fn)
+	if _, exists := s.onInteractionCreateHandler[command]; !exists {
+		s.onInteractionCreateHandler[command] = []func(*discordgo.Session, *discordgo.InteractionCreate){}
+	}
+
+	s.onInteractionCreateHandler[command] = append(s.onInteractionCreateHandler[command], fn)
 }
 
 func (s *serveCmdOptions) GetDiscordHA() discordha.HA {
