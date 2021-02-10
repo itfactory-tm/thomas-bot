@@ -105,12 +105,6 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord HA: %w", err)
 	}
 
-	err = dg.Open()
-	if err != nil {
-		return fmt.Errorf("error opening connection: %w", err)
-	}
-	defer dg.Close()
-
 	if s.MongoDBDB != "" {
 		s.db, err = db.NewMongoDB(s.MongoDBURL, s.MongoDBDB)
 		if err != nil {
@@ -123,6 +117,12 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
+
+	err = dg.Open()
+	if err != nil {
+		return fmt.Errorf("error opening connection: %w", err)
+	}
+	defer dg.Close()
 
 	s.RegisterHandlers()
 
