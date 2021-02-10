@@ -63,14 +63,19 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 	}
 
 	welcome, _ := s.ChannelMessageSend(conf.WelcomeChannelID, welcomeText.String())
-	err = s.MessageReactionAdd(conf.WelcomeChannelID, welcome.ID, "👋")
-	if err != nil {
-		log.Println(err)
-	}
-	err = s.MessageReactionAdd(conf.WelcomeChannelID, welcome.ID, "💗")
-	if err != nil {
-		log.Println(err)
-	}
+	go func() {
+		// waving back is not essential and should not delay other actions
+		// plus the students want to race against the bot in waving at new users so let's give a head start
+		time.Sleep(5 * time.Minute)
+		err = s.MessageReactionAdd(conf.WelcomeChannelID, welcome.ID, "👋")
+		if err != nil {
+			log.Println(err)
+		}
+		err = s.MessageReactionAdd(conf.WelcomeChannelID, welcome.ID, "💗")
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
 	if g.GuildID == itfDiscord {
 		m.superITFSpecificStuffWeShouldPutIntoAGeneralThing(s, g)
