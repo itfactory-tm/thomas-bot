@@ -102,7 +102,12 @@ func (i *ImagesCommands) sayPartners(s *discordgo.Session, m *discordgo.MessageC
 
 func (i *ImagesCommands) sayLove(s *discordgo.Session, m *discordgo.MessageCreate) {
 	e := embed.NewEmbed()
-	e.SetTitle("<3 IT-Factory <3")
+	guild, err := s.Guild(m.GuildID)
+	if err != nil {
+		log.Println(guild)
+		return
+	}
+	e.SetTitle(fmt.Sprintf("<3 %s <3", guild.Name))
 	e.SetImage("https://static.eyskens.me/thomas-bot/love.gif")
 	s.ChannelMessageSendEmbed(m.ChannelID, e.MessageEmbed)
 }
