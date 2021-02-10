@@ -31,7 +31,7 @@ func NewHiveCommand(dbConn db.Database) *HiveCommand {
 }
 
 // NewHiveCommand gives a new HiveCommand
-func NewHiveCommandForBob(db db.Database) *HiveCommand {
+func NewHiveCommandForBob(dbConn db.Database) *HiveCommand {
 	return &HiveCommand{
 		isBob:        true,
 		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) ([a-zA-Z0-9]*) ?(.*)$`),
