@@ -328,7 +328,6 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 		return
 	}
 
-	// target type 1 is user, yes excellent library...
 	var allow int64
 	allow |= discordgo.PermissionReadMessageHistory
 	allow |= discordgo.PermissionViewChannel
