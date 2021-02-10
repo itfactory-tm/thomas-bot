@@ -1,0 +1,37 @@
+{
+  "687565213943332875": {
+    "_JSON_Comment_Hack": "ITF Discord",
+    "welcomeChannelID": "687588438886842373",
+    "welcomeText": "Welcome <@{{.User.ID}}> to the **IT Factory Official** Discord server. We will send you a DM in a moment to get you set up!",
+    "hives": [
+      {
+        "requestChannelIDs": ["775453791801049119", "794973874634752040"],
+        "junkyardCategoryID": "780775904082395136",
+        "textCategoryID": "775436992136871957",
+        "voiceCategoryID": "775436992136871957",
+        "prefix": "",
+        "voiceBitrate": 128000
+      }
+    ]
+  },
+  "694621018970390538": {
+    "_JSON_Comment_Hack": "Trains",
+    "welcomeText": "Spoor 1, de IC trein met bestemming <@{{.User.ID}}> komt aan, spoor 1. Deze trein stopt in Welkom-Centraal en Geel. Deze trein stopt uitzonderlijk niet in Haat-Noord. De 1ste klas plaatsen zijn overal.",
+    "welcomeChannelID": "694621018970390541"
+  },
+  "808273924600365058": {
+    "_JSON_Comment_Hack": "Ice Cube",
+    "welcomeText": "Welkom <@{{.User.ID}}> in de  **ICE Cube** Discord server.",
+    "welcomeChannelID": "808395496556986428",
+    "hives": [
+      {
+        "requestChannelIDs": ["808989577204465754", "808989694355570738"],
+        "junkyardCategoryID": "808989859406282792",
+        "textCategoryID": "808989126187679766",
+        "voiceCategoryID": "808989186911895553",
+        "prefix": "",
+        "voiceBitrate": 128000
+      }
+    ]
+  }
+}

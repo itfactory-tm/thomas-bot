@@ -16,6 +16,7 @@ RUN mkdir -p /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
 COPY ./sounds /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/sounds
 COPY ./www /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/www
+COPY ./config.json /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/
 
 COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/thomas /usr/local/bin/
 

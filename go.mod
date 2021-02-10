@@ -29,6 +29,7 @@ require (
 	github.com/spf13/viper v1.7.1
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.etcd.io/etcd v3.3.25+incompatible
+	go.mongodb.org/mongo-driver v1.4.6
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
