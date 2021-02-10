@@ -329,13 +329,13 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 	}
 
 	// target type 1 is user, yes excellent library...
-	var allow int
+	var allow int64
 	allow |= discordgo.PermissionReadMessageHistory
 	allow |= discordgo.PermissionViewChannel
 	allow |= discordgo.PermissionSendMessages
 	allow |= discordgo.PermissionVoiceConnect
 
-	s.ChannelPermissionSet(channel.ID, r.UserID, "1", allow, 0)
+	s.ChannelPermissionSet(channel.ID, r.UserID, discordgo.PermissionOverwriteTypeMember, allow, 0)
 
 	s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>, you can leave any time by saying `tm!leave`", r.UserID))
 }
