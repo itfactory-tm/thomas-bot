@@ -75,8 +75,6 @@ func (s *serveCmdOptions) Validate(cmd *cobra.Command, args []string) error {
 		return errors.New("No token specified")
 	}
 
-	s.RegisterHandlers()
-
 	return nil
 }
 
