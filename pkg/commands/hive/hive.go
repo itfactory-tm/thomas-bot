@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/db"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
 
 	"github.com/bwmarrin/discordgo"
@@ -31,22 +33,22 @@ var categoryPrefixes = map[string]string{
 // HiveCommand contains the tm!hello command
 type HiveCommand struct {
 	isBob        bool
-	prefix       string
 	requestRegex *regexp.Regexp
+	db           db.Database
 }
 
 // NewHiveCommand gives a new HiveCommand
-func NewHiveCommand() *HiveCommand {
+func NewHiveCommand(dbConn db.Database) *HiveCommand {
 	return &HiveCommand{
 		requestRegex: regexp.MustCompile(`!hive ([a-zA-Z0-9-_]*) ([a-zA-Z0-9]*) ?(.*)$`),
+		db:           dbConn,
 	}
 }
 
 // NewHiveCommand gives a new HiveCommand
-func NewHiveCommandForBob() *HiveCommand {
+func NewHiveCommandForBob(db db.Database) *HiveCommand {
 	return &HiveCommand{
 		isBob:        true,
-		prefix:       "bob-",
 		requestRegex: regexp.MustCompile(`!vc ([a-zA-Z0-9-_]*) ([a-zA-Z0-9]*) ?(.*)$`),
 	}
 }
@@ -70,14 +72,9 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) {
 	hidden := false
 
-	// check of in the request channel to apply limits
-	catID, ok := channelToCategory[m.ChannelID]
-	if !ok {
-		if h.isBob {
-			s.ChannelMessageSend(m.ChannelID, "This command only works in the bob-commands channel")
-		} else {
-			s.ChannelMessageSend(m.ChannelID, "This command only works in the Requests channels")
-		}
+	conf, isHive, err := h.getConfigForRequestChannel(m)
+	if err != nil {
+		log.Println(err)
 		return
 	}
 
@@ -96,10 +93,9 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 	}
 
 	var newChan *discordgo.Channel
-	var err error
 	isText := false
 	if matched[2] == "text" {
-		newChan, err = h.createTextChannel(s, m, matched[1], catID, hidden)
+		newChan, err = h.createTextChannel(s, m, conf, matched[1], conf.TextCategoryID, hidden)
 		isText = true
 	} else {
 		i, err := strconv.ParseInt(matched[2], 10, 64)
@@ -107,7 +103,7 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%q is not a number", matched[2]))
 			return
 		}
-		newChan, err = h.createVoiceChannel(s, m, matched[1], catID, int(i), hidden)
+		newChan, err = h.createVoiceChannel(s, m, conf, matched[1], conf.VoiceCategoryID, int(i), hidden)
 	}
 
 	if err != nil {
@@ -126,7 +122,7 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("your channel is hidden (alpha!!!!!!!!!!), react 👋 below to join"))
 		e := embed.NewEmbed()
 		e.SetTitle("Hive Channel")
-		e.AddField("name", h.prefix+matched[1])
+		e.AddField("name", conf.Prefix+matched[1])
 		e.AddField("id", newChan.ID)
 
 		msg, err := s.ChannelMessageSendEmbed(m.ChannelID, e.MessageEmbed)
@@ -137,9 +133,9 @@ func (h *HiveCommand) SayHive(s *discordgo.Session, m *discordgo.MessageCreate) 
 	}
 }
 
-func (h *HiveCommand) createTextChannel(s *discordgo.Session, m *discordgo.MessageCreate, name, catID string, hidden bool) (*discordgo.Channel, error) {
+func (h *HiveCommand) createTextChannel(s *discordgo.Session, m *discordgo.MessageCreate, conf *db.HiveConfiguration, name, catID string, hidden bool) (*discordgo.Channel, error) {
 	props := discordgo.GuildChannelCreateData{
-		Name:     h.prefix + name,
+		Name:     conf.Prefix + name,
 		NSFW:     false,
 		ParentID: catID,
 		Type:     discordgo.ChannelTypeGuildText,
@@ -147,15 +143,21 @@ func (h *HiveCommand) createTextChannel(s *discordgo.Session, m *discordgo.Messa
 
 	if hidden {
 		// this is why it is Alpha silly
-		j, _ := s.Channel("780775904082395136")
-		props.PermissionOverwrites = j.PermissionOverwrites
+		props.PermissionOverwrites = []*discordgo.PermissionOverwrite{
+			{
+				ID:    m.Author.ID,
+				Type:  "",
+				Deny:  0,
+				Allow: 0,
+			},
+		}
 	}
 
 	return s.GuildChannelCreateComplex(m.GuildID, props)
 }
 
 // we filled up on junk quickly, we should recycle a voice channel from junkjard
-func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, m *discordgo.MessageCreate, name, catID string, limit int, hidden bool) (*discordgo.Channel, error, bool) {
+func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, m *discordgo.MessageCreate, conf *db.HiveConfiguration, name, catID string, limit int, hidden bool) (*discordgo.Channel, error, bool) {
 	channels, err := s.GuildChannels(m.GuildID)
 	if err != nil {
 		return nil, err, true
@@ -198,8 +200,8 @@ func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, m *discordgo.Mes
 	return newChan, err, true
 }
 
-func (h *HiveCommand) createVoiceChannel(s *discordgo.Session, m *discordgo.MessageCreate, name, catID string, limit int, hidden bool) (*discordgo.Channel, error) {
-	newChan, err, ok := h.recycleVoiceChannel(s, m, name, catID, limit, hidden)
+func (h *HiveCommand) createVoiceChannel(s *discordgo.Session, m *discordgo.MessageCreate, conf *db.HiveConfiguration, name, catID string, limit int, hidden bool) (*discordgo.Channel, error) {
+	newChan, err, ok := h.recycleVoiceChannel(s, m, conf, name, catID, limit, hidden)
 	if ok {
 		return newChan, err
 	}

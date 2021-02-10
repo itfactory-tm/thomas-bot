@@ -3,11 +3,15 @@
     "_JSON_Comment_Hack": "ITF Discord",
     "welcomeChannelID": "687588438886842373",
     "welcomeText": "Welcome <@{{.User.ID}}> to the **IT Factory Official** Discord server. We will send you a DM in a moment to get you set up!",
-    "hives": {
-      "775453791801049119": {
-
+    "hives": [
+      {
+        "requestChannelIDs": ["775453791801049119", "794973874634752040"],
+        "junkyardCategoryID": "780775904082395136",
+        "textCategoryID": "775436992136871957",
+        "voiceCategoryID": "775436992136871957",
+        "prefix": ""
       }
-    }
+    ]
   },
   "694621018970390538": {
     "_JSON_Comment_Hack": "Trains",
