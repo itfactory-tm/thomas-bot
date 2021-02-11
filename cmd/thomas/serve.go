@@ -135,6 +135,13 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	err = dg.Open()
+	if err != nil {
+		return fmt.Errorf("error opening connection: %w", err)
+	}
+	defer dg.Close()
+	s.dg = dg
+
 	s.RegisterHandlers()
 
 	s.ha.AddHandler(s.onMessage)
@@ -142,13 +149,6 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	s.ha.AddHandler(s.onGuildMemberAdd)
 	s.ha.AddHandler(s.onMessageReactionAdd)
 	s.ha.AddHandler(s.onInteractionCreate)
-
-	err = dg.Open()
-	if err != nil {
-		return fmt.Errorf("error opening connection: %w", err)
-	}
-	defer dg.Close()
-	s.dg = dg
 
 	for _, handler := range s.handlers {
 		err := handler.InstallSlashCommands(s.dg)
