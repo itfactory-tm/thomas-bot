@@ -27,6 +27,11 @@ func NewHelpCommand() *HelpCommand {
 	return &HelpCommand{}
 }
 
+// InstallSlashCommands registers the slash commands
+func (h *HelpCommand) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 // Register registers the handlers
 func (h *HelpCommand) Register(registry command.Registry, server command.Server) {
 	registry.RegisterMessageCreateHandler("help", h.sayHelp)

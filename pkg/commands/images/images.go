@@ -31,6 +31,11 @@ func (i *ImagesCommands) Register(registry command.Registry, server command.Serv
 	registry.RegisterMessageCreateHandler("steun", i.saySteun)
 }
 
+// InstallSlashCommands registers the slash commands
+func (i *ImagesCommands) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 // Info return the commands in this package
 func (i *ImagesCommands) Info() []command.Command {
 	return []command.Command{

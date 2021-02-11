@@ -22,12 +22,14 @@ type Registry interface {
 	RegisterMessageEditHandler(command string, fn func(*discordgo.Session, *discordgo.MessageUpdate))
 	RegisterMessageReactionAddHandler(fn func(*discordgo.Session, *discordgo.MessageReactionAdd))
 	RegisterGuildMemberAddHandler(fn func(*discordgo.Session, *discordgo.GuildMemberAdd))
+	RegisterInteractionCreate(command string, fn func(*discordgo.Session, *discordgo.InteractionCreate))
 }
 
 // Interface defines how a command should be structured
 type Interface interface {
 	Info() []Command
 	Register(registry Registry, server Server)
+	InstallSlashCommands(session *discordgo.Session) error
 }
 
 // Server represents a discord bot server

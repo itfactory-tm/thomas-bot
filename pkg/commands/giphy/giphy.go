@@ -52,6 +52,11 @@ func (g *GiphyCommands) Register(registry command.Registry, server command.Serve
 	g.server = server
 }
 
+// InstallSlashCommands registers the slash commands
+func (g *GiphyCommands) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 func (g *GiphyCommands) clap(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.ChannelID == discordTalksVragen {
 		err := g.server.GetDiscordHA().SendVoiceCommand("thomasbot", discordha.VoiceCommand{

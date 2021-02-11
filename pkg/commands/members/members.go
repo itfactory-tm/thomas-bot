@@ -38,6 +38,11 @@ func (m *MemberCommands) Register(registry command.Registry, server command.Serv
 	registry.RegisterMessageReactionAddHandler(m.handleRoleReaction)
 }
 
+// InstallSlashCommands registers the slash commands
+func (m *MemberCommands) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	conf, err := m.db.ConfigForGuild(g.GuildID)
 	if err != nil {
