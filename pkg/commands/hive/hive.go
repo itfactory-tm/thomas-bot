@@ -141,15 +141,15 @@ func (h *HiveCommand) HiveCommand(s *discordgo.Session, i *discordgo.Interaction
 	istext := false
 	var size int
 	var name string
-	if len(i.Data.Options) < 1 || len(i.Data.Options[1].Options) < 2 {
+	if len(i.Data.Options) < 1 || len(i.Data.Options[0].Options) < 2 {
 		return // invalid
 	}
 
-	if i.Data.Options[1].Name == "text" {
+	if i.Data.Options[0].Name == "text" {
 		istext = true
 	}
 
-	for _, option := range i.Data.Options[1].Options {
+	for _, option := range i.Data.Options[0].Options {
 		switch option.Name {
 		case "name":
 			name, ok = option.Value.(string)
