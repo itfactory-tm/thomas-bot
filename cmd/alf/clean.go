@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
-
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/kelseyhightower/envconfig"
@@ -33,8 +31,6 @@ func init() {
 
 type cleanCmdOptions struct {
 	Token string
-
-	ha *discordha.HA
 }
 
 // NewCleanCmd generates the `clean` command
