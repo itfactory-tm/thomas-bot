@@ -17,10 +17,6 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
 
-//TODO: replace me
-const discordTalksVragen = "689915740564095061"
-const audioChannel = "688370622228725848"
-
 // GiphyCommands contains the tm!hello command
 type GiphyCommands struct {
 	server command.Server
@@ -60,13 +56,9 @@ func (g *GiphyCommands) InstallSlashCommands(session *discordgo.Session) error {
 }
 
 func (g *GiphyCommands) clap(s *discordgo.Session, m *discordgo.MessageCreate) {
-	ch, err := voice.FindVoiceUser(s, m.GuildID, m.Author.ID)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	ch, _ := voice.FindVoiceUser(s, m.GuildID, m.Author.ID)
 
-	if m.ChannelID == discordTalksVragen {
+	if ch != "" {
 		err := g.server.GetDiscordHA().SendVoiceCommand(discordha.VoiceCommand{
 			ModuleID:  "thomasbot",
 			GuildID:   m.GuildID,
