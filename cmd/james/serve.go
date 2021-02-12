@@ -48,6 +48,7 @@ type serveCmdOptions struct {
 	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
 	onMessageReactionAddHandler []func(*discordgo.Session, *discordgo.MessageReactionAdd)
 	onGuildMemberAddHandler     []func(*discordgo.Session, *discordgo.GuildMemberAdd)
+	onInteractionCreateHandler  map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
 }
 
 // NewServeCmd generates the `serve` command
@@ -126,6 +127,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 	s.ha.AddHandler(s.onMessage)
 	s.ha.AddHandler(s.onMessageReactionAdd)
+	s.ha.AddHandler(s.onInteractionCreate)
 
 	log.Println("Thomas Bob is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
@@ -181,6 +183,12 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 	}
 }
 
+func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
+	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
+		handler(sess, i)
+	}
+}
+
 func (s *serveCmdOptions) RegisterMessageCreateHandler(command string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
 	if s.onMessageCreateHandlers == nil {
 		s.onMessageCreateHandlers = map[string][]func(*discordgo.Session, *discordgo.MessageCreate){}
@@ -216,6 +224,18 @@ func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Sessi
 	}
 
 	s.onGuildMemberAddHandler = append(s.onGuildMemberAddHandler, fn)
+}
+
+func (s *serveCmdOptions) RegisterInteractionCreate(command string, fn func(*discordgo.Session, *discordgo.InteractionCreate)) {
+	if s.onInteractionCreateHandler == nil {
+		s.onInteractionCreateHandler = map[string][]func(*discordgo.Session, *discordgo.InteractionCreate){}
+	}
+
+	if _, exists := s.onInteractionCreateHandler[command]; !exists {
+		s.onInteractionCreateHandler[command] = []func(*discordgo.Session, *discordgo.InteractionCreate){}
+	}
+
+	s.onInteractionCreateHandler[command] = append(s.onInteractionCreateHandler[command], fn)
 }
 
 func (s *serveCmdOptions) GetDiscordHA() discordha.HA {
