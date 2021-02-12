@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/util/voice"
+
 	discordha "github.com/meyskens/discord-ha"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
@@ -58,9 +60,17 @@ func (g *GiphyCommands) InstallSlashCommands(session *discordgo.Session) error {
 }
 
 func (g *GiphyCommands) clap(s *discordgo.Session, m *discordgo.MessageCreate) {
+	ch, err := voice.FindVoiceUser(s, m.GuildID, m.Author.ID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	if m.ChannelID == discordTalksVragen {
-		err := g.server.GetDiscordHA().SendVoiceCommand("thomasbot", discordha.VoiceCommand{
-			ChannelID: audioChannel,
+		err := g.server.GetDiscordHA().SendVoiceCommand(discordha.VoiceCommand{
+			ModuleID:  "thomasbot",
+			GuildID:   m.GuildID,
+			ChannelID: ch,
 			File:      "clappingmono.wav",
 			UserID:    m.Author.ID,
 		})

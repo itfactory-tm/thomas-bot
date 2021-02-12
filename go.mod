@@ -6,6 +6,7 @@ require (
 	github.com/bwmarrin/discordgo v0.23.3-0.20210210083539-d11a0797e600
 	github.com/coreos/etcd v3.3.25+incompatible
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
+	github.com/davecgh/go-spew v1.1.1
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/elliotchance/orderedmap v1.3.0
@@ -20,7 +21,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/meyskens/discord-ha v0.0.0-20210210142358-d85dcbbe8022
+	github.com/meyskens/discord-ha v0.0.0-20210212163233-deed04fff462
 	github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd
 	github.com/prometheus/client_golang v1.0.0 // indirect
 	github.com/sanzaru/go-giphy v0.0.0-20180211202227-c353d5ec6ee8
@@ -36,7 +37,7 @@ require (
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	golang.org/x/text v0.3.5 // indirect
-	google.golang.org/genproto v0.0.0-20210207032614-bba0dbe2a9ea // indirect
+	google.golang.org/genproto v0.0.0-20210211221406-4ccc9a5e4183 // indirect
 	google.golang.org/grpc v1.35.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	mvdan.cc/xurls/v2 v2.2.0

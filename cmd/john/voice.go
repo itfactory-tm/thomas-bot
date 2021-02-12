@@ -8,7 +8,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+	discordha "github.com/meyskens/discord-ha"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/mixer"
@@ -18,13 +18,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TODO: automate these
-const itfDiscord = "687565213943332875"
-
-// default channel
-const discordTalksChannel = "688370622228725848"
-
-var audioConnected = false
+// audioConnected per Guild ID
+var audioConnected = map[string]bool{}
 
 func init() {
 	rootCmd.AddCommand(NewVoiceCmd())
@@ -34,7 +29,7 @@ type voiceCmdOptions struct {
 	Token         string
 	EtcdEndpoints []string `envconfig:"ETCD_ENDPOINTS"`
 
-	ha *discordha.HA
+	ha discordha.HA
 }
 
 // NewVoiceCmd generates the `serve` command
@@ -75,13 +70,13 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
 
-	dg.VoiceConnections = map[string]*discordgo.VoiceConnection{} // fixing a nil pointer?
-
-	v.ha, err = discordha.New(discordha.Config{
-		Session:       dg,
-		HA:            len(v.EtcdEndpoints) > 0,
-		EtcdEndpoints: v.EtcdEndpoints,
-		Context:       ctx,
+	v.ha, err = discordha.New(&discordha.Config{
+		Session:            dg,
+		HA:                 len(v.EtcdEndpoints) > 0,
+		EtcdEndpoints:      v.EtcdEndpoints,
+		Context:            ctx,
+		LockTTL:            1 * time.Second,
+		LockUpdateInterval: 500 * time.Millisecond,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating Discord HA: %w", err)
@@ -98,35 +93,32 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 	for {
 		q := <-voiceQueueChan
-		if audioConnected {
+		if audioConnected[q.GuildID] {
 			continue
 		}
 		connected := make(chan struct{})
 		fmt.Printf("Connecting to %s\n", q.ChannelID)
-		go v.connectVoice(dg, connected, q.ChannelID, q.UserID)
+		go v.connectVoice(dg, connected, q.GuildID, q.ChannelID, q.UserID)
 		<-connected
 		// send again for voice to pick up
-		v.ha.SendVoiceCommand("thomasbot", q)
+		v.ha.SendVoiceCommand(q)
 	}
 
 	return nil
 }
 
-func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan struct{}, channelID, userID string) {
-	if channelID == "" {
-		channelID = discordTalksChannel
-	}
+func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan struct{}, guildID, channelID, userID string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	if audioConnected {
+	if audioConnected[guildID] {
 		connected <- struct{}{}
 		return
 	}
 
-	audioConnected = true
+	audioConnected[guildID] = true
 	voiceQueueChan := v.ha.WatchVoiceCommands(ctx, "thomasbot")
 
-	dgv, err := dg.ChannelVoiceJoin(itfDiscord, channelID, false, true)
+	dgv, err := dg.ChannelVoiceJoin(guildID, channelID, false, true)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -162,6 +154,6 @@ func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan str
 	dgv.Disconnect()
 	dgv.Close()
 	encoder.Stop()
-	audioConnected = false
+	audioConnected[guildID] = false
 	doneChan <- struct{}{}
 }

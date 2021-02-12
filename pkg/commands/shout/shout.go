@@ -45,7 +45,9 @@ func (s *ShoutCommand) shout(sess *discordgo.Session, m *discordgo.MessageCreate
 	if ch != "715889803937185812" { // sorry that is the other bot!
 		matches := shoutRegex.FindAllStringSubmatch(m.Message.Content, -1)
 		if len(matches) > 0 && len(matches[0]) > 1 {
-			err := s.server.GetDiscordHA().SendVoiceCommand("thomasbot", discordha.VoiceCommand{
+			err := s.server.GetDiscordHA().SendVoiceCommand(discordha.VoiceCommand{
+				ModuleID:  "thomasbot",
+				GuildID:   m.GuildID,
 				ChannelID: ch,
 				File:      matches[0][1] + ".wav",
 				UserID:    m.Author.ID,

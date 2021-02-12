@@ -249,6 +249,8 @@ github.com/meyskens/discord-ha v0.0.0-20210210084328-cd33e2242ae3 h1:NBQt92SEvx9
 github.com/meyskens/discord-ha v0.0.0-20210210084328-cd33e2242ae3/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
 github.com/meyskens/discord-ha v0.0.0-20210210142358-d85dcbbe8022 h1:tWAz3YCIKzyr3c6ca2IJoWW2JaZPDNQJc1GyOs/JoUw=
 github.com/meyskens/discord-ha v0.0.0-20210210142358-d85dcbbe8022/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
+github.com/meyskens/discord-ha v0.0.0-20210212163233-deed04fff462 h1:avlkDiMNOCYUS7BX8g+nZmElW2jH2HTSSXHyjeKrNOc=
+github.com/meyskens/discord-ha v0.0.0-20210212163233-deed04fff462/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
 github.com/meyskens/discordgo v0.23.3-0.20210210083539-d11a0797e600 h1:0m57qpplN+FHJEhW8mOw2OrZsrODWGfAce/Jj5G/On4=
 github.com/meyskens/discordgo v0.23.3-0.20210210083539-d11a0797e600/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+bVyfBG7JE+M=
 github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd h1:n0QVTkt3UwQ9166YyvKgMCXIm02r5ZZZtadIIfkmzbI=
@@ -550,6 +552,8 @@ google.golang.org/genproto v0.0.0-20201214200347-8c77b98c765d h1:HV9Z9qMhQEsdlvx
 google.golang.org/genproto v0.0.0-20201214200347-8c77b98c765d/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/genproto v0.0.0-20210207032614-bba0dbe2a9ea h1:N98SvVh7Hdle2lgUVFuIkf0B3u29CUakMUQa7Hwz8Wc=
 google.golang.org/genproto v0.0.0-20210207032614-bba0dbe2a9ea/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
+google.golang.org/genproto v0.0.0-20210211221406-4ccc9a5e4183 h1:5YmF1NDDcUX9p0CJqW+GQiLW0HHe7ZW5K6lsFk6mJeA=
+google.golang.org/genproto v0.0.0-20210211221406-4ccc9a5e4183/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/grpc v1.26.0 h1:2dTRdpdFEEhJYQD8EMLB61nnrzSCTbG38PhqdhvOltg=
 google.golang.org/grpc v1.26.0/go.mod h1:qbnxyOmOxrQa7FizSgH+ReBfzJrCY1pSN7KXBS8abTk=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
