@@ -11,6 +11,14 @@
         "voiceCategoryID": "775436992136871957",
         "prefix": "",
         "voiceBitrate": 128000
+      },
+      {
+        "requestChannelIDs": ["787346218304274483"],
+        "junkyardCategoryID": "780775904082395136",
+        "textCategoryID": "760860082241142790",
+        "voiceCategoryID": "760860082241142790",
+        "prefix": "bob-",
+        "voiceBitrate": 128000
       }
     ]
   },
