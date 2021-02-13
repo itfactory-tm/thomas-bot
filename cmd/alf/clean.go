@@ -165,6 +165,10 @@ func (v *cleanCmdOptions) checkGuild(guildID string) {
 				}
 			}
 
+			if !inUse {
+				log.Println(channel.Name, "looks sus")
+			}
+
 			// on first occurance: mark to remove, on second occurance remove
 			if wasMarkedAsRemove := v.shouldRemove[channel.ID]; wasMarkedAsRemove && !inUse {
 				log.Println("Deleting", channel.ID, channel.Name)
