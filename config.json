@@ -75,6 +75,18 @@
       "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
       "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, ICE to meet you!"
     ],
+    "roleManagement": {
+      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+      "roles": [
+        {"emoji": "🍩", "id": "808987908668653568"},
+        {"emoji": "🔈", "id": "808988046854455357"},
+        {"emoji": "❤️", "id": "808988176164323358"},
+        {"emoji": "🤵‍♀️", "id": "808988256095961139"},
+        {"emoji": "🦸‍♀️", "id": "809374332655763526"},
+      ],
+      "roleAdminChannelID": "808991336904130570",
+      "defaultRole": "808987692619661363"
+    },
     "hives": [
       {
         "requestChannelIDs": ["808989577204465754", "808989694355570738"],
