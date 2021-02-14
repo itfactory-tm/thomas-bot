@@ -98,7 +98,9 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 			time.Sleep(time.Second)
 		}
 
-		m.SendRoleDM(s, g.GuildID, g.Member.User.ID)
+		if len(conf.RoleManagement.Roles) > 0 {
+			m.SendRoleDM(s, g.GuildID, g.Member.User.ID)
+		}
 	}
 
 }
