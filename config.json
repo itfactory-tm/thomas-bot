@@ -30,7 +30,17 @@
   "689786403596533841": {
     "_JSON_Comment_Hack": "TM graduaten",
     "welcomeText": "Welkom <@{{.User.ID}}> op de IT Graduaten Thomas More Discord server. Je wordt automatisch toegevoegd als Gast. Indien je student of alumnus bent en toegang wil tot de studenten- of alumnikanalen, gelieve dan op de <#689821990907019282> pagina je jaar te selecteren.",
-    "welcomeChannelID": "689786403596533845"
+    "welcomeChannelID": "689786403596533845",
+    "hives": [
+      {
+        "requestChannelIDs": ["810471294540840970"],
+        "junkyardCategoryID": "810471628089458748",
+        "textCategoryID": "810470699097522196",
+        "voiceCategoryID": "810470699097522196",
+        "prefix": "",
+        "voiceBitrate": 96000
+      }
+    ]
   },
   "808273924600365058": {
     "_JSON_Comment_Hack": "Ice Cube",
