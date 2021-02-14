@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/db"
+	"github.com/itfactory-tm/thomas-bot/pkg/embed"
+
 	"github.com/bwmarrin/discordgo"
 )
-
-// TODO: add ability for commands to query config
-const prefix = "tm"
 
 func (m *MemberCommands) sayRole(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	ch, err := s.UserChannelCreate(msg.Author.ID)
@@ -16,32 +16,81 @@ func (m *MemberCommands) sayRole(s *discordgo.Session, msg *discordgo.MessageCre
 		s.ChannelMessageSend(msg.ChannelID, "Cannot DM user")
 		return
 	}
-	if ch.ID != msg.ChannelID && msg.Message.Content == fmt.Sprintf("%s!role", prefix) {
-		s.ChannelMessageDelete(msg.ChannelID, msg.Message.ID)
+
+	// if not in DM delete command
+	if ch.ID == msg.ChannelID {
+		s.ChannelMessageSend(msg.ChannelID, "I'm sorry I have no idea which server you are in, please use tm!role in a channel in the Discord server I need to help you with.")
+		return
 	}
 
-	m.SendRoleDM(s, msg.Author.ID)
+	m.SendRoleDM(s, msg.GuildID, msg.Author.ID)
 }
 
 // SendRoleDM sends a role selection DM to the user
-func (m *MemberCommands) SendRoleDM(s *discordgo.Session, userID string) {
+func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string) {
+	conf, err := m.db.ConfigForGuild(guildID)
+	if err != nil || conf == nil {
+		return
+	}
+
 	ch, err := s.UserChannelCreate(userID)
 	if err != nil {
 		return
 	}
 
-	msg, err := s.ChannelMessageSend(ch.ID, roleMessage)
+	if len(conf.RoleManagement.Roles) <= 0 {
+		s.ChannelMessageSend(ch.ID, "I'm sorry this server hasn't told me any roles I am allowed to give you :(")
+		return
+	}
+
+	if conf.RoleManagement.Message != "" {
+		_, err := s.ChannelMessageSend(ch.ID, conf.RoleManagement.Message)
+		if err != nil {
+			log.Println("Role DM error", err)
+			return
+		}
+	}
+
+	guild, err := s.Guild(guildID)
+	if err != nil {
+		log.Println("Guild error", err)
+		return
+	}
+	e := embed.NewEmbed()
+	e.SetTitle("Role Request")
+	e.SetAuthor(guildID)
+
+	roles := ""
+	for _, crole := range conf.RoleManagement.Roles {
+		role := findRole(guild.Roles, crole.ID)
+		if role != nil {
+			roles += fmt.Sprintf("%s: %s\n", crole.Emoji, role.Name)
+		}
+	}
+
+	e.AddField("Roles", roles)
+
+	msg, err := s.ChannelMessageSendEmbed(ch.ID, e.MessageEmbed)
 	if err != nil {
 		log.Println("Role DM error", err)
 		return
 	}
 
-	for _, emoji := range roleEmoji.Keys() {
-		err := s.MessageReactionAdd(ch.ID, msg.ID, emoji.(string))
+	for _, crole := range conf.RoleManagement.Roles {
+		err := s.MessageReactionAdd(ch.ID, msg.ID, crole.Emoji)
 		if err != nil {
 			log.Printf("Error adding help emoji: %q\n", err)
 		}
 	}
+}
+
+func findRole(all []*discordgo.Role, want string) *discordgo.Role {
+	for _, role := range all {
+		if role.ID == want {
+			return role
+		}
+	}
+	return nil
 }
 
 func (m *MemberCommands) handleRoleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
@@ -54,12 +103,22 @@ func (m *MemberCommands) handleRoleReaction(s *discordgo.Session, r *discordgo.M
 		return // not the bot user
 	}
 
-	if message.Content != roleMessage {
+	if len(message.Embeds) <= 0 {
 		return // not the role message
 	}
 
-	wantedRole, roleExists := roleEmoji.Get(r.Emoji.MessageFormat())
-	if !roleExists {
+	if message.Embeds[0].Title != "Role Request" {
+		return // not the role message
+	}
+
+	guildID := message.Embeds[0].Author.Name
+	conf, err := m.db.ConfigForGuild(guildID)
+	if err != nil || conf == nil {
+		return
+	}
+
+	wantedRole := findRoleWithEmoji(conf.RoleManagement.Roles, r.Emoji.MessageFormat())
+	if wantedRole == nil {
 		log.Printf("Role emoji %s not found", r.Emoji.MessageFormat())
 	}
 
@@ -69,10 +128,10 @@ func (m *MemberCommands) handleRoleReaction(s *discordgo.Session, r *discordgo.M
 		return
 	}
 
-	member, err := s.GuildMember(itfDiscord, r.UserID)
+	member, err := s.GuildMember(guildID, r.UserID)
 	if err == nil {
 		for _, role := range member.Roles {
-			if role == wantedRole {
+			if role == wantedRole.ID {
 				s.ChannelMessageSend(ch.ID, "Oopsie! You already have the role you requested!")
 				return
 			}
@@ -84,17 +143,22 @@ func (m *MemberCommands) handleRoleReaction(s *discordgo.Session, r *discordgo.M
 		s.ChannelMessageSend(ch.ID, "Not already working at Thomas More? We're hiring! http://werkenbij.thomasmore.be/")
 	}
 
-	msg, err := s.ChannelMessageSend(roleChannelID, fmt.Sprintf("<@%s> wants role <@&%s>\n Allow/Deny or Remove all others and assign requested role?", r.UserID, wantedRole))
+	msg, err := s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("<@%s> wants role <@&%s>\n Allow/Deny or Remove all others and assign requested role?", r.UserID, wantedRole.ID))
 	if err != nil {
 		return // let's handle this later
 	}
-	s.MessageReactionAdd(roleChannelID, msg.ID, "✅")
-	s.MessageReactionAdd(roleChannelID, msg.ID, "❌")
-	s.MessageReactionAdd(roleChannelID, msg.ID, "☝️")
+	s.MessageReactionAdd(conf.RoleManagement.RoleAdminChannelID, msg.ID, "✅")
+	s.MessageReactionAdd(conf.RoleManagement.RoleAdminChannelID, msg.ID, "❌")
+	s.MessageReactionAdd(conf.RoleManagement.RoleAdminChannelID, msg.ID, "☝️")
 }
 
 func (m *MemberCommands) handleRolePermissionReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
-	if r.ChannelID != roleChannelID {
+	conf, err := m.db.ConfigForGuild(r.GuildID)
+	if err != nil || conf == nil {
+		return
+	}
+
+	if r.ChannelID != conf.RoleManagement.RoleAdminChannelID {
 		return
 	}
 
@@ -118,19 +182,32 @@ func (m *MemberCommands) handleRolePermissionReaction(s *discordgo.Session, r *d
 	roleID := matches[0][2]
 
 	if r.Emoji.MessageFormat() == "☝️" {
-		member, err := s.GuildMember(itfDiscord, userID)
+		member, err := s.GuildMember(r.GuildID, userID)
 		if err != nil {
-			s.ChannelMessageSend(roleChannelID, fmt.Sprintf("Error getting roles of <@%s>, aborting operation: %q\n", userID, err))
+			s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("Error getting roles of <@%s>, aborting operation: %q\n", userID, err))
 			return
 		}
 		for _, role := range member.Roles {
-			s.GuildMemberRoleRemove(itfDiscord, userID, role)
+			s.GuildMemberRoleRemove(r.GuildID, userID, role)
 		}
 	}
 
-	err = s.GuildMemberRoleAdd(itfDiscord, userID, roleID)
+	err = s.GuildMemberRoleAdd(r.GuildID, userID, roleID)
 	if err != nil {
-		s.ChannelMessageSend(roleChannelID, fmt.Sprintf("Error assigning role %q\n", err))
+		s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("Error assigning role %q\n", err))
 		log.Printf("Error assigning role %q\n", err)
+		return
 	}
+
+	s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("Assigned <@&%s> role for <@%s>", roleID, userID))
+}
+
+func findRoleWithEmoji(roles []db.Role, wantedEmjoi string) *db.Role {
+	for _, role := range roles {
+		if role.Emoji == wantedEmjoi {
+			return &role
+		}
+	}
+
+	return nil
 }
