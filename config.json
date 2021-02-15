@@ -34,6 +34,14 @@
         "voiceBitrate": 128000
       },
       {
+        "requestChannelIDs": ["810912390891307088"],
+        "junkyardCategoryID": "780775904082395136",
+        "textCategoryID": "760855457631436801",
+        "voiceCategoryID": "760855457631436801",
+        "prefix": "",
+        "voiceBitrate": 128000
+      },
+      {
         "requestChannelIDs": ["787346218304274483"],
         "junkyardCategoryID": "780775904082395136",
         "textCategoryID": "760860082241142790",
@@ -93,6 +101,14 @@
         "junkyardCategoryID": "808989859406282792",
         "textCategoryID": "808989126187679766",
         "voiceCategoryID": "808989186911895553",
+        "prefix": "",
+        "voiceBitrate": 128000
+      },
+      {
+        "requestChannelIDs": ["808991034759315518"],
+        "junkyardCategoryID": "808989859406282792",
+        "textCategoryID": "808990827602640936",
+        "voiceCategoryID": "808990827602640936",
         "prefix": "",
         "voiceBitrate": 128000
       }
