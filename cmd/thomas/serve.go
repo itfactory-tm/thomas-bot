@@ -110,6 +110,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 	dg.State.TrackVoice = true
 
+	haLogger := log.New(os.Stderr, "discordha: ", log.Ldate|log.Ltime)
 	s.ha, err = discordha.New(&discordha.Config{
 		Session:            dg,
 		HA:                 len(s.EtcdEndpoints) > 0,
@@ -117,6 +118,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		Context:            ctx,
 		LockTTL:            1 * time.Second,
 		LockUpdateInterval: 500 * time.Millisecond,
+		Log:                *haLogger,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating Discord HA: %w", err)
