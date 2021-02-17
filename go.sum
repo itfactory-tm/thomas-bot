@@ -253,6 +253,12 @@ github.com/meyskens/discord-ha v0.0.0-20210212163233-deed04fff462 h1:avlkDiMNOCY
 github.com/meyskens/discord-ha v0.0.0-20210212163233-deed04fff462/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
 github.com/meyskens/discord-ha v0.0.0-20210216102106-075509c05e7f h1:hVYGQhPGGx9NDHxjhY8fSdPFHvv1k8JrL+3HXL2AMW0=
 github.com/meyskens/discord-ha v0.0.0-20210216102106-075509c05e7f/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
+github.com/meyskens/discord-ha v0.0.0-20210217163905-e63bdd248fa2 h1:QgQ+jOzDMpaXHSijy3txsSkqsB031FgcKEHFfQpaNSI=
+github.com/meyskens/discord-ha v0.0.0-20210217163905-e63bdd248fa2/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
+github.com/meyskens/discord-ha v0.0.0-20210217164413-b9de278eea31 h1:8y0F2+e7FfX90gkjkwPw89aXgUJI/1QkAdSKJWLqetQ=
+github.com/meyskens/discord-ha v0.0.0-20210217164413-b9de278eea31/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
+github.com/meyskens/discord-ha v0.0.0-20210217164523-7dbdf345fabe h1:5coebBMxmT+N8D/PUWpxVvU4M+DCM1FCMF4Tlr9vbaM=
+github.com/meyskens/discord-ha v0.0.0-20210217164523-7dbdf345fabe/go.mod h1:p7AjgTFWIaXg2CZjFg/E+kba69KNZozC2nZm/ThtILs=
 github.com/meyskens/discordgo v0.23.3-0.20210210083539-d11a0797e600 h1:0m57qpplN+FHJEhW8mOw2OrZsrODWGfAce/Jj5G/On4=
 github.com/meyskens/discordgo v0.23.3-0.20210210083539-d11a0797e600/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+bVyfBG7JE+M=
 github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd h1:n0QVTkt3UwQ9166YyvKgMCXIm02r5ZZZtadIIfkmzbI=
@@ -483,6 +489,8 @@ golang.org/x/sys v0.0.0-20201231184435-2d18734c6014 h1:joucsQqXmyBVxViHCPFjG3hx8
 golang.org/x/sys v0.0.0-20201231184435-2d18734c6014/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c h1:VwygUrnw9jn88c4u8GD3rZQbqrP/tgas88tPUbBxQrk=
 golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20210217105451-b926d437f341 h1:2/QtM1mL37YmcsT8HaDNHDgTqqFVw+zr8UzMiBVLzYU=
+golang.org/x/sys v0.0.0-20210217105451-b926d437f341/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

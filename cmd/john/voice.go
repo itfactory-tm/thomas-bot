@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"path"
 	"time"
 
@@ -70,13 +71,16 @@ func (v *voiceCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
 
+	haLogger := log.New(os.Stderr, "discordha: ", log.Ldate|log.Ltime)
 	v.ha, err = discordha.New(&discordha.Config{
-		Session:            dg,
-		HA:                 len(v.EtcdEndpoints) > 0,
-		EtcdEndpoints:      v.EtcdEndpoints,
-		Context:            ctx,
-		LockTTL:            1 * time.Second,
-		LockUpdateInterval: 500 * time.Millisecond,
+		Session:                          dg,
+		HA:                               len(v.EtcdEndpoints) > 0,
+		EtcdEndpoints:                    v.EtcdEndpoints,
+		Context:                          ctx,
+		LockTTL:                          1 * time.Second,
+		LockUpdateInterval:               500 * time.Millisecond,
+		Log:                              *haLogger,
+		DoNotParticipateInLeaderElection: true,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating Discord HA: %w", err)
