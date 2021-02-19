@@ -1,7 +1,6 @@
 package hive
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"regexp"
@@ -283,10 +282,6 @@ func (h *HiveCommand) createTextChannel(s *discordgo.Session, conf *db.HiveConfi
 	}
 
 	if hidden {
-		everyoneID, err := h.findRoleEveryone(s, guildID)
-		if err != nil {
-			return nil, err
-		}
 		// admin privileges on channel for creator
 		var allow int64
 		allow |= discordgo.PermissionReadMessageHistory
@@ -302,7 +297,7 @@ func (h *HiveCommand) createTextChannel(s *discordgo.Session, conf *db.HiveConfi
 				Allow: allow,
 			},
 			{
-				ID:   everyoneID,
+				ID:   guildID,
 				Type: discordgo.PermissionOverwriteTypeRole,
 				Deny: discordgo.PermissionAll,
 			},
@@ -528,20 +523,6 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 	}
 
 	s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>, you can leave any time by saying `tm!leave`", r.UserID))
-}
-
-func (h *HiveCommand) findRoleEveryone(s *discordgo.Session, guildID string) (string, error) {
-	roles, err := s.GuildRoles(guildID)
-	if err != nil {
-		return "", err
-	}
-	for _, role := range roles {
-		if role.Name == "@everyone" {
-			return role.ID, nil
-		}
-	}
-
-	return "", errors.New("Role @everyone not found")
 }
 
 // Info return the commands in this package
