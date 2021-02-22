@@ -338,7 +338,7 @@ func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, conf *db.HiveCon
 		PermissionOverwrites: cat.PermissionOverwrites,
 		UserLimit:            limit,
 		Name:                 conf.Prefix + name,
-		Bitrate:              128000,
+		Bitrate:              conf.VoiceBitrate,
 	}
 
 	if hidden {
@@ -355,6 +355,11 @@ func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, conf *db.HiveCon
 				Type:  discordgo.PermissionOverwriteTypeMember,
 				Deny:  0,
 				Allow: allow,
+			},
+			{
+				ID:   guildID,
+				Type: discordgo.PermissionOverwriteTypeRole,
+				Deny: discordgo.PermissionAll,
 			},
 		}
 	}
@@ -391,6 +396,11 @@ func (h *HiveCommand) createVoiceChannel(s *discordgo.Session, conf *db.HiveConf
 				Type:  discordgo.PermissionOverwriteTypeMember,
 				Deny:  0,
 				Allow: allow,
+			},
+			{
+				ID:   guildID,
+				Type: discordgo.PermissionOverwriteTypeRole,
+				Deny: discordgo.PermissionAll,
 			},
 		}
 	}
