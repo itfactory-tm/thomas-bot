@@ -509,7 +509,7 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 		return
 	}
 
-	_, isHive, err := h.getConfigForRequestChannel(r.GuildID, r.ChannelID)
+	conf, isHive, err := h.getConfigForRequestChannel(r.GuildID, r.ChannelID)
 	if err != nil {
 		log.Println(err)
 		return
@@ -517,6 +517,11 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 
 	if !isHive {
 		//s.ChannelMessageSend(r.ChannelID, "Sorry category not allowed, try privilege escalating otherwise!")
+		return
+	}
+
+	if channel.ParentID != conf.VoiceCategoryID && channel.ParentID != conf.TextCategoryID {
+		// channel no longer in hive
 		return
 	}
 
