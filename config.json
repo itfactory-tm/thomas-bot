@@ -51,6 +51,7 @@
       }
     ]
   },
+  
   "694621018970390538": {
     "_JSON_Comment_Hack": "Trains",
     "welcomeText": "Spoor 1, de IC trein met bestemming <@{{.User.ID}}> komt aan, spoor 1. Deze trein stopt in Welkom-Centraal en Geel. Deze trein stopt uitzonderlijk niet in Haat-Noord. De 1ste klas plaatsen zijn overal.",
@@ -71,6 +72,7 @@
       }
     ]
   },
+  
   "808273924600365058": {
     "_JSON_Comment_Hack": "Ice Cube",
     "welcomeText": "Welkom <@{{.User.ID}}> in de  **ICE Cube** Discord server.",
