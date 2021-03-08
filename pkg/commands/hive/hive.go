@@ -530,6 +530,9 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 	allow |= discordgo.PermissionViewChannel
 	allow |= discordgo.PermissionSendMessages
 	allow |= discordgo.PermissionVoiceConnect
+	allow |= discordgo.PermissionAddReactions
+	allow |= discordgo.PermissionAttachFiles
+	allow |= discordgo.PermissionEmbedLinks
 
 	err = s.ChannelPermissionSet(channel.ID, r.UserID, discordgo.PermissionOverwriteTypeMember, allow, 0)
 	if err != nil {
