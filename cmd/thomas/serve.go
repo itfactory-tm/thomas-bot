@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/shout"
@@ -155,7 +157,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	for _, handler := range s.handlers {
 		err := handler.InstallSlashCommands(s.dg)
 		if err != nil {
-			log.Println(err)
+			log.Println("error installing slash commandos", err)
 		}
 	}
 
@@ -252,6 +254,7 @@ func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo
 }
 
 func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
+	spew.Dump(i)
 	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
 		handler(sess, i)
 	}

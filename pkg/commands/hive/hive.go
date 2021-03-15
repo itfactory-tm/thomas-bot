@@ -63,7 +63,7 @@ func (h *HiveCommand) InstallSlashCommands(session *discordgo.Session) error {
 	if h.isBob {
 		return nil
 	}
-	_, err := session.ApplicationCommandCreate("", "", &discordgo.ApplicationCommand{
+	_, err := session.ApplicationCommandCreate(session.State.User.ID, "", &discordgo.ApplicationCommand{
 		Name:        "hive",
 		Description: "creates on-remand voice and text channels",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -76,7 +76,6 @@ func (h *HiveCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Type:        discordgo.ApplicationCommandOptionSubCommand,
 						Name:        "text",
 						Description: "text channel",
-						Default:     false,
 						Required:    false,
 						Choices:     nil,
 						Options: []*discordgo.ApplicationCommandOption{
@@ -98,7 +97,6 @@ func (h *HiveCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Type:        discordgo.ApplicationCommandOptionSubCommand,
 						Name:        "voice",
 						Description: "voice channel",
-						Default:     false,
 						Required:    false,
 						Choices:     nil,
 						Options: []*discordgo.ApplicationCommandOption{
@@ -125,14 +123,6 @@ func (h *HiveCommand) InstallSlashCommands(session *discordgo.Session) error {
 }
 
 func (h *HiveCommand) HiveCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseACKWithSource,
-	})
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
 	hidden := false
 	istext := false
 	var size int
@@ -170,6 +160,17 @@ func (h *HiveCommand) HiveCommand(s *discordgo.Session, i *discordgo.Interaction
 				return
 			}
 		}
+	}
+
+	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionApplicationCommandResponseData{
+			Content: "Creating channel...",
+		},
+	})
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
 	h.createChannel(s, i.GuildID, i.ChannelID, i.Member.User.ID, name, istext, hidden, conf, size)
