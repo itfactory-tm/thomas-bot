@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+	discordha "github.com/meyskens/discord-ha"
 
 	"github.com/bwmarrin/discordgo"
 )

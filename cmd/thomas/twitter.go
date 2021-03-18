@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
-
-	"github.com/itfactory-tm/thomas-bot/pkg/embed"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dghubble/go-twitter/twitter"
@@ -107,24 +104,31 @@ func (t *twitterCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			return
 		}
 
-		if tweet.User.FollowersCount < 10 {
+		// it is project season relaxing our requirements
+		// make sure I do not regret this!
+
+		/*if tweet.User.FollowersCount < 10 {
 			// we do not take people with less than 5 followers seriously
 			return
-		}
+		}*/
 
-		if tweet.User.ScreenName == "paardemeis" || tweet.User.ScreenName == "Koosiebz" || tweet.User.ScreenName == "marjolijnWI" {
+		if tweet.User.ScreenName == "paardemeis" || tweet.User.ScreenName == "Koosiebz" || tweet.User.ScreenName == "marjolijnWI" || tweet.User.ScreenName == "johnfilibuster" {
 			// because lack of a better system
 			return
 		}
 
-		if t, err := time.Parse("Mon Jan 2 15:04:05 -0700 2006", tweet.User.CreatedAt); err == nil {
+		/*if t, err := time.Parse("Mon Jan 2 15:04:05 -0700 2006", tweet.User.CreatedAt); err == nil {
 			if time.Since(t) < 30*24*time.Hour {
 				// accounts need to be 30 days old
 				return
 			}
-		}
+		}*/
 
-		embed := embed.NewEmbed()
+		_, err := dg.ChannelMessageSend(whatsupChannel, "https://twitter.com/"+tweet.User.ScreenName+"/status/"+tweet.IDStr)
+		if err != nil {
+			log.Println(err)
+		}
+		/*embed := embed.NewEmbed()
 		embed.AddField("Tweet", tweet.Text)
 
 		images := []string{}
@@ -153,7 +157,7 @@ func (t *twitterCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		_, err := dg.ChannelMessageSendEmbed(whatsupChannel, embed.MessageEmbed)
 		if err != nil {
 			log.Println(err)
-		}
+		}*/
 	}
 
 	log.Println("Starting Twitter listener")

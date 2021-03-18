@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/discordha"
+	discordha "github.com/meyskens/discord-ha"
 
 	"github.com/bwmarrin/discordgo"
 	"mvdan.cc/xurls/v2"

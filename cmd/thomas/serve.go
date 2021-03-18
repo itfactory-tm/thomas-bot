@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/db"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/shout"
 
 	"github.com/bwmarrin/discordgo"
@@ -41,6 +43,9 @@ type serveCmdOptions struct {
 	HCaptchaSiteKey    string   `envconfig:"HCAPTCHA_SITE_KEY"`
 	HCaptchaSiteSecret string   `envconfig:"HCAPTCHA_SITE_SECRET"`
 	BindAddr           string   `default:":8080" envconfig:"BIND_ADDR"`
+	MongoDBURL         string   `envconfig:"MONGODB_URL"`
+	MongoDBDB          string   `envconfig:"MONGODB_DB"`
+	ConfigPath         string   `default:"./config.json" envconfig:"CONFIG"`
 	EtcdEndpoints      []string `envconfig:"ETCD_ENDPOINTS"`
 
 	commandRegex *regexp.Regexp
@@ -48,10 +53,13 @@ type serveCmdOptions struct {
 	ha           discordha.HA
 	handlers     []command.Interface
 
+	db db.Database
+
 	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
 	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
 	onMessageReactionAddHandler []func(*discordgo.Session, *discordgo.MessageReactionAdd)
 	onGuildMemberAddHandler     []func(*discordgo.Session, *discordgo.GuildMemberAdd)
+	onInteractionCreateHandler  map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
 }
 
 // NewServeCmd generates the `serve` command
@@ -79,8 +87,6 @@ func (s *serveCmdOptions) Validate(cmd *cobra.Command, args []string) error {
 		return errors.New("No token specified")
 	}
 
-	s.RegisterHandlers()
-
 	return nil
 }
 
@@ -104,6 +110,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 	dg.State.TrackVoice = true
 
+	haLogger := log.New(os.Stderr, "discordha: ", log.Ldate|log.Ltime)
 	s.ha, err = discordha.New(&discordha.Config{
 		Session:            dg,
 		HA:                 len(s.EtcdEndpoints) > 0,
@@ -111,16 +118,24 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		Context:            ctx,
 		LockTTL:            1 * time.Second,
 		LockUpdateInterval: 500 * time.Millisecond,
+		Log:                *haLogger,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating Discord HA: %w", err)
 	}
 
-	// TODO: Register handlers
-	s.ha.AddHandler(s.onMessage)
-	s.ha.AddHandler(s.onMessageUpdate)
-	s.ha.AddHandler(s.onGuildMemberAdd)
-	s.ha.AddHandler(s.onMessageReactionAdd)
+	if s.MongoDBDB != "" {
+		s.db, err = db.NewMongoDB(s.MongoDBURL, s.MongoDBDB)
+		if err != nil {
+			return err
+		}
+	} else {
+		// local fallback
+		s.db, err = db.NewLocalDB(s.ConfigPath)
+		if err != nil {
+			return err
+		}
+	}
 
 	err = dg.Open()
 	if err != nil {
@@ -128,6 +143,21 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	}
 	defer dg.Close()
 	s.dg = dg
+
+	s.RegisterHandlers()
+
+	s.ha.AddHandler(s.onMessage)
+	s.ha.AddHandler(s.onMessageUpdate)
+	s.ha.AddHandler(s.onGuildMemberAdd)
+	s.ha.AddHandler(s.onMessageReactionAdd)
+	s.ha.AddHandler(s.onInteractionCreate)
+
+	for _, handler := range s.handlers {
+		err := handler.InstallSlashCommands(s.dg)
+		if err != nil {
+			log.Println(err)
+		}
+	}
 
 	dg.UpdateStreamingStatus(0, fmt.Sprintf("tm!help (version %s)", revision), "")
 
@@ -142,14 +172,14 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 func (s *serveCmdOptions) RegisterHandlers() {
 	s.handlers = []command.Interface{
 		hello.NewHelloCommand(),
-		members.NewMemberCommand(),
+		members.NewMemberCommand(s.db),
 		moderation.NewModerationCommands(),
 		help.NewHelpCommand(),
 		giphy.NewGiphyCommands(),
 		images.NewImagesCommands(),
 		links.NewLinkCommands(),
 		shout.NewShoutCommand(),
-		hive.NewHiveCommand(),
+		hive.NewHiveCommand(s.db),
 	}
 
 	for _, handler := range s.handlers {
@@ -221,6 +251,12 @@ func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo
 	}
 }
 
+func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
+	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
+		handler(sess, i)
+	}
+}
+
 func (s *serveCmdOptions) RegisterMessageCreateHandler(command string, fn func(*discordgo.Session, *discordgo.MessageCreate)) {
 	if s.onMessageCreateHandlers == nil {
 		s.onMessageCreateHandlers = map[string][]func(*discordgo.Session, *discordgo.MessageCreate){}
@@ -256,6 +292,18 @@ func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Sessi
 	}
 
 	s.onGuildMemberAddHandler = append(s.onGuildMemberAddHandler, fn)
+}
+
+func (s *serveCmdOptions) RegisterInteractionCreate(command string, fn func(*discordgo.Session, *discordgo.InteractionCreate)) {
+	if s.onInteractionCreateHandler == nil {
+		s.onInteractionCreateHandler = map[string][]func(*discordgo.Session, *discordgo.InteractionCreate){}
+	}
+
+	if _, exists := s.onInteractionCreateHandler[command]; !exists {
+		s.onInteractionCreateHandler[command] = []func(*discordgo.Session, *discordgo.InteractionCreate){}
+	}
+
+	s.onInteractionCreateHandler[command] = append(s.onInteractionCreateHandler[command], fn)
 }
 
 func (s *serveCmdOptions) GetDiscordHA() discordha.HA {

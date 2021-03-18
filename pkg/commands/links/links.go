@@ -25,6 +25,11 @@ func (l *LinkCommands) Register(registry command.Registry, server command.Server
 	l.buildLinks()
 }
 
+// InstallSlashCommands registers the slash commands
+func (l *LinkCommands) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 func (l *LinkCommands) buildLinks() {
 	l.registerInfoDagCommand("website", "Link naar Thomas More website", "Bezoek onze website: https://thomasmore.be/opleidingen/professionele-bachelor/it-factory")
 	l.registerLinkCommand("rooster", "Link naar lessenrooster", "Bekijk hier je lessenrooster: https://rooster.thomasmore.be/")
@@ -60,6 +65,21 @@ func (l *LinkCommands) buildLinks() {
 	l.registerLinkCommand("coderood", "Meer info over code rood", "Heb je meer info over code rood nodig? https://www.thomasmore.be/update-code-rood")
 	l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\nGeitjes: https://www.twitch.tv/tmgeitlive")
 	l.registerLinkCommand("pictures", "Fotoalbum van IT Factory", "De Flickr-link voor IT Factory: https://www.flickr.com/photos/itfactorygeel/albums/with/72157711381764072")
+
+	// ICE Donut
+	l.registerLinkCommand("level1", "", "https://donut.sinners.be/on/Level_1.pdf")
+	l.registerLinkCommand("level2", "", "https://donut.sinners.be/ly/Level_2.pdf")
+	l.registerLinkCommand("level3", "", "https://donut.sinners.be/go/Level_3.pdf")
+	l.registerLinkCommand("level4", "", "https://donut.sinners.be/od/Level_4.pdf")
+	l.registerLinkCommand("level5", "", "https://donut.sinners.be/vi/Level_5.pdf")
+	l.registerLinkCommand("level6", "", "https://donut.sinners.be/be/Level_6.pdf")
+	l.registerLinkCommand("level7", "", "https://donut.sinners.be/si/Level_7.pdf")
+	l.registerLinkCommand("level8", "", "https://donut.sinners.be/ce/Level_8.pdf")
+	l.registerLinkCommand("brainstorm", "", "https://donut.sinners.be/word/Document_Brainstorm.docx")
+	l.registerLinkCommand("fase1", "", "https://donut.sinners.be/word/Document_Fase_1.docx")
+	l.registerLinkCommand("fase2", "", "https://donut.sinners.be/word/Document_Fase_2.docx")
+	l.registerLinkCommand("fase3", "", "https://donut.sinners.be/word/Document_Fase_3.docx")
+	l.registerLinkCommand("pitch", "", "https://donut.sinners.be/word/Document_Pitch.docx")
 }
 
 func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {

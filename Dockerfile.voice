@@ -25,5 +25,6 @@ COPY ./sounds/clappingmono.wav /go/src/github.com/itfactory-tm/thomas-bot/thomas
 COPY ./www /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/www
 
 COPY --from=build /go/src/github.com/itfactory-tm/thomas-bot/john /usr/local/bin/
+COPY ./config.json /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/
 
 CMD [ "/usr/local/bin/john", "voice" ]

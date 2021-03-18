@@ -27,6 +27,11 @@ func (m *MuteCommand) Register(registry command.Registry, server command.Server)
 	registry.RegisterMessageReactionAddHandler(m.handleMuteReaction)
 }
 
+// InstallSlashCommands registers the slash commands
+func (m *MuteCommand) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 func (m *MuteCommand) mutevc(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	if !sudo.IsItfGameAdmin(msg.Author.ID) {
 		s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("%s is not in the sudoers file. This incident will be reported.", msg.Author.ID))

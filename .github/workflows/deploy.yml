@@ -1,4 +1,4 @@
-name: Docker Deploy
+name: Docker Deploy Thomas Bot
 
 on:
   push:

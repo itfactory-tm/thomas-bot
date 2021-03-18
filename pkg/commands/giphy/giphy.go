@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/util/voice"
+
 	discordha "github.com/meyskens/discord-ha"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
@@ -14,10 +16,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
-
-//TODO: replace me
-const discordTalksVragen = "689915740564095061"
-const audioChannel = "688370622228725848"
 
 // GiphyCommands contains the tm!hello command
 type GiphyCommands struct {
@@ -52,10 +50,19 @@ func (g *GiphyCommands) Register(registry command.Registry, server command.Serve
 	g.server = server
 }
 
+// InstallSlashCommands registers the slash commands
+func (g *GiphyCommands) InstallSlashCommands(session *discordgo.Session) error {
+	return nil
+}
+
 func (g *GiphyCommands) clap(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.ChannelID == discordTalksVragen {
-		err := g.server.GetDiscordHA().SendVoiceCommand("thomasbot", discordha.VoiceCommand{
-			ChannelID: audioChannel,
+	ch, _ := voice.FindVoiceUser(s, m.GuildID, m.Author.ID)
+
+	if ch != "" {
+		err := g.server.GetDiscordHA().SendVoiceCommand(discordha.VoiceCommand{
+			ModuleID:  "thomasbot",
+			GuildID:   m.GuildID,
+			ChannelID: ch,
 			File:      "clappingmono.wav",
 			UserID:    m.Author.ID,
 		})
