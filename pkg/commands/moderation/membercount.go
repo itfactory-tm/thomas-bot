@@ -57,6 +57,11 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 		}
 	}
 
+	//Sort by role position
+	sort.Slice(roleList, func(i, j int) bool {
+		return roleList[i].Position > roleList[j].Position
+	})
+
 	//Check if user wants to sort by amount (xx!membercount a) OR position of role (default)
 	if mes := strings.Fields(msg.Message.Content); len(mes) > 1 {
 		if strings.HasPrefix(mes[1] ,"a") {
@@ -64,11 +69,7 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 			sort.Slice(roleList, func(i, j int) bool {
 				return roleMap[roleList[i].ID] > roleMap[roleList[j].ID]
 			})
-		} else{
-			sortByPosition(roleList)
 		}
-	} else{
-		sortByPosition(roleList)
 	}
 
 	//Create embed
@@ -96,13 +97,6 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	if len(embedmessage.Fields) != 0 {
 		sendEmbed(s, msg, embedmessage)
 	}
-}
-
-func sortByPosition(roleList []*discordgo.Role){
-	//Sort by role position
-	sort.Slice(roleList, func(i, j int) bool {
-		return roleList[i].Position > roleList[j].Position
-	})
 }
 
 func sendEmbed(s *discordgo.Session, msg *discordgo.MessageCreate, embedmessage *embed.Embed) {
