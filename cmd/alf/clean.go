@@ -19,6 +19,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const agora = "687565214555570195"
+
 func init() {
 	rootCmd.AddCommand(NewCleanCmd())
 }
@@ -95,6 +97,30 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	}
 
 	v.dg = dg
+
+	go func() {
+		for {
+			time.Sleep(time.Second)
+			now := time.Now()
+			_, m, d := now.Date()
+			if m == time.March && d == 30 && now.Hour() == 19 && now.Minute() == 15 {
+				dg.ChannelMessageSend(agora, "Happy birthday to me")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Happy birthday to me")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Happy birthday to Thomas Bot")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Happy birthday to me")
+				time.Sleep(2 * time.Second)
+				dg.ChannelMessageSend(agora, "Happy birthday Edward, James, John, Thomas!")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Bedankt <@687715371255463972> en <@252083102992695296> en alle contributors om mij te laten draaien :)")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Groetjes, Alf de enige (maar stille) Thomas Bot microservice die een besef van tijd heeft")
+				return
+			}
+		}
+	}()
 
 	// small in memory structure to keep candidates to remove
 	v.shouldRemove = map[string]bool{}
