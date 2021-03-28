@@ -25,7 +25,7 @@ jobs:
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login registry.dispatch.sh -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build the main Docker image
-      run: docker buildx build . --file Dockerfile --tag registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA --push --platform "linux/amd64,linux/arm64,linux/arm
+      run: docker buildx build . --file Dockerfile --tag registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA --push --platform "linux/amd64,linux/arm64,linux/arm"
 
     - name: Build the Twitter Docker image
       run: docker buildx build . --file Dockerfile.twitter --build-arg src=registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA --tag registry.dispatch.sh/maartje/thomas-bot-twitter:$GITHUB_SHA  --push --platform "linux/amd64,linux/arm64,linux/arm"
