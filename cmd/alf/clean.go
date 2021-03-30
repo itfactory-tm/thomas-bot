@@ -66,15 +66,9 @@ func (v *cleanCmdOptions) Validate(cmd *cobra.Command, args []string) error {
 }
 
 func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
-	loc, err := time.LoadLocation("Europe/Brussels")
-	if err == nil {
-		time.Local = loc
-	} else {
-		fmt.Println(err)
-	}
-
 	log.Println("Starting Alf...")
 
+	var err error
 	if v.MongoDBDB != "" {
 		v.db, err = db.NewMongoDB(v.MongoDBURL, v.MongoDBDB)
 		if err != nil {
@@ -107,9 +101,9 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	go func() {
 		for {
 			time.Sleep(time.Second)
-			now := time.Now().Local()
+			now := time.Now().UTC()
 			_, m, d := now.Date()
-			if m == time.March && d == 30 && now.Hour() == 19 && now.Minute() == 15 {
+			if m == time.March && d == 30 && now.Hour() == 17 && now.Minute() == 15 {
 				dg.ChannelMessageSend(agora, "Happy birthday to me")
 				time.Sleep(time.Second)
 				dg.ChannelMessageSend(agora, "Happy birthday to me")
