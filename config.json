@@ -83,7 +83,7 @@
         "junkyardCategoryID": "827952120707547146",
         "textCategoryID": "827958422674210847",
         "voiceCategoryID": "827958422674210847",
-        "prefix": "",
+        "prefix": "vc-",
         "voiceBitrate": 128000
       }
     ]
