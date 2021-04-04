@@ -86,7 +86,10 @@
         "prefix": "vc-",
         "voiceBitrate": 128000
       }
-    ]
+    ],
+    "roleManagement": {
+      "defaultRole": "828201134111719464"
+    }
   },
   
   "808273924600365058": {
