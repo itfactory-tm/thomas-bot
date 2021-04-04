@@ -12,11 +12,9 @@ import (
 
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/help"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
 
@@ -47,6 +45,7 @@ type serveCmdOptions struct {
 	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
 	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
 	onMessageReactionAddHandler []func(*discordgo.Session, *discordgo.MessageReactionAdd)
+	onMessageReactionRemoveHandler []func(*discordgo.Session, *discordgo.MessageReactionRemove)
 	onGuildMemberAddHandler     []func(*discordgo.Session, *discordgo.GuildMemberAdd)
 	onInteractionCreateHandler  map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
 }
@@ -89,6 +88,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
 
+	//Enable Privileged Gateway Intents on https://discord.com/developers/applications/
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
 	dg.UpdateStreamingStatus(0, fmt.Sprintf("Thomas Bob rev. %s", revision), "")
@@ -122,12 +122,21 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error opening connection: %w", err)
 	}
 	defer dg.Close()
+	s.dg = dg
 
 	s.RegisterHandlers()
 
 	s.ha.AddHandler(s.onMessage)
 	s.ha.AddHandler(s.onMessageReactionAdd)
+	s.ha.AddHandler(s.onMessageReactionRemove)
 	s.ha.AddHandler(s.onInteractionCreate)
+
+	for _, handler := range s.handlers {
+		err := handler.InstallSlashCommands(s.dg)
+		if err != nil {
+			log.Println(err)
+		}
+	}
 
 	log.Println("Thomas Bob is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
@@ -143,7 +152,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		game.NewUserCommand(),
 		game.NewMuteCommand(),
 		help.NewHelpCommand(),
-		hive.NewHiveCommandForBob(s.db),
+		game.NewLookCommand(),
 	}
 
 	for _, handler := range s.handlers {
@@ -182,6 +191,16 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 		handler(sess, m)
 	}
 }
+func (s *serveCmdOptions) onMessageReactionRemove(sess *discordgo.Session, m *discordgo.MessageReactionRemove) {
+	// Ignore all reactions created by the bot itself
+	if m.UserID == sess.State.User.ID {
+		return
+	}
+
+	for _, handler := range s.onMessageReactionRemoveHandler {
+		handler(sess, m)
+	}
+}
 
 func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
 	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
@@ -217,6 +236,14 @@ func (s *serveCmdOptions) RegisterMessageReactionAddHandler(fn func(*discordgo.S
 	}
 
 	s.onMessageReactionAddHandler = append(s.onMessageReactionAddHandler, fn)
+}
+
+func (s *serveCmdOptions) RegisterMessageReactionRemoveHandler(fn func(*discordgo.Session, *discordgo.MessageReactionRemove)) {
+	if s.onMessageReactionRemoveHandler == nil {
+		s.onMessageReactionRemoveHandler = []func(*discordgo.Session, *discordgo.MessageReactionRemove){}
+	}
+
+	s.onMessageReactionRemoveHandler = append(s.onMessageReactionRemoveHandler, fn)
 }
 func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Session, *discordgo.GuildMemberAdd)) {
 	if s.onGuildMemberAddHandler == nil {
