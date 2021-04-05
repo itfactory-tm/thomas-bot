@@ -72,6 +72,25 @@
       }
     ]
   },
+
+  "773847927910432789": {
+    "_JSON_Comment_Hack": "TM gaming",
+    "welcomeText": "Welcome <@{{.User.ID}}> to the Thomas More Gaming Discord server. Please select your roles in the <#773858922896949250> channel to see more content!",
+    "welcomeChannelID": "827962425126027324",
+    "hives": [
+      {
+        "requestChannelIDs": ["827960558258094090"],
+        "junkyardCategoryID": "827952120707547146",
+        "textCategoryID": "827958422674210847",
+        "voiceCategoryID": "827958422674210847",
+        "prefix": "vc-",
+        "voiceBitrate": 128000
+      }
+    ],
+    "roleManagement": {
+      "defaultRole": "828201134111719464"
+    }
+  },
   
   "808273924600365058": {
     "_JSON_Comment_Hack": "Ice Cube",

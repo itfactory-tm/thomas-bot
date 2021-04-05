@@ -22,6 +22,7 @@ type Registry interface {
 	RegisterMessageEditHandler(command string, fn func(*discordgo.Session, *discordgo.MessageUpdate))
 	RegisterMessageReactionAddHandler(fn func(*discordgo.Session, *discordgo.MessageReactionAdd))
 	RegisterGuildMemberAddHandler(fn func(*discordgo.Session, *discordgo.GuildMemberAdd))
+	RegisterMessageReactionRemoveHandler(fn func(*discordgo.Session, *discordgo.MessageReactionRemove))
 	RegisterInteractionCreate(command string, fn func(*discordgo.Session, *discordgo.InteractionCreate))
 }
 

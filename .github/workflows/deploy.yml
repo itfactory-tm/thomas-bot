@@ -9,13 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build the main Docker image
-      run: docker build . --file Dockerfile --tag registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA
-    - name: Build the Twitter Docker image
-      run: docker build . --file Dockerfile.twitter --build-arg src=registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA --tag registry.dispatch.sh/maartje/thomas-bot-twitter:$GITHUB_SHA
+    - name: Install buildx
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y binfmt-support qemu-user-static jq
+        mkdir -p ~/.docker/cli-plugins
+        BUILDX_URL=$(curl https://api.github.com/repos/docker/buildx/releases/latest | jq -r .assets[].browser_download_url | grep amd64 | grep linux)
+        wget $BUILDX_URL -O ~/.docker/cli-plugins/docker-buildx
+        chmod +x ~/.docker/cli-plugins/docker-buildx
+        docker buildx create --name xbuilder
+        docker buildx use xbuilder
+        docker buildx inspect --bootstrap
+
     - name: Log in to registry
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login registry.dispatch.sh -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    - name: Push image
-      run: docker push registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA
-    - name: Push Twitter image
-      run: docker push registry.dispatch.sh/maartje/thomas-bot-twitter:$GITHUB_SHA
+
+    - name: Build the main Docker image
+      run: docker buildx build . --file Dockerfile --tag registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA --push --platform "linux/amd64,linux/arm64,linux/arm"
+
+    - name: Build the Twitter Docker image
+      run: docker buildx build . --file Dockerfile.twitter --build-arg src=registry.dispatch.sh/maartje/thomas-bot:$GITHUB_SHA --tag registry.dispatch.sh/maartje/thomas-bot-twitter:$GITHUB_SHA  --push --platform "linux/amd64,linux/arm64,linux/arm"
