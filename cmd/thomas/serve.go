@@ -183,7 +183,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		links.NewLinkCommands(),
 		shout.NewShoutCommand(),
 		hive.NewHiveCommand(s.db),
-		game.NewLookCommand(),
+		game.NewLookCommand(s.db),
 	}
 
 	for _, handler := range s.handlers {

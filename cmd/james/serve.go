@@ -152,7 +152,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		game.NewUserCommand(),
 		game.NewMuteCommand(),
 		help.NewHelpCommand(),
-		game.NewLookCommand(),
+		game.NewLookCommand(s.db),
 	}
 
 	for _, handler := range s.handlers {
