@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
 	"log"
 	"os"
 	"os/signal"
@@ -152,6 +153,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		game.NewUserCommand(),
 		game.NewMuteCommand(),
 		help.NewHelpCommand(),
+		hive.NewHiveCommandForBob(s.db),
 		game.NewLookCommand(s.db),
 	}
 
