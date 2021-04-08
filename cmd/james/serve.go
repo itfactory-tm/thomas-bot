@@ -154,7 +154,6 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		game.NewMuteCommand(),
 		help.NewHelpCommand(),
 		hive.NewHiveCommandForBob(s.db),
-		game.NewLookCommand(s.db),
 	}
 
 	for _, handler := range s.handlers {
@@ -190,7 +189,7 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 	}
 
 	for _, handler := range s.onMessageReactionAddHandler {
-		handler(sess, m)
+		go handler(sess, m)
 	}
 }
 func (s *serveCmdOptions) onMessageReactionRemove(sess *discordgo.Session, m *discordgo.MessageReactionRemove) {
@@ -200,7 +199,7 @@ func (s *serveCmdOptions) onMessageReactionRemove(sess *discordgo.Session, m *di
 	}
 
 	for _, handler := range s.onMessageReactionRemoveHandler {
-		handler(sess, m)
+		go handler(sess, m)
 	}
 }
 

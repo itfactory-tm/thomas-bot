@@ -256,7 +256,7 @@ func (s *serveCmdOptions) onMessageReactionRemove(sess *discordgo.Session, m *di
 	}
 
 	for _, handler := range s.onMessageReactionRemoveHandler {
-		handler(sess, m)
+		go handler(sess, m)
 	}
 }
 
