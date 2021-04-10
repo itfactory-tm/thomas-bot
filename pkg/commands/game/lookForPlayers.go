@@ -7,6 +7,7 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 	"log"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -42,7 +43,7 @@ func (l *LookCommand) Register(registry command.Registry, server command.Server)
 // TODO: Make configurable for specific guilds
 // InstallSlashCommands registers the slash commands
 func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
-	_, err := s.ApplicationCommandCreate("", "773847927910432789", &discordgo.ApplicationCommand{
+	app := discordgo.ApplicationCommand{
 		Name:        "lookForPlayers",
 		Description: "Send out an invitation to look for players!",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -68,7 +69,23 @@ func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 				Required:    false,
 			},
 		},
-	})
+	}
+
+	cmds, err := s.ApplicationCommands(s.State.User.ID, "773847927910432789")
+	if err != nil {
+		return err
+	}
+	exists := false
+	for _, cmd := range cmds {
+		if cmd.Name == "lookForPlayers" {
+			exists = reflect.DeepEqual(app.Options, cmd.Options)
+		}
+	}
+
+	if !exists {
+		_, err = s.ApplicationCommandCreate(s.State.User.ID, "773847927910432789", &app)
+	}
+
 	return err
 }
 
