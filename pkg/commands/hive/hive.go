@@ -29,7 +29,8 @@ func NewHiveCommand(dbConn db.Database) *HiveCommand {
 // deprecated
 func NewHiveCommandForBob(dbConn db.Database) *HiveCommand {
 	return &HiveCommand{
-		db: dbConn,
+		isBob: true,
+		db:    dbConn,
 	}
 }
 
