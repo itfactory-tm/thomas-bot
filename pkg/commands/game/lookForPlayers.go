@@ -384,13 +384,13 @@ func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Messag
 
 func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReactionAdd, currentPlayers []*discordgo.User, message *discordgo.Message, hostID string, err error) {
 	//Notify players, except the host
-	messagePlayerSuccessful := l.messagePlayers(s, r, currentPlayers[1:], fmt.Sprintf("The game %s is starting now! Your host should make a voice channel soon!\nOr make one yourself with **/hive voice <name> <amount of players>** in the request channel", message.Embeds[0].Title))
+	messagePlayerSuccessful := l.messagePlayers(s, r, currentPlayers[1:], fmt.Sprintf("The game %s is starting now! Your host should make a voice channel soon!\nOr make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title,message.Embeds[0].Title,message.Embeds[0].Fields[1].Value))
 	if !messagePlayerSuccessful {
 		return
 	}
 	message.Embeds[0].Fields = message.Embeds[0].Fields[:5]
 	messageSend := &discordgo.MessageSend{
-		Content: "I have notified every joined player! Here is your invite to notify players if needed.\nDon't forget to make a voice channel with **/hive voice <name> <amount of players>** in the request channel",
+		Content: fmt.Sprintf("I have notified every joined player! Here is your invite to notify backup players if needed.\nDon't forget to make a voice channel with `/hive type voice name:%s size:%s` in the request channel",message.Embeds[0].Title,message.Embeds[0].Fields[1].Value),
 		Embed:   message.Embeds[0],
 	}
 	//Dm invite to host
