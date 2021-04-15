@@ -16,7 +16,7 @@ import (
 
 // TODO: make configurable in config file
 //LFPDesk channel id
-const lfpDeskID = "828205635249635369"
+const lfpDeskID = "832321290190848090"
 
 //LFP Request channel id
 const lfpReqID = "828204894187421696"
