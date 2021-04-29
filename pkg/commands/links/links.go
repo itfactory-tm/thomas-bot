@@ -1,6 +1,9 @@
 package links
 
 import (
+	"log"
+	"reflect"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
@@ -8,18 +11,21 @@ import (
 // LinkCommands contains the tm!hello command
 type LinkCommands struct {
 	infos    []command.Command
+	output   map[string]string
 	registry command.Registry
 }
 
 // NewLinkCommands gives a new LinkCommands
 func NewLinkCommands() *LinkCommands {
 	return &LinkCommands{
-		infos: []command.Command{},
+		infos:  []command.Command{},
+		output: map[string]string{},
 	}
 }
 
 // Register registers the handlers
 func (l *LinkCommands) Register(registry command.Registry, server command.Server) {
+	registry.RegisterInteractionCreate("link", l.slashCommand)
 	l.registry = registry
 
 	l.buildLinks()
@@ -27,10 +33,53 @@ func (l *LinkCommands) Register(registry command.Registry, server command.Server
 
 // InstallSlashCommands registers the slash commands
 func (l *LinkCommands) InstallSlashCommands(session *discordgo.Session) error {
-	return nil
+	if l.registry == nil {
+		return nil
+	}
+
+	var choices []*discordgo.ApplicationCommandOptionChoice
+	for _, info := range l.infos {
+		choices = append(choices, &discordgo.ApplicationCommandOptionChoice{
+			Name:  info.Name,
+			Value: info.Name,
+		})
+	}
+
+	app := discordgo.ApplicationCommand{
+		Name:        "link",
+		Description: "Gives a useful link",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "name",
+				Description: "name of the link",
+				Required:    true,
+				Choices:     choices,
+			},
+		},
+	}
+
+	cmds, err := session.ApplicationCommands(session.State.User.ID, "687565213943332875") // ITF only for now till links are moved to a DB
+	if err != nil {
+		return err
+	}
+	exists := false
+	for _, cmd := range cmds {
+		if cmd.Name == "links" {
+			exists = reflect.DeepEqual(app.Options, cmd.Options)
+		}
+	}
+
+	if !exists {
+		_, err = session.ApplicationCommandCreate(session.State.User.ID, "687565213943332875", &app) // ITF only for now till links are moved to a DB
+	}
+
+	return err
 }
 
 func (l *LinkCommands) buildLinks() {
+	// Warning: these are exactly 25 links the maximum options of a Discord slash command
+
 	l.registerInfoDagCommand("website", "Link naar Thomas More website", "Bezoek onze website: https://thomasmore.be/opleidingen/professionele-bachelor/it-factory")
 	l.registerLinkCommand("rooster", "Link naar lessenrooster", "Bekijk hier je lessenrooster: https://rooster.thomasmore.be/")
 	l.registerInfoDagCommand("fb", "Link naar Facebook paginas", "Bekijk hier onze facebook pagina van Toegepaste informatica: https://www.facebook.com/ToegepasteInformatica.ThomasMoreBE & ELO-ICT: https://www.facebook.com/ElektronicaICT.ThomasMoreBE & ACS: https://www.facebook.com/ACS.ThomasMoreBE")
@@ -38,11 +87,11 @@ func (l *LinkCommands) buildLinks() {
 	l.registerInfoDagCommand("ects", "Link naar ECTS fiches", "Bekijk hier de ECTS fiches van ELO-ICT: http://onderwijsaanbodkempen.thomasmore.be/2019/opleidingen/n/SC_51260633.html & Toegepaste Informatica: http://onderwijsaanbodkempen.thomasmore.be/opleidingen/n/SC_51260641.html")
 	//l.registerLinkCommand("lunch", "Link naar weekmenu", "Heb je honger? Bekijk hier het menu voor deze week: https://thomasmore365.sharepoint.com/sites/James/NL/stuvo/Paginas/Weekmenu.aspx?tmbaseCampus=Geel")
 	l.registerLinkCommand("sharepoint", "Link naar Studentenportaal", "Bekijk hier de 365 sharepoint van de ITFactory: https://thomasmore365.sharepoint.com/sites/s.itfactory/SitePages/Start.aspx")
-	l.registerLinkCommand("corona", "Link naar Corona informatie", "Zit je met vragen hoe thomasmore omgaat met corona? Bekijk dan zeker deze pagina: https://thomasmore365.sharepoint.com/sites/s-Studentenvoorzieningen/SitePages/Corona.aspx")
+	//l.registerLinkCommand("corona", "Link naar Corona informatie", "Zit je met vragen hoe thomasmore omgaat met corona? Bekijk dan zeker deze pagina: https://thomasmore365.sharepoint.com/sites/s-Studentenvoorzieningen/SitePages/Corona.aspx")
 	l.registerInfoDagCommand("stuvo", "Link naar Stuvo", "Heb je nood aan een goed gesprek? Neem dan zeker contact op met Stuvo: https://thomasmore365.sharepoint.com/sites/s-Studentenvoorzieningen")
 	l.registerInfoDagCommand("discord", "Link naar Discord documentatie", "Nog een beetje in de war over hoe Discord werkt?: https://support.discordapp.com/hc/nl")
 	l.registerLinkCommand("kot", "Link naar kot informatie", "Informatie nodig rond op kot gaan? https://www.thomasmore.be/studenten/op-kot")
-	l.registerInfoDagCommand("laptop", "Link naar info over laptops", "Welk materiaal heb ik nodig om in de IT-Factory te kunnen starten? https://www.thomasmore.be/sites/www.thomasmore.be/files/Laptopspecificaties%20voor%20IT%20Factory-studenten%202019-2020.pdf")
+	//l.registerInfoDagCommand("laptop", "Link naar info over laptops", "Welk materiaal heb ik nodig om in de IT-Factory te kunnen starten? https://www.thomasmore.be/sites/www.thomasmore.be/files/Laptopspecificaties%20voor%20IT%20Factory-studenten%202019-2020.pdf")
 	l.registerLinkCommand("sinners", "Link naar Sinners", "Wat is Sinners? https://sinners.be/")
 	l.registerInfoDagCommand("emt", "Link naar EMT", "Heeft de IT-Factory een eigen studentenvereniging? Jazeker: https://www.facebook.com/StudentenverenigingEMT")
 	l.registerLinkCommand("wallet", "Link naar wallet", "Hoeveel staat er nog op mijn studentenkaart? https://thomasmore.mynetpay.be/")
@@ -52,34 +101,19 @@ func (l *LinkCommands) buildLinks() {
 	l.registerLinkCommand("icecube", "Link naar ice-cube", "Ice-cube, wat is dat? https://www.thomasmore.be/ice-cube")
 	l.registerLinkCommand("bot", "Link naar de git repo van deze bot", "Biep Boep, bekijk zeker mijn git repo https://github.com/itfactory-tm/thomas-bot")
 	l.registerInfoDagCommand("inschrijven", "Link naar inschrijven", "Wil je je inschrijven? Dat kan hier! https://www.thomasmore.be/inschrijven")
-	l.registerInfoDagCommand("junior", "Link naar Junior College", "Benieuwd wat Junior College is? Bekijk het hier: https://www.thomasmore.be/site/junior-university-college")
+	//l.registerInfoDagCommand("junior", "Link naar Junior College", "Benieuwd wat Junior College is? Bekijk het hier: https://www.thomasmore.be/site/junior-university-college")
 	l.registerInfoDagCommand("oho", "Link naar OHO", "Werken en studeren combineren? Dat kan zeker! https://www.thomasmore.be/opleidingen/professionele-bachelor/toegepaste-informatica/toegepaste-informatica-combinatie-werken-en-studeren-oho")
 	l.registerInfoDagCommand("centen", "Link naar financiële informatie", "Wil je het financiële aspect van verder studeren bekijken? https://centenvoorstudenten.be/")
 	l.registerInfoDagCommand("studenten", "Link naar studenten info", "Op zoek naar meer algemene info rondom verder studeren? https://www.thomasmore.be/studenten")
 	//l.registerLinkCommand("template", "Link naar TM huisstijl templates", "Hier vind je de TM huisstijl templates: https://thomasmore365.sharepoint.com/sites/James/NL/marcom/Paginas/Huisstijl-templates.aspx")
-	l.registerLinkCommand("onlineexamen", "Link naar info over online examens", "Instructies voor het online examen vind je hier: https://thomasmore365.sharepoint.com/sites/s-icts/SitePages/Digitaal-schriftelijk-examen.aspx\nFAQ over digitaal examineren: https://thomasmore365.sharepoint.com/sites/s-icts/SitePages/FAQ-digitaal-examineren.aspx\nTIP: bekijk zeker ook de canvas cursus voor vak specifieke info")
+	//l.registerLinkCommand("onlineexamen", "Link naar info over online examens", "Instructies voor het online examen vind je hier: https://thomasmore365.sharepoint.com/sites/s-icts/SitePages/Digitaal-schriftelijk-examen.aspx\nFAQ over digitaal examineren: https://thomasmore365.sharepoint.com/sites/s-icts/SitePages/FAQ-digitaal-examineren.aspx\nTIP: bekijk zeker ook de canvas cursus voor vak specifieke info")
 	l.registerLinkCommand("examen", "Link naar info over examens", "Alles over de examens vind je hier: https://thomasmore365.sharepoint.com/sites/s.itfactory/SitePages/Examens.aspx")
 	l.registerLinkCommand("twitch", "Link naar ITF Twitch kanaal", "Af en toe livestreamen we wat games op ons Twitch kanaal: https://www.twitch.tv/itfactorygaming")
-	l.registerLinkCommand("positief", "Link naar covid 19 meld formulier", "Heb je een bevestigde covid-19 besmetting? Laat dit dan hier weten: https://thomasmore365.sharepoint.com/sites/s-Studentenadministratie/SitePages/Melden-van-een-bevestigde-COVID-19-besmetting.aspx")
+	//l.registerLinkCommand("positief", "Link naar covid 19 meld formulier", "Heb je een bevestigde covid-19 besmetting? Laat dit dan hier weten: https://thomasmore365.sharepoint.com/sites/s-Studentenadministratie/SitePages/Melden-van-een-bevestigde-COVID-19-besmetting.aspx")
 	l.registerLinkCommand("studentenraad", "Contact opnemen met de studentenraad", "Wil je contact opnemen met de studentenraad? Stuur ze een mailtje via: studentenraad.itfactory@thomasmore.be")
-	l.registerLinkCommand("coderood", "Meer info over code rood", "Heb je meer info over code rood nodig? https://www.thomasmore.be/update-code-rood")
-	l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\nGeitjes: https://www.twitch.tv/tmgeitlive")
+	//l.registerLinkCommand("coderood", "Meer info over code rood", "Heb je meer info over code rood nodig? https://www.thomasmore.be/update-code-rood")
+	//l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\nGeitjes: https://www.twitch.tv/tmgeitlive")
 	l.registerLinkCommand("pictures", "Fotoalbum van IT Factory", "De Flickr-link voor IT Factory: https://www.flickr.com/photos/itfactorygeel/albums/with/72157711381764072")
-
-	// ICE Donut
-	l.registerLinkCommand("level1", "", "https://donut.sinners.be/on/Level_1.pdf")
-	l.registerLinkCommand("level2", "", "https://donut.sinners.be/ly/Level_2.pdf")
-	l.registerLinkCommand("level3", "", "https://donut.sinners.be/go/Level_3.pdf")
-	l.registerLinkCommand("level4", "", "https://donut.sinners.be/od/Level_4.pdf")
-	l.registerLinkCommand("level5", "", "https://donut.sinners.be/vi/Level_5.pdf")
-	l.registerLinkCommand("level6", "", "https://donut.sinners.be/be/Level_6.pdf")
-	l.registerLinkCommand("level7", "", "https://donut.sinners.be/si/Level_7.pdf")
-	l.registerLinkCommand("level8", "", "https://donut.sinners.be/ce/Level_8.pdf")
-	l.registerLinkCommand("brainstorm", "", "https://donut.sinners.be/word/Document_Brainstorm.docx")
-	l.registerLinkCommand("fase1", "", "https://donut.sinners.be/word/Document_Fase_1.docx")
-	l.registerLinkCommand("fase2", "", "https://donut.sinners.be/word/Document_Fase_2.docx")
-	l.registerLinkCommand("fase3", "", "https://donut.sinners.be/word/Document_Fase_3.docx")
-	l.registerLinkCommand("pitch", "", "https://donut.sinners.be/word/Document_Pitch.docx")
 }
 
 func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
@@ -89,6 +123,8 @@ func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
 		Description: helpText,
 		Hidden:      false,
 	})
+
+	l.output[name] = response
 
 	l.registry.RegisterMessageCreateHandler(name, func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, response)
@@ -103,9 +139,34 @@ func (l *LinkCommands) registerInfoDagCommand(name, helpText, response string) {
 		Hidden:      false,
 	})
 
+	l.output[name] = response
+
 	l.registry.RegisterMessageCreateHandler(name, func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, response)
 	})
+}
+
+func (l *LinkCommands) slashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	reply := "I do not know that link"
+
+	if len(i.Data.Options) > 0 {
+		if key, ok := i.Data.Options[0].Value.(string); ok {
+			if r, ok := l.output[key]; ok {
+				reply = r
+			}
+		}
+	}
+
+	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionApplicationCommandResponseData{
+			Content: reply,
+		},
+	})
+
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 // Info return the commands in this package
