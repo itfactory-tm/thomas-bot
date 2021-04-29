@@ -64,7 +64,7 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 
 	//Check if user wants to sort by amount (xx!membercount a) OR position of role (default)
 	if mes := strings.Fields(msg.Message.Content); len(mes) > 1 {
-		if strings.HasPrefix(mes[1] ,"a") {
+		if strings.HasPrefix(mes[1], "a") {
 			//Sort by amount of people
 			sort.Slice(roleList, func(i, j int) bool {
 				return roleMap[roleList[i].ID] > roleMap[roleList[j].ID]

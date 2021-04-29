@@ -125,7 +125,7 @@ func (s *serveHTTPCmdOptions) handleInvite(w http.ResponseWriter, r *http.Reques
 	}
 
 	i, err := dg.ChannelInviteCreate(itfWelcome, discordgo.Invite{
-		MaxUses: 3, // serve users with weird setups
+		MaxUses: 3,       // serve users with weird setups
 		MaxAge:  60 * 60, // 1 hour
 		Unique:  true,
 	})
