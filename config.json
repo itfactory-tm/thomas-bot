@@ -91,6 +91,41 @@
       "defaultRole": "828201134111719464"
     }
   },
+
+  "837217317146066985": {
+    "_JSON_Comment_Hack": "Organisatie en Management Official",
+    "welcomeText": "Welkom <@{{.User.ID}}> op de Organisatie en Management Thomas More Discord server. Ik stuur je zo een DM om alles inorde te maken.",
+    "welcomeChannelID": "837217317640208435",
+    "welcomeDM": [
+      "Welkom op de Organisatie en Management Thomas More server!",
+      "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
+      "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
+      "Als je hulp nodig hebt, typ dan tm!help",
+      "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
+      "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, nice to meet you!"
+    ],
+    "hives": [
+      {
+        "requestChannelIDs": ["837217317833670694", "837217317833670693"],
+        "junkyardCategoryID": "837340830901600328",
+        "textCategoryID": "837217317833670692",
+        "voiceCategoryID": "837217317833670692",
+        "prefix": "",
+        "voiceBitrate": 96000
+      }
+    ],
+    "roleManagement": {
+      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+      "roles": [
+        {"emoji": "1️⃣", "id": "837217317146066987"},
+        {"emoji": "2️⃣", "id": "837217317146066988"},
+        {"emoji": "3️⃣", "id": "837217317146066989"},
+        {"emoji": "👩‍🎓", "id": "837217317146066990"}
+      ],
+      "roleAdminChannelID": "837217317946654741",
+      "defaultRole": "837217317146066986"
+    }
+  },
   
   "808273924600365058": {
     "_JSON_Comment_Hack": "Ice Cube",
