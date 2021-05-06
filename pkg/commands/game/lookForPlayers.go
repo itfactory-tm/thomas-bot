@@ -16,12 +16,10 @@ import (
 
 // TODO: make configurable in config file
 //LFPDesk channel id
-//const lfpDeskID = "828205635249635369"
-const lfpDeskID = "826930117618958361"
+const lfpDeskID = "828205635249635369"
 
 //LFP Request channel id
-//const lfpReqID = "828204894187421696"
-const lfpReqID = "826930117618958362"
+const lfpReqID = "828204894187421696"
 
 // LookCommand contains the /lookforplayers command
 type LookCommand struct {
