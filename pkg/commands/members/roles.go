@@ -10,20 +10,53 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func (m *MemberCommands) sayRole(s *discordgo.Session, msg *discordgo.MessageCreate) {
-	ch, err := s.UserChannelCreate(msg.Author.ID)
+func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	ch, err := s.UserChannelCreate(i.Member.User.ID)
 	if err != nil {
-		s.ChannelMessageSend(msg.ChannelID, "Cannot DM user")
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: "error sending a DM to you",
+				Flags:   64, // ephemeral
+			},
+		})
+
+		if err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
 	// if not in DM delete command
-	if ch.ID == msg.ChannelID {
-		s.ChannelMessageSend(msg.ChannelID, "I'm sorry I have no idea which server you are in, please use tm!role in a channel in the Discord server I need to help you with.")
+	if ch.ID == i.ChannelID {
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: "I'm sorry I have no idea which server you are in, please use tm!role in a channel in the Discord server I need to help you with.",
+				Flags:   64, // ephemeral
+			},
+		})
+
+		if err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
-	m.SendRoleDM(s, msg.GuildID, msg.Author.ID)
+	m.SendRoleDM(s, i.GuildID, i.Member.User.ID)
+
+	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionApplicationCommandResponseData{
+			Content: "I sent you a DM!",
+			Flags:   64, // ephemeral
+		},
+	})
+
+	if err != nil {
+		log.Println(err)
+	}
+
 }
 
 // SendRoleDM sends a role selection DM to the user

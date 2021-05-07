@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"reflect"
 	"text/template"
 	"time"
 
@@ -26,7 +27,7 @@ func NewMemberCommand(conn db.Database) *MemberCommands {
 
 // Register registers the handlers
 func (m *MemberCommands) Register(registry command.Registry, server command.Server) {
-	registry.RegisterMessageCreateHandler("role", m.sayRole)
+	registry.RegisterInteractionCreate("role", m.roleSlashCommand)
 	registry.RegisterGuildMemberAddHandler(m.onGuildMemberAdd)
 	registry.RegisterMessageReactionAddHandler(m.handleRolePermissionReaction)
 	registry.RegisterMessageReactionAddHandler(m.handleRoleReaction)
@@ -34,7 +35,28 @@ func (m *MemberCommands) Register(registry command.Registry, server command.Serv
 
 // InstallSlashCommands registers the slash commands
 func (m *MemberCommands) InstallSlashCommands(session *discordgo.Session) error {
-	return nil
+	app := discordgo.ApplicationCommand{
+		Name:        "role",
+		Description: "Request a new role om this server",
+		Options:     []*discordgo.ApplicationCommandOption{},
+	}
+
+	cmds, err := session.ApplicationCommands(session.State.User.ID, "") // ITF only for now till links are moved to a DB
+	if err != nil {
+		return err
+	}
+	exists := false
+	for _, cmd := range cmds {
+		if cmd.Name == "links" {
+			exists = reflect.DeepEqual(app.Options, cmd.Options)
+		}
+	}
+
+	if !exists {
+		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
+	}
+
+	return err
 }
 
 func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
