@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
 	"log"
 	"os"
 	"os/signal"
@@ -58,6 +59,7 @@ type serveCmdOptions struct {
 	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
 	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
 	onMessageReactionAddHandler []func(*discordgo.Session, *discordgo.MessageReactionAdd)
+	onMessageReactionRemoveHandler []func(*discordgo.Session, *discordgo.MessageReactionRemove)
 	onGuildMemberAddHandler     []func(*discordgo.Session, *discordgo.GuildMemberAdd)
 	onInteractionCreateHandler  map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
 }
@@ -150,6 +152,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	s.ha.AddHandler(s.onMessageUpdate)
 	s.ha.AddHandler(s.onGuildMemberAdd)
 	s.ha.AddHandler(s.onMessageReactionAdd)
+	s.ha.AddHandler(s.onMessageReactionRemove)
 	s.ha.AddHandler(s.onInteractionCreate)
 
 	for _, handler := range s.handlers {
@@ -180,6 +183,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		links.NewLinkCommands(),
 		shout.NewShoutCommand(),
 		hive.NewHiveCommand(s.db),
+		game.NewLookCommand(s.db),
 	}
 
 	for _, handler := range s.handlers {
@@ -245,6 +249,17 @@ func (s *serveCmdOptions) onMessageReactionAdd(sess *discordgo.Session, m *disco
 	}
 }
 
+func (s *serveCmdOptions) onMessageReactionRemove(sess *discordgo.Session, m *discordgo.MessageReactionRemove) {
+	// Ignore all reactions created by the bot itself
+	if m.UserID == sess.State.User.ID {
+		return
+	}
+
+	for _, handler := range s.onMessageReactionRemoveHandler {
+		go handler(sess, m)
+	}
+}
+
 func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	for _, handler := range s.onGuildMemberAddHandler {
 		handler(sess, m)
@@ -285,6 +300,13 @@ func (s *serveCmdOptions) RegisterMessageReactionAddHandler(fn func(*discordgo.S
 	}
 
 	s.onMessageReactionAddHandler = append(s.onMessageReactionAddHandler, fn)
+}
+func (s *serveCmdOptions) RegisterMessageReactionRemoveHandler(fn func(*discordgo.Session, *discordgo.MessageReactionRemove)) {
+	if s.onMessageReactionRemoveHandler == nil {
+		s.onMessageReactionRemoveHandler = []func(*discordgo.Session, *discordgo.MessageReactionRemove){}
+	}
+
+	s.onMessageReactionRemoveHandler = append(s.onMessageReactionRemoveHandler, fn)
 }
 func (s *serveCmdOptions) RegisterGuildMemberAddHandler(fn func(*discordgo.Session, *discordgo.GuildMemberAdd)) {
 	if s.onGuildMemberAddHandler == nil {
