@@ -157,14 +157,14 @@ func (i *ImagesCommands) sayLoesje(s *discordgo.Session, in *discordgo.Interacti
 }
 
 func (i *ImagesCommands) sayGeit(s *discordgo.Session, in *discordgo.InteractionCreate) *discordgo.MessageEmbed {
-	j := rand.Intn(5)
+	j := rand.Intn(4)
 	e := embed.NewEmbed()
 	e.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/geit%d.png", j+1))
 	return e.MessageEmbed
 }
 
 func (i *ImagesCommands) sayPaard(s *discordgo.Session, in *discordgo.InteractionCreate) *discordgo.MessageEmbed {
-	j := rand.Intn(3)
+	j := rand.Intn(2)
 	e := embed.NewEmbed()
 	e.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/paard%d.png", j+1))
 	return e.MessageEmbed
