@@ -152,6 +152,7 @@ func (i *ImagesCommands) sayLove(s *discordgo.Session, in *discordgo.Interaction
 func (i *ImagesCommands) sayLoesje(s *discordgo.Session, in *discordgo.InteractionCreate) *discordgo.MessageEmbed {
 	j := rand.Intn(7)
 	e := embed.NewEmbed()
+	e.SetTitle("Loesje")
 	e.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/loesje%d.png", j+1))
 	return e.MessageEmbed
 }
@@ -159,6 +160,7 @@ func (i *ImagesCommands) sayLoesje(s *discordgo.Session, in *discordgo.Interacti
 func (i *ImagesCommands) sayGeit(s *discordgo.Session, in *discordgo.InteractionCreate) *discordgo.MessageEmbed {
 	j := rand.Intn(4)
 	e := embed.NewEmbed()
+	e.SetTitle("Geit")
 	e.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/geit%d.png", j+1))
 	return e.MessageEmbed
 }
@@ -166,6 +168,7 @@ func (i *ImagesCommands) sayGeit(s *discordgo.Session, in *discordgo.Interaction
 func (i *ImagesCommands) sayPaard(s *discordgo.Session, in *discordgo.InteractionCreate) *discordgo.MessageEmbed {
 	j := rand.Intn(2)
 	e := embed.NewEmbed()
+	e.SetTitle("Paard")
 	e.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/paard%d.png", j+1))
 	return e.MessageEmbed
 }
@@ -173,6 +176,7 @@ func (i *ImagesCommands) sayPaard(s *discordgo.Session, in *discordgo.Interactio
 func (i *ImagesCommands) saySchaap(s *discordgo.Session, in *discordgo.InteractionCreate) *discordgo.MessageEmbed {
 	j := rand.Intn(9)
 	e := embed.NewEmbed()
+	e.SetTitle("Schaap")
 	e.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/schaap%d.png", j+1))
 	return e.MessageEmbed
 }
@@ -180,7 +184,7 @@ func (i *ImagesCommands) saySchaap(s *discordgo.Session, in *discordgo.Interacti
 func (i *ImagesCommands) saySteun(s *discordgo.Session, in *discordgo.InteractionCreate) *discordgo.MessageEmbed {
 	j := rand.Intn(40)
 	e := embed.NewEmbed()
+	e.SetTitle("Steun")
 	e.SetImage(fmt.Sprintf("https://static.eyskens.me/thomas-bot/examensteun/%02d.png", j+1))
-	log.Println(fmt.Sprintf("https://static.eyskens.me/thomas-bot/examensteun/%02d.png", j+1))
 	return e.MessageEmbed
 }
