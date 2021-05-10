@@ -36,6 +36,75 @@ func NewHiveCommandForBob(dbConn db.Database) *HiveCommand {
 
 // InstallSlashCommands registers the slash commands handlers
 func (h *HiveCommand) InstallSlashCommands(session *discordgo.Session) error {
+	if session == nil {
+		return nil
+	}
+	if err := h.installHive(session); err != nil {
+		return err
+	}
+
+	if err := h.installArchive(session); err != nil {
+		return err
+	}
+
+	if err := h.installLeave(session); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (h *HiveCommand) installLeave(session *discordgo.Session) error {
+	app := discordgo.ApplicationCommand{
+		Name:        "leave",
+		Description: "Leave an on-remand text channel",
+		Options:     []*discordgo.ApplicationCommandOption{},
+	}
+
+	cmds, err := session.ApplicationCommands(session.State.User.ID, "")
+	if err != nil {
+		return err
+	}
+	exists := false
+	for _, cmd := range cmds {
+		if cmd.Name == "leave" {
+			exists = reflect.DeepEqual(app.Options, cmd.Options)
+		}
+	}
+
+	if !exists {
+		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
+	}
+
+	return err
+}
+
+func (h *HiveCommand) installArchive(session *discordgo.Session) error {
+	app := discordgo.ApplicationCommand{
+		Name:        "archive",
+		Description: "Archives an on-remand text channel",
+		Options:     []*discordgo.ApplicationCommandOption{},
+	}
+
+	cmds, err := session.ApplicationCommands(session.State.User.ID, "")
+	if err != nil {
+		return err
+	}
+	exists := false
+	for _, cmd := range cmds {
+		if cmd.Name == "leave" {
+			exists = reflect.DeepEqual(app.Options, cmd.Options)
+		}
+	}
+
+	if !exists {
+		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
+	}
+
+	return err
+}
+
+func (h *HiveCommand) installHive(session *discordgo.Session) error {
 	app := discordgo.ApplicationCommand{
 		Name:        "hive",
 		Description: "creates on-remand voice and text channels",
@@ -232,7 +301,7 @@ func (h *HiveCommand) createChannel(s *discordgo.Session, i *discordgo.Interacti
 				Flags:   64,
 			},
 		})
-		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `tm!archive`")
+		s.ChannelMessageSend(newChan.ID, "Welcome to your text channel! If you're finished using this please say `/archive`")
 	} else {
 		e := embed.NewEmbed()
 		e.SetTitle("Hive Channel")
@@ -401,27 +470,47 @@ func (h *HiveCommand) createVoiceChannel(s *discordgo.Session, conf *db.HiveConf
 	return s.GuildChannelCreateComplex(i.GuildID, props)
 }
 
-// SayArchive handles the tm!archive command
-func (h *HiveCommand) SayArchive(s *discordgo.Session, m *discordgo.MessageCreate) {
-	channel, err := s.Channel(m.ChannelID)
+// SayArchive handles the archive command
+func (h *HiveCommand) SayArchive(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	channel, err := s.Channel(i.ChannelID)
 	if err != nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: "Error getting channel info",
+				Flags:   64,
+			},
+		})
 		log.Println(err)
 		return
 	}
 
-	conf, isHive, err := h.getConfigForRequestCategory(s, m.GuildID, m.ChannelID)
+	conf, isHive, err := h.getConfigForRequestCategory(s, i.GuildID, i.ChannelID)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	if !isHive || h.isPrivilegedChannel(channel.ID, conf) {
-		s.ChannelMessageSend(m.ChannelID, "This command only works in hive created channels")
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: "This command only works in hive created channels",
+				Flags:   64,
+			},
+		})
 		return
 	}
 
 	if conf.Prefix != "" {
 		if !strings.HasPrefix(channel.Name, conf.Prefix) {
-			s.ChannelMessageSend(m.ChannelID, "This command only works in hive created channels with correct prefix")
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionApplicationCommandResponseData{
+					Content: "This command only works in hive created channels with correct prefix",
+					Flags:   64,
+				},
+			})
+
 			return
 		}
 	}
@@ -438,22 +527,43 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, m *discordgo.MessageCreat
 	if err != nil {
 		log.Println(err)
 	}
+
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionApplicationCommandResponseData{
+			Content: "Channel is archived",
+		},
+	})
 }
 
 // SayLeave handles the tm!eave command
-func (h *HiveCommand) SayLeave(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (h *HiveCommand) SayLeave(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// check if this is allowed
-	conf, isHive, err := h.getConfigForRequestCategory(s, m.GuildID, m.ChannelID)
+	conf, isHive, err := h.getConfigForRequestCategory(s, i.GuildID, i.ChannelID)
 	if err != nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: err.Error(),
+				Flags:   64,
+			},
+		})
 		log.Println(err)
 		return
 	}
-	if !isHive || h.isPrivilegedChannel(m.ChannelID, conf) {
-		s.ChannelMessageSend(m.ChannelID, "This command only works in hive created channels, consider using Discord's mute instead")
+	if !isHive || h.isPrivilegedChannel(i.ChannelID, conf) {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: "This command only works in hive created channels, consider using Discord's mute instead",
+				Flags:   64,
+			},
+		})
+
 		return
 	}
 
-	channel, err := s.Channel(m.ChannelID)
+	channel, err := s.Channel(i.ChannelID)
 	if err != nil {
 		log.Println(err)
 		return
@@ -461,7 +571,7 @@ func (h *HiveCommand) SayLeave(s *discordgo.Session, m *discordgo.MessageCreate)
 
 	newPerms := []*discordgo.PermissionOverwrite{}
 	for _, perm := range channel.PermissionOverwrites {
-		if perm.ID != m.Author.ID {
+		if perm.ID != i.Member.User.ID {
 			newPerms = append(newPerms, perm)
 		}
 	}
@@ -471,6 +581,12 @@ func (h *HiveCommand) SayLeave(s *discordgo.Session, m *discordgo.MessageCreate)
 	if err != nil {
 		log.Println(err)
 	}
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionApplicationCommandResponseData{
+			Content: fmt.Sprintf("<@%s. has left the chat", i.Member.User.ID),
+		},
+	})
 }
 
 func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
@@ -533,5 +649,5 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 		return
 	}
 
-	s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>, you can leave any time by saying `tm!leave`", r.UserID))
+	s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>, you can leave any time by saying `/leave`", r.UserID))
 }
