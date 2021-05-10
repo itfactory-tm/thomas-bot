@@ -3,8 +3,9 @@ package hive
 import (
 	"fmt"
 	"log"
-	"reflect"
 	"strings"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 
@@ -39,9 +40,6 @@ func (h *HiveCommand) InstallSlashCommands(session *discordgo.Session) error {
 	if session == nil {
 		return nil
 	}
-	if err := h.installHive(session); err != nil {
-		return err
-	}
 
 	if err := h.installArchive(session); err != nil {
 		return err
@@ -51,61 +49,31 @@ func (h *HiveCommand) InstallSlashCommands(session *discordgo.Session) error {
 		return err
 	}
 
+	if err := h.installHive(session); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (h *HiveCommand) installLeave(session *discordgo.Session) error {
-	app := discordgo.ApplicationCommand{
+	return slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "leave",
 		Description: "Leave an on-remand text channel",
 		Options:     []*discordgo.ApplicationCommandOption{},
-	}
-
-	cmds, err := session.ApplicationCommands(session.State.User.ID, "")
-	if err != nil {
-		return err
-	}
-	exists := false
-	for _, cmd := range cmds {
-		if cmd.Name == "leave" {
-			exists = reflect.DeepEqual(app.Options, cmd.Options)
-		}
-	}
-
-	if !exists {
-		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
-	}
-
-	return err
+	})
 }
 
 func (h *HiveCommand) installArchive(session *discordgo.Session) error {
-	app := discordgo.ApplicationCommand{
+	return slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "archive",
 		Description: "Archives an on-remand text channel",
 		Options:     []*discordgo.ApplicationCommandOption{},
-	}
-
-	cmds, err := session.ApplicationCommands(session.State.User.ID, "")
-	if err != nil {
-		return err
-	}
-	exists := false
-	for _, cmd := range cmds {
-		if cmd.Name == "leave" {
-			exists = reflect.DeepEqual(app.Options, cmd.Options)
-		}
-	}
-
-	if !exists {
-		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
-	}
-
-	return err
+	})
 }
 
 func (h *HiveCommand) installHive(session *discordgo.Session) error {
-	app := discordgo.ApplicationCommand{
+	return slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "hive",
 		Description: "creates on-remand voice and text channels",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -159,24 +127,7 @@ func (h *HiveCommand) installHive(session *discordgo.Session) error {
 				},
 			},
 		},
-	}
-
-	cmds, err := session.ApplicationCommands(session.State.User.ID, "")
-	if err != nil {
-		return err
-	}
-	exists := false
-	for _, cmd := range cmds {
-		if cmd.Name == "hive" {
-			exists = reflect.DeepEqual(app.Options, cmd.Options)
-		}
-	}
-
-	if !exists {
-		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
-	}
-
-	return err
+	})
 }
 
 func (h *HiveCommand) HiveCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
