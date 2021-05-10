@@ -535,7 +535,7 @@ func (h *HiveCommand) SayLeave(s *discordgo.Session, i *discordgo.InteractionCre
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionApplicationCommandResponseData{
-			Content: fmt.Sprintf("<@%s. has left the chat", i.Member.User.ID),
+			Content: fmt.Sprintf("<@%s> has left the chat", i.Member.User.ID),
 		},
 	})
 }
