@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
 	"log"
 	"os"
 	"os/signal"
 	"regexp"
 	"syscall"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 
@@ -43,12 +44,12 @@ type serveCmdOptions struct {
 	handlers     []command.Interface
 	db           db.Database
 
-	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
-	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
-	onMessageReactionAddHandler []func(*discordgo.Session, *discordgo.MessageReactionAdd)
+	onMessageCreateHandlers        map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
+	onMessageEditHandlers          map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
+	onMessageReactionAddHandler    []func(*discordgo.Session, *discordgo.MessageReactionAdd)
 	onMessageReactionRemoveHandler []func(*discordgo.Session, *discordgo.MessageReactionRemove)
-	onGuildMemberAddHandler     []func(*discordgo.Session, *discordgo.GuildMemberAdd)
-	onInteractionCreateHandler  map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
+	onGuildMemberAddHandler        []func(*discordgo.Session, *discordgo.GuildMemberAdd)
+	onInteractionCreateHandler     map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
 }
 
 // NewServeCmd generates the `serve` command
@@ -131,13 +132,6 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	s.ha.AddHandler(s.onMessageReactionAdd)
 	s.ha.AddHandler(s.onMessageReactionRemove)
 	s.ha.AddHandler(s.onInteractionCreate)
-
-	for _, handler := range s.handlers {
-		err := handler.InstallSlashCommands(s.dg)
-		if err != nil {
-			log.Println(err)
-		}
-	}
 
 	log.Println("Thomas Bob is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
