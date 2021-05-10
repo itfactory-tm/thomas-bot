@@ -27,7 +27,6 @@ func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.Int
 		return
 	}
 
-	// if not in DM delete command
 	if ch.ID == i.ChannelID {
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
