@@ -600,5 +600,16 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 		return
 	}
 
-	s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>, you can leave any time by saying `/leave`", r.UserID))
+	// send message if user was not in channel before, we do keep changing the permissions to handle bugs in old permissions
+	inChannel := false
+	for _, ow := range channel.PermissionOverwrites {
+		if ow.Type == discordgo.PermissionOverwriteTypeMember && ow.ID == r.UserID {
+			inChannel = true
+			break
+		}
+	}
+
+	if !inChannel {
+		s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>, you can leave any time by saying `/leave`", r.UserID))
+	}
 }
