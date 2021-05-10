@@ -23,6 +23,9 @@ func (h *HelloCommand) Register(registry command.Registry, server command.Server
 
 // InstallSlashCommands registers the slash commands
 func (h *HelloCommand) InstallSlashCommands(session *discordgo.Session) error {
+	if session == nil {
+		return nil
+	}
 	app := discordgo.ApplicationCommand{
 		Name:        "hello",
 		Description: "Thomas Bot will say hello",
