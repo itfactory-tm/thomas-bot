@@ -43,8 +43,6 @@ func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.Int
 		return
 	}
 
-	m.SendRoleDM(s, i.GuildID, i.Member.User.ID)
-
 	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionApplicationCommandResponseData{
@@ -56,6 +54,8 @@ func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.Int
 	if err != nil {
 		log.Println(err)
 	}
+
+	m.SendRoleDM(s, i.GuildID, i.Member.User.ID)
 
 }
 
