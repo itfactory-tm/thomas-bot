@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
 	"log"
 	"os"
 	"os/signal"
 	"regexp"
 	"syscall"
 	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 
@@ -56,12 +57,12 @@ type serveCmdOptions struct {
 
 	db db.Database
 
-	onMessageCreateHandlers     map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
-	onMessageEditHandlers       map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
-	onMessageReactionAddHandler []func(*discordgo.Session, *discordgo.MessageReactionAdd)
+	onMessageCreateHandlers        map[string][]func(*discordgo.Session, *discordgo.MessageCreate)
+	onMessageEditHandlers          map[string][]func(*discordgo.Session, *discordgo.MessageUpdate)
+	onMessageReactionAddHandler    []func(*discordgo.Session, *discordgo.MessageReactionAdd)
 	onMessageReactionRemoveHandler []func(*discordgo.Session, *discordgo.MessageReactionRemove)
-	onGuildMemberAddHandler     []func(*discordgo.Session, *discordgo.GuildMemberAdd)
-	onInteractionCreateHandler  map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
+	onGuildMemberAddHandler        []func(*discordgo.Session, *discordgo.GuildMemberAdd)
+	onInteractionCreateHandler     map[string][]func(*discordgo.Session, *discordgo.InteractionCreate)
 }
 
 // NewServeCmd generates the `serve` command
