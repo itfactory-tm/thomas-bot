@@ -93,8 +93,8 @@
   },
 
   "837217317146066985": {
-    "_JSON_Comment_Hack": "Organisatie en Management Official",
-    "welcomeText": "Welkom <@{{.User.ID}}> op de Organisatie en Management Thomas More Discord server. Ik stuur je zo een DM om alles inorde te maken.",
+    "_JSON_Comment_Hack": "Business Kempen",
+    "welcomeText": "Welkom <@{{.User.ID}}> op de Business Kempen Discord server. Ik stuur je zo een DM om alles inorde te maken.",
     "welcomeChannelID": "837217317640208435",
     "welcomeDM": [
       "Welkom op de Organisatie en Management Thomas More server!",
