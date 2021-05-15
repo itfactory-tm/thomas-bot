@@ -14,6 +14,18 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+var defaultAllows int64
+
+func init() {
+	defaultAllows |= discordgo.PermissionReadMessageHistory
+	defaultAllows |= discordgo.PermissionViewChannel
+	defaultAllows |= discordgo.PermissionSendMessages
+	defaultAllows |= discordgo.PermissionVoiceConnect
+	defaultAllows |= discordgo.PermissionAddReactions
+	defaultAllows |= discordgo.PermissionAttachFiles
+	defaultAllows |= discordgo.PermissionEmbedLinks
+}
+
 // HiveCommand contains the handlers for the Hive commandos
 type HiveCommand struct {
 	db    db.Database
@@ -296,11 +308,7 @@ func (h *HiveCommand) createTextChannel(s *discordgo.Session, conf *db.HiveConfi
 
 	if hidden {
 		// admin privileges on channel for creator
-		var allow int64
-		allow |= discordgo.PermissionReadMessageHistory
-		allow |= discordgo.PermissionViewChannel
-		allow |= discordgo.PermissionSendMessages
-		allow |= discordgo.PermissionVoiceConnect
+		var allow = defaultAllows
 		allow |= discordgo.PermissionManageMessages
 		props.PermissionOverwrites = []*discordgo.PermissionOverwrite{
 			{
@@ -354,28 +362,6 @@ func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, conf *db.HiveCon
 		Bitrate:              conf.VoiceBitrate,
 	}
 
-	if hidden {
-		// admin privileges on channel for creator
-		var allow int64
-		allow |= discordgo.PermissionReadMessageHistory
-		allow |= discordgo.PermissionViewChannel
-		allow |= discordgo.PermissionSendMessages
-		allow |= discordgo.PermissionVoiceConnect
-		allow |= discordgo.PermissionManageMessages
-		edit.PermissionOverwrites = []*discordgo.PermissionOverwrite{
-			{
-				ID:    userID,
-				Type:  discordgo.PermissionOverwriteTypeMember,
-				Deny:  0,
-				Allow: allow,
-			},
-			{
-				ID:   guildID,
-				Type: discordgo.PermissionOverwriteTypeRole,
-				Deny: discordgo.PermissionAll,
-			},
-		}
-	}
 	newChan, err := s.ChannelEditComplex(toRecycle.ID, edit)
 
 	return newChan, err, true
@@ -393,29 +379,6 @@ func (h *HiveCommand) createVoiceChannel(s *discordgo.Session, conf *db.HiveConf
 		ParentID:  catID,
 		Type:      discordgo.ChannelTypeGuildVoice,
 		UserLimit: limit,
-	}
-
-	if hidden {
-		// admin privileges on channel for creator
-		var allow int64
-		allow |= discordgo.PermissionReadMessageHistory
-		allow |= discordgo.PermissionViewChannel
-		allow |= discordgo.PermissionSendMessages
-		allow |= discordgo.PermissionVoiceConnect
-		allow |= discordgo.PermissionManageMessages
-		props.PermissionOverwrites = []*discordgo.PermissionOverwrite{
-			{
-				ID:    i.Member.User.ID,
-				Type:  discordgo.PermissionOverwriteTypeMember,
-				Deny:  0,
-				Allow: allow,
-			},
-			{
-				ID:   i.GuildID,
-				Type: discordgo.PermissionOverwriteTypeRole,
-				Deny: discordgo.PermissionAll,
-			},
-		}
 	}
 
 	return s.GuildChannelCreateComplex(i.GuildID, props)
@@ -585,16 +548,7 @@ func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageR
 		return
 	}
 
-	var allow int64
-	allow |= discordgo.PermissionReadMessageHistory
-	allow |= discordgo.PermissionViewChannel
-	allow |= discordgo.PermissionSendMessages
-	allow |= discordgo.PermissionVoiceConnect
-	allow |= discordgo.PermissionAddReactions
-	allow |= discordgo.PermissionAttachFiles
-	allow |= discordgo.PermissionEmbedLinks
-
-	err = s.ChannelPermissionSet(channel.ID, r.UserID, discordgo.PermissionOverwriteTypeMember, allow, 0)
+	err = s.ChannelPermissionSet(channel.ID, r.UserID, discordgo.PermissionOverwriteTypeMember, defaultAllows, 0)
 	if err != nil {
 		log.Println("Cannot set permissions", err)
 		return
