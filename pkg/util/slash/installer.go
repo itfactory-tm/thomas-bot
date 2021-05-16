@@ -12,11 +12,11 @@ func InstallSlashCommand(session *discordgo.Session, guildID string, app discord
 		return err
 	}
 
-	exists := true
+	exists := false
 	same := false
 	var slashcmd *discordgo.ApplicationCommand
 	for _, cmd := range cmds {
-		if cmd.Name == "hive" {
+		if cmd.Name == app.Name {
 			exists = true
 			same = reflect.DeepEqual(app.Options, cmd.Options)
 			slashcmd = cmd
