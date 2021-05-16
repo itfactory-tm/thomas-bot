@@ -25,7 +25,7 @@ func InstallSlashCommand(session *discordgo.Session, guildID string, app discord
 
 	if !same && exists && slashcmd != nil {
 		_, err = session.ApplicationCommandEdit(slashcmd.ID, session.State.User.ID, "", &app)
-	} else if !same {
+	} else {
 		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
 	}
 	return err

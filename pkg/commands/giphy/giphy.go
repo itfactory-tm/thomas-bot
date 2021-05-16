@@ -39,7 +39,7 @@ func (g *GiphyCommands) Register(registry command.Registry, server command.Serve
 
 // InstallSlashCommands registers the slash commands
 func (g *GiphyCommands) InstallSlashCommands(session *discordgo.Session) error {
-	slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
+	err := slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "gif",
 		Description: "Posts a GIF",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -78,11 +78,21 @@ func (g *GiphyCommands) InstallSlashCommands(session *discordgo.Session) error {
 		},
 	})
 
-	return slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
+	if err != nil {
+		return fmt.Errorf("error installing /gif %w", err)
+	}
+
+	err = slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "clap",
 		Description: "Applause!",
 		Options:     []*discordgo.ApplicationCommandOption{},
 	})
+
+	if err != nil {
+		return fmt.Errorf("error installing /clap %w", err)
+	}
+
+	return nil
 }
 
 func (g *GiphyCommands) slashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
