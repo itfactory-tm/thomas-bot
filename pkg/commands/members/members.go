@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"reflect"
 	"text/template"
 	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
@@ -35,28 +36,11 @@ func (m *MemberCommands) Register(registry command.Registry, server command.Serv
 
 // InstallSlashCommands registers the slash commands
 func (m *MemberCommands) InstallSlashCommands(session *discordgo.Session) error {
-	app := discordgo.ApplicationCommand{
+	return slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "role",
 		Description: "Request a new role om this server",
 		Options:     []*discordgo.ApplicationCommandOption{},
-	}
-
-	cmds, err := session.ApplicationCommands(session.State.User.ID, "") // ITF only for now till links are moved to a DB
-	if err != nil {
-		return err
-	}
-	exists := false
-	for _, cmd := range cmds {
-		if cmd.Name == "links" {
-			exists = reflect.DeepEqual(app.Options, cmd.Options)
-		}
-	}
-
-	if !exists {
-		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
-	}
-
-	return err
+	})
 }
 
 func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {

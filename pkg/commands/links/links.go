@@ -2,7 +2,8 @@ package links
 
 import (
 	"log"
-	"reflect"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
@@ -45,7 +46,7 @@ func (l *LinkCommands) InstallSlashCommands(session *discordgo.Session) error {
 		})
 	}
 
-	app := discordgo.ApplicationCommand{
+	return slash.InstallSlashCommand(session, "687565213943332875", discordgo.ApplicationCommand{
 		Name:        "link",
 		Description: "Gives a useful link",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -57,24 +58,7 @@ func (l *LinkCommands) InstallSlashCommands(session *discordgo.Session) error {
 				Choices:     choices,
 			},
 		},
-	}
-
-	cmds, err := session.ApplicationCommands(session.State.User.ID, "687565213943332875") // ITF only for now till links are moved to a DB
-	if err != nil {
-		return err
-	}
-	exists := false
-	for _, cmd := range cmds {
-		if cmd.Name == "links" {
-			exists = reflect.DeepEqual(app.Options, cmd.Options)
-		}
-	}
-
-	if !exists {
-		_, err = session.ApplicationCommandCreate(session.State.User.ID, "687565213943332875", &app) // ITF only for now till links are moved to a DB
-	}
-
-	return err
+	})
 }
 
 func (l *LinkCommands) buildLinks() {

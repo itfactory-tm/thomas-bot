@@ -2,7 +2,8 @@ package hello
 
 import (
 	"log"
-	"reflect"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
@@ -23,31 +24,11 @@ func (h *HelloCommand) Register(registry command.Registry, server command.Server
 
 // InstallSlashCommands registers the slash commands
 func (h *HelloCommand) InstallSlashCommands(session *discordgo.Session) error {
-	if session == nil {
-		return nil
-	}
-	app := discordgo.ApplicationCommand{
+	return slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "hello",
 		Description: "Thomas Bot will say hello",
 		Options:     []*discordgo.ApplicationCommandOption{},
-	}
-
-	cmds, err := session.ApplicationCommands(session.State.User.ID, "") // ITF only for now till links are moved to a DB
-	if err != nil {
-		return err
-	}
-	exists := false
-	for _, cmd := range cmds {
-		if cmd.Name == "links" {
-			exists = reflect.DeepEqual(app.Options, cmd.Options)
-		}
-	}
-
-	if !exists {
-		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
-	}
-
-	return err
+	})
 }
 
 // SayHello sends an hello message

@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"reflect"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
 
@@ -51,7 +52,7 @@ func (i *ImagesCommands) InstallSlashCommands(session *discordgo.Session) error 
 		})
 	}
 
-	app := discordgo.ApplicationCommand{
+	return slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "image",
 		Description: "Gives an image",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -63,24 +64,7 @@ func (i *ImagesCommands) InstallSlashCommands(session *discordgo.Session) error 
 				Choices:     choices,
 			},
 		},
-	}
-
-	cmds, err := session.ApplicationCommands(session.State.User.ID, "")
-	if err != nil {
-		return err
-	}
-	exists := false
-	for _, cmd := range cmds {
-		if cmd.Name == "image" {
-			exists = reflect.DeepEqual(app.Options, cmd.Options)
-		}
-	}
-
-	if !exists {
-		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
-	}
-
-	return err
+	})
 }
 
 // Info return the commands in this package
