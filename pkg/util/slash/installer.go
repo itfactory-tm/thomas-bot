@@ -10,7 +10,7 @@ import (
 func InstallSlashCommand(session *discordgo.Session, guildID string, app discordgo.ApplicationCommand) error {
 	cmds, err := session.ApplicationCommands(session.State.User.ID, guildID)
 	if err != nil {
-		return err
+		return fmt.Errorf("error in ApplicationCommands get: %w", err)
 	}
 
 	exists := false
