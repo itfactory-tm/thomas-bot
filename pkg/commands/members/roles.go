@@ -75,14 +75,6 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 		return
 	}
 
-	if conf.RoleManagement.Message != "" {
-		_, err := s.ChannelMessageSend(ch.ID, conf.RoleManagement.Message)
-		if err != nil {
-			log.Println("Role DM error", err)
-			return
-		}
-	}
-
 	guild, err := s.Guild(guildID)
 	if err != nil {
 		log.Println("Guild error", err)
@@ -91,6 +83,8 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 	e := embed.NewEmbed()
 	e.SetTitle("Role Request")
 	e.SetAuthor(guildID)
+
+	e.SetDescription(conf.RoleManagement.Message)
 
 	roles := ""
 	for _, crole := range conf.RoleManagement.Roles {

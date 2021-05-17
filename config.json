@@ -115,7 +115,7 @@
       }
     ],
     "roleManagement": {
-      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen? Selecteer je jaar **en** je afstudeerrichting zodat je toegang krijgt tot de juiste kanalen!",
       "roles": [
         {"emoji": "1️⃣", "id": "837217317146066987"},
         {"emoji": "2️⃣", "id": "837217317146066988"},
