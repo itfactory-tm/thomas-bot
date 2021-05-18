@@ -234,7 +234,7 @@ func (h *HiveCommand) createChannel(s *discordgo.Session, i *discordgo.Interacti
 	if isText {
 		newChan, err = h.createTextChannel(s, conf, name, conf.TextCategoryID, i, hidden)
 	} else {
-		newChan, err = h.createVoiceChannel(s, conf, name, conf.VoiceCategoryID, i, size, hidden)
+		newChan, err = h.CreateVoiceChannel(s, conf, name, conf.VoiceCategoryID, i.GuildID, size, hidden)
 	}
 
 	if err != nil {
@@ -329,7 +329,7 @@ func (h *HiveCommand) createTextChannel(s *discordgo.Session, conf *db.HiveConfi
 }
 
 // we filled up on junk quickly, we should recycle a voice channel from junkjard
-func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, conf *db.HiveConfiguration, name, catID, userID, guildID string, limit int, hidden bool) (*discordgo.Channel, error, bool) {
+func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, conf *db.HiveConfiguration, name, catID, guildID string, limit int, hidden bool) (*discordgo.Channel, error, bool) {
 	channels, err := s.GuildChannels(guildID)
 	if err != nil {
 		return nil, err, true
@@ -367,8 +367,8 @@ func (h *HiveCommand) recycleVoiceChannel(s *discordgo.Session, conf *db.HiveCon
 	return newChan, err, true
 }
 
-func (h *HiveCommand) createVoiceChannel(s *discordgo.Session, conf *db.HiveConfiguration, name, catID string, i *discordgo.InteractionCreate, limit int, hidden bool) (*discordgo.Channel, error) {
-	newChan, err, ok := h.recycleVoiceChannel(s, conf, name, catID, i.Member.User.ID, i.GuildID, limit, hidden)
+func (h *HiveCommand) CreateVoiceChannel(s *discordgo.Session, conf *db.HiveConfiguration, name, catID, guildID string, limit int, hidden bool) (*discordgo.Channel, error) {
+	newChan, err, ok := h.recycleVoiceChannel(s, conf, name, catID, guildID, limit, hidden)
 	if ok {
 		return newChan, err
 	}
@@ -381,7 +381,7 @@ func (h *HiveCommand) createVoiceChannel(s *discordgo.Session, conf *db.HiveConf
 		UserLimit: limit,
 	}
 
-	return s.GuildChannelCreateComplex(i.GuildID, props)
+	return s.GuildChannelCreateComplex(guildID, props)
 }
 
 // SayArchive handles the archive command
