@@ -1,8 +1,10 @@
 package shout
 
 import (
+	"fmt"
 	"log"
-	"regexp"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/util/voice"
 
@@ -24,50 +26,68 @@ func NewShoutCommand() *ShoutCommand {
 
 // Register registers the handlers
 func (s *ShoutCommand) Register(registry command.Registry, server command.Server) {
-	registry.RegisterMessageCreateHandler("shout", s.shout)
+	registry.RegisterInteractionCreate("shout", s.shout)
 
 	s.server = server
 }
 
 // InstallSlashCommands registers the slash commands
 func (s *ShoutCommand) InstallSlashCommands(session *discordgo.Session) error {
-	return nil
+	return slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
+		Name:        "shout",
+		Description: "Gives a quote in your audio channel",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionInteger,
+				Name:        "number",
+				Description: "number of the audio clip",
+				Required:    true,
+			},
+		},
+	})
 }
 
-var shoutRegex = regexp.MustCompile(`^tm!shout (.*)$`)
-
-func (s *ShoutCommand) shout(sess *discordgo.Session, m *discordgo.MessageCreate) {
-	ch, err := voice.FindVoiceUser(sess, m.GuildID, m.Author.ID)
+func (s *ShoutCommand) shout(sess *discordgo.Session, i *discordgo.InteractionCreate) {
+	ch, err := voice.FindVoiceUser(sess, i.GuildID, i.Member.User.ID)
 	if err != nil {
+		sess.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: fmt.Sprintf("An error happened: %s", err),
+				Flags:   64, // ephemeral
+			},
+		})
 		log.Println(err)
 		return
 	}
-	if ch != "715889803937185812" { // sorry that is the other bot!
-		matches := shoutRegex.FindAllStringSubmatch(m.Message.Content, -1)
-		if len(matches) > 0 && len(matches[0]) > 1 {
-			err := s.server.GetDiscordHA().SendVoiceCommand(discordha.VoiceCommand{
-				ModuleID:  "thomasbot",
-				GuildID:   m.GuildID,
-				ChannelID: ch,
-				File:      matches[0][1] + ".wav",
-				UserID:    m.Author.ID,
-			})
-			if err != nil {
-				log.Printf("Error sending voice command: %q\n", err)
-			}
-		}
 
+	err = s.server.GetDiscordHA().SendVoiceCommand(discordha.VoiceCommand{
+		ModuleID:  "thomasbot",
+		GuildID:   i.GuildID,
+		ChannelID: ch,
+		File:      fmt.Sprintf("%d.wav", int(i.Data.Options[0].Value.(float64))),
+		UserID:    i.Member.User.ID,
+	})
+	if err != nil {
+		sess.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: fmt.Sprintf("Error sending voice command: %q", err),
+				Flags:   64, // ephemeral
+			},
+		})
 	}
+
+	sess.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionApplicationCommandResponseData{
+			Content: "Go Go Go",
+		},
+	})
+
 }
 
 // Info return the commands in this package
 func (s *ShoutCommand) Info() []command.Command {
-	return []command.Command{
-		command.Command{
-			Name:        "shout",
-			Category:    command.CategoryFun,
-			Description: "Send an audio message",
-			Hidden:      false,
-		},
-	}
+	return []command.Command{}
 }
