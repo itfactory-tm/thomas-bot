@@ -80,7 +80,7 @@ func (l *LinkCommands) buildLinks() {
 	l.registerInfoDagCommand("emt", "Link naar EMT", "Heeft de IT-Factory een eigen studentenvereniging? Jazeker: https://www.facebook.com/StudentenverenigingEMT")
 	l.registerLinkCommand("wallet", "Link naar wallet", "Hoeveel staat er nog op mijn studentenkaart? https://thomasmore.mynetpay.be/")
 	l.registerLinkCommand("kuloket", "Link naar KUloket", "Kuloket raadplegen? https://kuloket.be")
-	l.registerLinkCommand("printen", "Link naar printen", "Meer informatie nodig over printen? https://thomasmore365.sharepoint.com/sites/s-Leercentrum/SitePages/Printen.aspx")
+	l.registerLinkCommand("printen", "Link naar printen", "Meer informatie nodig over printen? https://thomasmore365.sharepoint.com/sites/s-Leercentrum/SitePages/Printen.aspx Je printkrediet opladen? https://printbeheer.thomasmore.be/")
 	l.registerLinkCommand("printbeheer", "Link naar printbeheer", "Je print gegevens bekijken? https://printbeheer.thomasmore.be/")
 	l.registerLinkCommand("campusshop", "Link naar campusshop", "Een kijkje nemen in de campusshop? https://www.campiniamedia.be/mvc/index.jsp")
 	l.registerLinkCommand("icecube", "Link naar ice-cube", "Ice-cube, wat is dat? https://www.thomasmore.be/ice-cube")
