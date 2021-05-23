@@ -183,6 +183,9 @@ func (l *LookCommand) checkConfig(guildID, channelID string) (*db.LookingForPlay
 	}
 
 	for _, lfp := range conf.LookingForPlayers {
+		if channelID == lfp.AdvertiseChannelID {
+			return &lfp, true, nil
+		}
 		for _, reqID := range lfp.RequestChannelIDs {
 			if channelID == reqID {
 				return &lfp, true, nil
