@@ -19,20 +19,16 @@ import (
 
 // TODO: make configurable in config file
 //GuildID for init of slash commands
-//const guildID = "773847927910432789"
-const guildID = "826930117108432936"
+const guildID = "773847927910432789"
 
 //LFPDesk channel id
-//const lfpDeskID = "832321290190848090"
-const lfpDeskID = "826930117618958361"
+const lfpDeskID = "832321290190848090"
 
 //LFP Request channel id
-//const lfpReqID = "828204894187421696"
-const lfpReqID = "826930117618958362"
+const lfpReqID = "828204894187421696"
 
 //Hive request channelID
-//const hiveReqID = "827960558258094090"
-const hiveReqID = "826930117618958362"
+const hiveReqID = "827960558258094090"
 
 // LookCommand contains the /lookforplayers command
 type LookCommand struct {
