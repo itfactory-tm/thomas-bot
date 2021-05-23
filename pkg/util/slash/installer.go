@@ -30,7 +30,7 @@ func InstallSlashCommand(session *discordgo.Session, guildID string, app discord
 			return fmt.Errorf("error in ApplicationCommandEdit: %w", err)
 		}
 	} else if !same {
-		_, err = session.ApplicationCommandCreate(session.State.User.ID, "", &app)
+		_, err = session.ApplicationCommandCreate(session.State.User.ID, guildID, &app)
 		if err != nil {
 			return fmt.Errorf("error in ApplicationCommandCreate: %w", err)
 		}
