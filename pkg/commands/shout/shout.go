@@ -33,7 +33,6 @@ func (s *ShoutCommand) Register(registry command.Registry, server command.Server
 
 // InstallSlashCommands registers the slash commands
 func (s *ShoutCommand) InstallSlashCommands(session *discordgo.Session) error {
-	log.Println("Installing /shout")
 	err := slash.InstallSlashCommand(session, "", discordgo.ApplicationCommand{
 		Name:        "shout",
 		Description: "Gives a quote in your audio channel",
@@ -46,9 +45,6 @@ func (s *ShoutCommand) InstallSlashCommands(session *discordgo.Session) error {
 			},
 		},
 	})
-	if err == nil {
-		log.Println("/shout is installed")
-	}
 	return err
 }
 
