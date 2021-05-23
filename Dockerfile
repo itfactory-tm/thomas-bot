@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine as build
+FROM golang:1.16-alpine as build
 
 RUN apk add --no-cache git
 
@@ -8,7 +8,7 @@ WORKDIR /go/src/github.com/itfactory-tm/thomas-bot
 
 RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./cmd/thomas/
 
-FROM alpine:3.12
+FROM alpine:3.13
 
 RUN apk add --no-cache ca-certificates
 
