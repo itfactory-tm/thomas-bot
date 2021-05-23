@@ -3,23 +3,32 @@ package game
 import (
 	"errors"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/itfactory-tm/thomas-bot/pkg/command"
-	"github.com/itfactory-tm/thomas-bot/pkg/db"
 	"log"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/itfactory-tm/thomas-bot/pkg/command"
+	"github.com/itfactory-tm/thomas-bot/pkg/db"
 )
 
 // TODO: make configurable in config file
+//GuildID for init of slash commands
+const guildID = "773847927910432789"
+
 //LFPDesk channel id
 const lfpDeskID = "832321290190848090"
 
 //LFP Request channel id
 const lfpReqID = "828204894187421696"
+
+//Hive request channelID
+const hiveReqID = "827960558258094090"
 
 // LookCommand contains the /lookforplayers command
 type LookCommand struct {
@@ -71,7 +80,7 @@ func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 		},
 	}
 
-	cmds, err := s.ApplicationCommands(s.State.User.ID, "773847927910432789")
+	cmds, err := s.ApplicationCommands(s.State.User.ID, guildID)
 	if err != nil {
 		return err
 	}
@@ -83,7 +92,7 @@ func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 	}
 
 	if !exists {
-		_, err = s.ApplicationCommandCreate(s.State.User.ID, "773847927910432789", &app)
+		_, err = s.ApplicationCommandCreate(s.State.User.ID, guildID, &app)
 	}
 
 	return err
@@ -101,7 +110,7 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 	//}
 
 	if i.ChannelID != lfpReqID {
-		l.sendInteractionResponse(s, i, "This command only works in Requests channels")
+		l.sendInvisibleInteractionResponse(s, i, "This command only works in Requests channels")
 		return
 	}
 
@@ -116,38 +125,39 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 		case "game":
 			name, ok = option.Value.(string)
 			if !ok {
-				l.sendInteractionResponse(s, i, "Please enter a valid name.")
+				l.sendInvisibleInteractionResponse(s, i, "Please enter a valid name.")
 				return
 			}
 			if len(name) < 2 || len(name) > 25 {
-				l.sendInteractionResponse(s, i, "Your game needs to be between 2-25 characters long")
+				l.sendInvisibleInteractionResponse(s, i, "Your game needs to be between 2-25 characters long")
 				return
 			}
 			if matched, _ := regexp.MatchString(`^[A-Za-z0-9 ]+$`, name); !matched {
-				l.sendInteractionResponse(s, i, "Your game cannot contain any special characters")
+				l.sendInvisibleInteractionResponse(s, i, "Your game cannot contain any special characters")
 				return
 			}
 
 		case "amount":
 			amount, ok = option.Value.(float64)
 			if !ok {
-				l.sendInteractionResponse(s, i, "Please enter a valid amount.")
+				l.sendInvisibleInteractionResponse(s, i, "Please enter a valid amount.")
 				return
 			}
 			if amount < 2 || amount > 40 {
-				l.sendInteractionResponse(s, i, "Your game needs to contain between 2-40 players")
+				l.sendInvisibleInteractionResponse(s, i, "Your game needs to contain between 2-40 players")
 				return
 			}
+
 		case "notifyrole":
 			selectedRoleID, ok = option.Value.(string)
 			if !ok {
-				l.sendInteractionResponse(s, i, "Please enter a valid role.")
+				l.sendInvisibleInteractionResponse(s, i, "Please enter a valid role.")
 				return
 			}
 			roles, _ := s.GuildRoles(i.GuildID)
 			for _, role := range roles {
 				if selectedRoleID == role.ID && role.Color != 0x9c9c9c {
-					l.sendInteractionResponse(s, i, "Please enter a valid gaming role.")
+					l.sendInvisibleInteractionResponse(s, i, "Please enter a valid gaming role.")
 					return
 				}
 			}
@@ -155,11 +165,11 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 		case "time":
 			timeString, ok = option.Value.(string)
 			if !ok {
-				l.sendInteractionResponse(s, i, "Please enter a valid time in format 15:45.")
+				l.sendInvisibleInteractionResponse(s, i, "Please enter a valid time in format 15:45.")
 				return
 			}
 			if _, err := time.Parse("15:04", timeString); err != nil {
-				l.sendInteractionResponse(s, i, "Please enter your time in format hh:mm (For example 15:50)")
+				l.sendInvisibleInteractionResponse(s, i, "Please enter your time in format hh:mm (For example 15:50)")
 				return
 			}
 		}
@@ -170,7 +180,16 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 	if err != nil {
 		content = err.Error()
 	}
-	l.sendInteractionResponse(s, i, content)
+	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionApplicationCommandResponseData{
+			Content: content,
+		},
+	})
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
 
 func (l *LookCommand) checkConfig(guildID, channelID string) (*db.HiveConfiguration, bool, error) {
@@ -265,11 +284,12 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 	return nil
 }
 
-func (l *LookCommand) sendInteractionResponse(s *discordgo.Session, i *discordgo.InteractionCreate, content string) {
+func (l *LookCommand) sendInvisibleInteractionResponse(s *discordgo.Session, i *discordgo.InteractionCreate, content string) {
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionApplicationCommandResponseData{
 			Content: content,
+			Flags:   64,
 		},
 	})
 	if err != nil {
@@ -300,7 +320,7 @@ func (l *LookCommand) handleReactionAdd(s *discordgo.Session, r *discordgo.Messa
 	if r.Emoji.MessageFormat() == "🗑️" {
 		if r.UserID == hostID {
 			//Notify players
-			l.messagePlayers(s, r, currentPlayers, fmt.Sprintf("The invite for %s has been deleted by the host.", message.Embeds[0].Title))
+			l.messagePlayers(s, r, currentPlayers, message.Embeds[0], fmt.Sprintf("The invite for %s has been deleted by the host.", message.Embeds[0].Title))
 		}
 	}
 
@@ -404,14 +424,39 @@ func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Messag
 }
 
 func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReactionAdd, currentPlayers []string, message *discordgo.Message, hostID string, err error) {
+	//Create voice channel
+	//TODO: Make configurable in config file!
+	conf, isHive, err := l.checkConfig(r.GuildID, hiveReqID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if !isHive {
+		log.Println("not in hive")
+		return
+	}
+
+	//Make the voice channel
+	h := hive.NewHiveCommand(l.db)
+	channelSize, err := strconv.Atoi(message.Embeds[0].Fields[1].Value)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	channel, err := h.CreateVoiceChannel(s, conf, message.Embeds[0].Title, conf.VoiceCategoryID, r.GuildID, channelSize, false)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	//Notify players, except the host
-	messagePlayerSuccessful := l.messagePlayers(s, r, currentPlayers[1:], fmt.Sprintf("The game %s is starting now! Your host should make a voice channel soon!\nOr make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
+	messagePlayerSuccessful := l.messagePlayers(s, r, currentPlayers[1:], message.Embeds[0], fmt.Sprintf("The game %s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
 	if !messagePlayerSuccessful {
 		return
 	}
 	message.Embeds[0].Fields = message.Embeds[0].Fields[:5]
 	messageSend := &discordgo.MessageSend{
-		Content: fmt.Sprintf("I have notified every joined player! Here is your invite to notify backup players if needed.\nDon't forget to make a voice channel with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, message.Embeds[0].Fields[1].Value),
+		Content: fmt.Sprintf("I have notified every joined player! Here is your invite to notify backup players if needed. You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value),
 		Embed:   message.Embeds[0],
 	}
 	//Dm invite to host
@@ -422,15 +467,20 @@ func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReacti
 	}
 }
 
-func (l *LookCommand) messagePlayers(s *discordgo.Session, r *discordgo.MessageReactionAdd, currentPlayers []string, message string) bool {
+func (l *LookCommand) messagePlayers(s *discordgo.Session, r *discordgo.MessageReactionAdd, currentPlayers []string, embed *discordgo.MessageEmbed, message string) bool {
 	//Delete message first to prevent players being notified multiple times when emoji spam (Dirk proofing)
 	err := s.ChannelMessageDelete(r.ChannelID, r.MessageID)
 	if err != nil {
 		return false
 	}
+	embed.Fields = embed.Fields[:5]
 	for _, user := range currentPlayers {
 		dmChannel, _ := s.UserChannelCreate(user)
-		_, err := s.ChannelMessageSend(dmChannel.ID, message)
+		messageSend := &discordgo.MessageSend{
+			Content: message,
+			Embed:   embed,
+		}
+		_, err = s.ChannelMessageSendComplex(dmChannel.ID, messageSend)
 		if err != nil {
 			log.Println(err)
 		}
