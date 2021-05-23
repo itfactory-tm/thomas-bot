@@ -45,7 +45,7 @@ func (l *LookCommand) Register(registry command.Registry, server command.Server)
 // TODO: Make configurable for specific guilds
 func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 	app := discordgo.ApplicationCommand{
-		Name:        "lookForPlayers",
+		Name:        "lookforplayers",
 		Description: "Send out an invitation to look for players!",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
