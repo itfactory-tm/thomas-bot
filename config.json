@@ -57,6 +57,13 @@
         "prefix": "pauze-",
         "voiceBitrate": 128000
       }
+    ],
+    "lookingForPlayers": [
+      {
+        "requestChannelIDs": ["844547099534032926"],
+        "advertiseChannelID": "844547099534032926",
+        "hiveChannelID": "844547099534032926"
+      }
     ]
   },
   
@@ -93,6 +100,13 @@
         "voiceCategoryID": "827958422674210847",
         "prefix": "vc-",
         "voiceBitrate": 128000
+      }
+    ],
+    "lookingForPlayers": [
+      {
+        "requestChannelIDs": ["828204894187421696"],
+        "advertiseChannelID": "832321290190848090",
+        "hiveChannelID": "827960558258094090"
       }
     ],
     "roleManagement": {

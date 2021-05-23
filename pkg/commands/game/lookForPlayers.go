@@ -4,11 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/hive"
 
@@ -17,25 +18,16 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 )
 
-// TODO: make configurable in config file
 //GuildID for init of slash commands
-const guildID = "773847927910432789"
-
-//LFPDesk channel id
-const lfpDeskID = "832321290190848090"
-
-//LFP Request channel id
-const lfpReqID = "828204894187421696"
-
-//Hive request channelID
-const hiveReqID = "827960558258094090"
+const tmGaming = "773847927910432789"
+const itf = "687565213943332875"
 
 // LookCommand contains the /lookforplayers command
 type LookCommand struct {
 	db db.Database
 }
 
-// NewSearchCommand gives a new SearchCommand
+// NewLookCommand gives a new LookCommand
 func NewLookCommand(dbConn db.Database) *LookCommand {
 	return &LookCommand{
 		db: dbConn,
@@ -49,8 +41,8 @@ func (l *LookCommand) Register(registry command.Registry, server command.Server)
 	registry.RegisterMessageReactionRemoveHandler(l.handleReactionRemove)
 }
 
-// TODO: Make configurable for specific guilds
 // InstallSlashCommands registers the slash commands
+// TODO: Make configurable for specific guilds
 func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 	app := discordgo.ApplicationCommand{
 		Name:        "lookForPlayers",
@@ -80,41 +72,29 @@ func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 		},
 	}
 
-	cmds, err := s.ApplicationCommands(s.State.User.ID, guildID)
-	if err != nil {
+	if err := slash.InstallSlashCommand(s, tmGaming, app); err != nil {
 		return err
 	}
-	exists := false
-	for _, cmd := range cmds {
-		if cmd.Name == "lookForPlayers" {
-			exists = reflect.DeepEqual(app.Options, cmd.Options)
-		}
+
+	if err := slash.InstallSlashCommand(s, itf, app); err != nil {
+		return err
 	}
 
-	if !exists {
-		_, err = s.ApplicationCommandCreate(s.State.User.ID, guildID, &app)
-	}
-
-	return err
+	return nil
 }
 
 func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	//conf, isHive, err := l.checkConfig(i.GuildID, i.ChannelID)
-	//if err != nil {
-	//	l.sendInteractionResponse(s,i,err.Error())
-	//	return
-	//}
-	//if !isHive {
-	//	l.sendInteractionResponse(s,i,"This command only works in Requests channels")
-	//	return// not from a guild
-	//}
-
-	if i.ChannelID != lfpReqID {
-		l.sendInvisibleInteractionResponse(s, i, "This command only works in Requests channels")
+	conf, isLFP, err := l.checkConfig(i.GuildID, i.ChannelID)
+	if err != nil {
+		l.sendInvisibleInteractionResponse(s, i, err.Error())
 		return
 	}
+	if !isLFP {
+		l.sendInvisibleInteractionResponse(s, i, "This command only works in Requests channels")
+		return // not from a guild
+	}
 
-	inviteChannelID := lfpDeskID
+	inviteChannelID := conf.AdvertiseChannelID
 	var name, selectedRoleID string
 	var amount float64
 	timeString := "Now!"
@@ -175,7 +155,7 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 		}
 	}
 
-	err := l.createInviteEmbed(s, i, name, int(amount), timeString, selectedRoleID, inviteChannelID)
+	err = l.createInviteEmbed(s, i, name, int(amount), timeString, selectedRoleID, inviteChannelID)
 	content := fmt.Sprintf("Invite created in <#%v>!", inviteChannelID)
 	if err != nil {
 		content = err.Error()
@@ -192,7 +172,29 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 	}
 }
 
-func (l *LookCommand) checkConfig(guildID, channelID string) (*db.HiveConfiguration, bool, error) {
+func (l *LookCommand) checkConfig(guildID, channelID string) (*db.LookingForPlayersConfiguration, bool, error) {
+	conf, err := l.db.ConfigForGuild(guildID)
+	if err != nil {
+		return nil, false, err
+	}
+	if conf == nil {
+		// not in our DB
+		return nil, false, nil
+	}
+
+	for _, lfp := range conf.LookingForPlayers {
+		for _, reqID := range lfp.RequestChannelIDs {
+			if channelID == reqID {
+				return &lfp, true, nil
+			}
+		}
+	}
+
+	// no lfp found
+	return nil, false, nil
+}
+
+func (l *LookCommand) checkHiveConfig(guildID, channelID string) (*db.HiveConfiguration, bool, error) {
 	conf, err := l.db.ConfigForGuild(guildID)
 	if err != nil {
 		return nil, false, err
@@ -426,13 +428,19 @@ func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Messag
 func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReactionAdd, currentPlayers []string, message *discordgo.Message, hostID string, err error) {
 	//Create voice channel
 	//TODO: Make configurable in config file!
-	conf, isHive, err := l.checkConfig(r.GuildID, hiveReqID)
+	conf, isLFP, err := l.checkConfig(r.GuildID, r.ChannelID)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	if !isHive {
-		log.Println("not in hive")
+	if !isLFP {
+		log.Println("not in lfp")
+		return
+	}
+
+	hiveconf, _, err := l.checkHiveConfig(r.GuildID, conf.HiveChannelID)
+	if err != nil {
+		log.Println(err)
 		return
 	}
 
@@ -443,7 +451,7 @@ func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReacti
 		log.Println(err)
 		return
 	}
-	channel, err := h.CreateVoiceChannel(s, conf, message.Embeds[0].Title, conf.VoiceCategoryID, r.GuildID, channelSize, false)
+	channel, err := h.CreateVoiceChannel(s, hiveconf, message.Embeds[0].Title, hiveconf.VoiceCategoryID, r.GuildID, channelSize, false)
 	if err != nil {
 		log.Println(err)
 		return

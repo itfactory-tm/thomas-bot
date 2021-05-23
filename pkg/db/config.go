@@ -7,7 +7,8 @@ type Configuration struct {
 
 	RoleManagement RoleManagementConfiguration `json:"roleManagement"`
 
-	Hives []HiveConfiguration `json:"hives"`
+	Hives             []HiveConfiguration              `json:"hives"`
+	LookingForPlayers []LookingForPlayersConfiguration `json:"lookingForPlayers"`
 }
 
 type HiveConfiguration struct {
@@ -31,4 +32,10 @@ type Role struct {
 	ID    string `json:"id"`
 	Emoji string `json:"emoji"`
 	//Name  string `json:"name"`
+}
+
+type LookingForPlayersConfiguration struct {
+	RequestChannelIDs  []string `json:"requestChannelIDs"`
+	AdvertiseChannelID string   `json:"advertiseChannelID"`
+	HiveChannelID      string   `json:"hiveChannelID"`
 }
