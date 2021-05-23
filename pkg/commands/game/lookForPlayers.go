@@ -461,7 +461,7 @@ func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReacti
 	}
 
 	//Notify players, except the host
-	messagePlayerSuccessful := l.messagePlayers(s, r, currentPlayers[1:], message.Embeds[0], fmt.Sprintf("The game %s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
+	messagePlayerSuccessful := l.messagePlayers(s, r, currentPlayers[1:], message.Embeds[0], fmt.Sprintf("%s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
 	if !messagePlayerSuccessful {
 		return
 	}
