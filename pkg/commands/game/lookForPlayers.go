@@ -59,14 +59,14 @@ func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 				Description: "Amount of people you need for the game",
 				Required:    true,
 			}, {
-				Type:        discordgo.ApplicationCommandOptionRole,
-				Name:        "notifyrole",
-				Description: "Notify a role with your invitation!",
-				Required:    false,
-			}, {
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "time",
 				Description: "At what time do you want to play? Format hh:mm (example: 15:45)",
+				Required:    false,
+			}, {
+				Type:        discordgo.ApplicationCommandOptionRole,
+				Name:        "notifyrole",
+				Description: "Notify a role with your invitation!",
 				Required:    false,
 			},
 		},
