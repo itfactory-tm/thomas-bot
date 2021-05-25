@@ -1,4 +1,7 @@
-FROM golang:1.16-alpine as build
+FROM --platform=$BUILDPLATFORM golang:1.16-alpine as build
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 RUN apk add --no-cache git
 
@@ -6,7 +9,11 @@ COPY ./ /go/src/github.com/itfactory-tm/thomas-bot
 
 WORKDIR /go/src/github.com/itfactory-tm/thomas-bot
 
-RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./cmd/thomas/
+RUN export GOARM=6 && \
+    export GOARCH=amd64 && \
+    if [ "$TARGETPLATFORM" == "linux/arm64" ]; then export GOARCH=arm64; fi && \
+    if [ "$TARGETPLATFORM" == "linux/arm" ]; then export GOARCH=arm; fi && \
+    go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./cmd/thomas/
 
 FROM alpine:3.13
 
