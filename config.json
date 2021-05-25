@@ -63,6 +63,11 @@
         "requestChannelIDs": ["844547099534032926"],
         "advertiseChannelID": "844547099534032926",
         "hiveChannelID": "844547099534032926"
+      },
+      {
+        "requestChannelIDs": ["787346218304274483"],
+        "advertiseChannelID": "771458095489744936",
+        "hiveChannelID": "787346218304274483"
       }
     ]
   },
