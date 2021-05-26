@@ -253,8 +253,16 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 				Value:  "\u200b",
 				Inline: true,
 			}, {
-				Name:   "Join",
+				Name:   "Join active",
 				Value:  "👋",
+				Inline: true,
+			}, {
+				Name:   "Join backup",
+				Value:  "💾",
+				Inline: true,
+			}, {
+				Name:   "\u200b",
+				Value:  "\u200b",
 				Inline: true,
 			}, {
 				Name:   "Delete Invite",
@@ -263,6 +271,10 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 			}, {
 				Name:   "Start game",
 				Value:  "🎮",
+				Inline: true,
+			}, {
+				Name:   "\u200b",
+				Value:  "\u200b",
 				Inline: true,
 			},
 		},
@@ -284,6 +296,7 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 		return errors.New(fmt.Sprintf("Error sending embed message: %v", err))
 	}
 	s.MessageReactionAdd(sentMessage.ChannelID, sentMessage.ID, "👋")
+	s.MessageReactionAdd(sentMessage.ChannelID, sentMessage.ID, "💾")
 	s.MessageReactionAdd(sentMessage.ChannelID, sentMessage.ID, "🗑️")
 	s.MessageReactionAdd(sentMessage.ChannelID, sentMessage.ID, "🎮")
 	return nil
@@ -308,30 +321,40 @@ func (l *LookCommand) handleReactionAdd(s *discordgo.Session, r *discordgo.Messa
 	if err != nil {
 		return
 	}
-
 	if !l.checkEmbed(s, message) {
 		return
 	}
 
-	hostID, currentPlayers, backupPlayers, neededPlayers := l.getPlayers(s, message, r.UserID, true)
-
 	if r.Emoji.MessageFormat() == "👋" {
+		_, currentPlayers, backupPlayers, neededPlayers := l.getPlayers(s, message, r.UserID, true, true)
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
 		if message.Embeds[0].Fields[2].Value == "Now!" && len(currentPlayers) >= neededPlayers {
-			l.startGame(s, r, currentPlayers, message, hostID, err)
+			l.startGame(s, r, currentPlayers, backupPlayers, neededPlayers, message)
 		}
 	}
 
-	if r.Emoji.MessageFormat() == "🗑️" {
-		if r.UserID == hostID {
+	hostID, currentPlayers, backupPlayers, neededPlayers := l.getPlayers(s, message, r.UserID, true, false)
+
+	if r.Emoji.MessageFormat() == "💾" {
+		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
+	}
+
+	if r.UserID == hostID {
+		if r.Emoji.MessageFormat() == "🗑️" {
+			//Delete message first to prevent players being notified multiple times when emoji spam (Dirk proofing)
+			err = s.ChannelMessageDelete(r.ChannelID, r.MessageID)
+			if err != nil {
+				return
+			}
 			//Notify players
-			l.messagePlayers(s, r, currentPlayers, message.Embeds[0], fmt.Sprintf("The invite for %s has been deleted by the host.", message.Embeds[0].Title))
+			err = l.messagePlayers(s, currentPlayers, message.Embeds[0], fmt.Sprintf("The invite for %s has been deleted by the host.", message.Embeds[0].Title))
+			if err != nil {
+				return
+			}
 		}
-	}
 
-	if r.Emoji.MessageFormat() == "🎮" {
-		if r.UserID == hostID {
-			l.startGame(s, r, currentPlayers, message, hostID, err)
+		if r.Emoji.MessageFormat() == "🎮" {
+			l.startGame(s, r, currentPlayers, backupPlayers, neededPlayers, message)
 		}
 	}
 }
@@ -345,9 +368,13 @@ func (l *LookCommand) handleReactionRemove(s *discordgo.Session, r *discordgo.Me
 		return
 	}
 
-	_, currentPlayers, backupPlayers, _ := l.getPlayers(s, message, r.UserID, false)
-
 	if r.Emoji.MessageFormat() == "👋" {
+		_, currentPlayers, backupPlayers, _ := l.getPlayers(s, message, r.UserID, false, true)
+		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
+	}
+
+	if r.Emoji.MessageFormat() == "💾" {
+		_, currentPlayers, backupPlayers, _ := l.getPlayers(s, message, r.UserID, false, false)
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
 	}
 }
@@ -374,61 +401,92 @@ func (l *LookCommand) checkEmbed(s *discordgo.Session, message *discordgo.Messag
 	return true
 }
 
-func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Message, reactionUser string, add bool) (hostID string, activePlayers []string, backupPlayers []string, neededplayers int) {
+func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Message, reactionUser string, add bool, active bool) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
 	//Trim out mention
 	hostID = strings.TrimRight(strings.TrimLeft(message.Embeds[0].Fields[0].Value, "<@"), ">")
 	neededPlayers, _ := strconv.Atoi(message.Embeds[0].Fields[1].Value)
 
 	//Get all players from message
 	var playersID []string
+	var backupPlayersID []string
 	//Active + Backup players (field 3 and 4)
 	for i := 3; i <= 4; i++ {
 		playersMention := strings.Split(message.Embeds[0].Fields[i].Value, "\n")
 		for _, player := range playersMention {
-			ID := strings.TrimRight(strings.TrimLeft(player, "<@"), ">")
-			if ID != "\u200b" {
+			if strings.HasSuffix(player, "\u200b") && player != "\u200b" {
+				//put the backup players in a different array
+				ID := strings.TrimRight(strings.TrimLeft(player, "<@"), ">\u200b")
+				backupPlayersID = append(backupPlayersID, ID)
+			} else if player != "\u200b" {
+				ID := strings.TrimRight(strings.TrimLeft(player, "<@"), ">")
 				playersID = append(playersID, ID)
 			}
 		}
 	}
 
-	//Make new array with the hostUser
-	joinedPlayers := []string{hostID}
-
-	//There's a better way to do this but i don't know how... (it works tough)
-	playerIndex := 999
-	//Append players without the host and bot
-	for index, ID := range playersID {
-		if ID != hostID && ID != s.State.User.ID {
-			if ID == reactionUser {
-				playerIndex = index
-			}
-			joinedPlayers = append(joinedPlayers, ID)
-		}
-	}
-
 	if reactionUser != hostID {
-		if add && playerIndex == 999 {
-			joinedPlayers = append(joinedPlayers, reactionUser)
+		//There's a better way to do this but i don't know how... (it works tough)
+		activePlayerIndex := 999
+		//Append players without the host and bot
+		for index, ID := range playersID {
+			if ID == reactionUser {
+				//player in list
+				activePlayerIndex = index
+			}
 		}
-		if !add && playerIndex != 999 {
-			//Remove from array
-			joinedPlayers = append(joinedPlayers[:playerIndex], joinedPlayers[playerIndex+1:]...)
+
+		backupPlayerIndex := 999
+		//Append backup players without the host and bot
+		for index, ID := range backupPlayersID {
+			if ID == reactionUser {
+				//player in list
+				backupPlayerIndex = index
+			}
+		}
+
+		if active == true && backupPlayerIndex == 999 {
+			if add && activePlayerIndex == 999 {
+				playersID = append(playersID, reactionUser)
+			}
+			if !add && activePlayerIndex != 999 {
+				//Remove from array
+				playersID = append(playersID[:activePlayerIndex], playersID[activePlayerIndex+1:]...)
+			}
+		}
+
+		if active == false && activePlayerIndex == 999 {
+			if add && backupPlayerIndex == 999 {
+				backupPlayersID = append(backupPlayersID, reactionUser)
+			}
+			if !add && backupPlayerIndex != 999 {
+				//Remove from backup array
+				backupPlayersID = append(backupPlayersID[:backupPlayerIndex], backupPlayersID[backupPlayerIndex+1:]...)
+			}
 		}
 	}
 
-	if len(joinedPlayers) < neededPlayers {
-		activePlayers = joinedPlayers
+	backupPlayers = make(map[string]bool)
+
+	if len(playersID) < neededPlayers {
+		activePlayers = playersID
+		for _, backupPlayer := range backupPlayersID {
+			backupPlayers[backupPlayer] = false
+		}
 		message.Embeds[0].Color = 0x33FF33
 	} else {
-		activePlayers = joinedPlayers[:neededPlayers]
-		backupPlayers = joinedPlayers[neededPlayers:]
+		activePlayers = playersID[:neededPlayers]
+		for _, player := range playersID[neededPlayers:] {
+			backupPlayers[player] = true
+		}
+		for _, backupPlayer := range backupPlayersID {
+			backupPlayers[backupPlayer] = false
+		}
 		message.Embeds[0].Color = 0xFF0000
 	}
 	return hostID, activePlayers, backupPlayers, neededPlayers
 }
 
-func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReactionAdd, currentPlayers []string, message *discordgo.Message, hostID string, err error) {
+func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReactionAdd, currentPlayers []string, backupPlayers map[string]bool, neededPlayers int, message *discordgo.Message) {
 	//Create voice channel
 	//TODO: Make configurable in config file!
 	conf, isLFP, err := l.checkConfig(r.GuildID, r.ChannelID)
@@ -460,46 +518,49 @@ func (l *LookCommand) startGame(s *discordgo.Session, r *discordgo.MessageReacti
 		return
 	}
 
-	//Notify players, except the host
-	messagePlayerSuccessful := l.messagePlayers(s, r, currentPlayers[1:], message.Embeds[0], fmt.Sprintf("%s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
-	if !messagePlayerSuccessful {
+	//Delete message first to prevent players being notified multiple times when emoji spam (Dirk proofing)
+	err = s.ChannelMessageDelete(r.ChannelID, r.MessageID)
+	if err != nil {
 		return
 	}
-	message.Embeds[0].Fields = message.Embeds[0].Fields[:5]
-	messageSend := &discordgo.MessageSend{
-		Content: fmt.Sprintf("I have notified every joined player! Here is your invite to notify backup players if needed. You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value),
-		Embed:   message.Embeds[0],
+
+	//Notify players, except the host
+	err = l.messagePlayers(s, currentPlayers[1:], message.Embeds[0], fmt.Sprintf("%s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
+	if len(currentPlayers) < neededPlayers && len(backupPlayers) != 0 {
+		var backupID []string
+		for player := range backupPlayers {
+			backupID = append(backupID, player)
+		}
+		//Message first backup players
+		err = l.messagePlayers(s, backupID[:neededPlayers-len(currentPlayers)], message.Embeds[0], fmt.Sprintf("%s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
+		//Message host about backup players
+		err = l.messagePlayers(s, currentPlayers[:1], message.Embeds[0], fmt.Sprintf("I have notified every joined player and needed backup player(s)! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
+	} else {
+		//Message host
+		err = l.messagePlayers(s, currentPlayers[:1], message.Embeds[0], fmt.Sprintf("I have notified every joined player! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
 	}
-	//Dm invite to host
-	dmChannel, err := s.UserChannelCreate(hostID)
-	_, err = s.ChannelMessageSendComplex(dmChannel.ID, messageSend)
 	if err != nil {
-		log.Println(err)
+		return
 	}
 }
 
-func (l *LookCommand) messagePlayers(s *discordgo.Session, r *discordgo.MessageReactionAdd, currentPlayers []string, embed *discordgo.MessageEmbed, message string) bool {
-	//Delete message first to prevent players being notified multiple times when emoji spam (Dirk proofing)
-	err := s.ChannelMessageDelete(r.ChannelID, r.MessageID)
-	if err != nil {
-		return false
-	}
+func (l *LookCommand) messagePlayers(s *discordgo.Session, playerList []string, embed *discordgo.MessageEmbed, message string) error {
 	embed.Fields = embed.Fields[:5]
-	for _, user := range currentPlayers {
+	for _, user := range playerList {
 		dmChannel, _ := s.UserChannelCreate(user)
 		messageSend := &discordgo.MessageSend{
 			Content: message,
 			Embed:   embed,
 		}
-		_, err = s.ChannelMessageSendComplex(dmChannel.ID, messageSend)
+		_, err := s.ChannelMessageSendComplex(dmChannel.ID, messageSend)
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 	}
-	return true
+	return nil
 }
 
-func (l *LookCommand) handleJoinReaction(currentPlayers []string, backupPlayers []string, message *discordgo.Message, s *discordgo.Session) {
+func (l *LookCommand) handleJoinReaction(currentPlayers []string, backupPlayers map[string]bool, message *discordgo.Message, s *discordgo.Session) {
 	activePlayersString := "\u200b"
 	backupPlayersString := "\u200b"
 
@@ -510,8 +571,14 @@ func (l *LookCommand) handleJoinReaction(currentPlayers []string, backupPlayers 
 		}
 		if len(backupPlayers) != 0 {
 			backupPlayersString = ""
-			for _, player := range backupPlayers {
-				backupPlayersString += fmt.Sprintf("<@%s>\n", player)
+			for player, active := range backupPlayers {
+				if active {
+					//If active join selected
+					backupPlayersString += fmt.Sprintf("<@%s>\n", player)
+				} else {
+					//If backup selected
+					backupPlayersString += fmt.Sprintf("<@%s>\u200b\n", player)
+				}
 			}
 		}
 	}
