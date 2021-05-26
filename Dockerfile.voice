@@ -3,7 +3,7 @@ FROM alpine as steunaudio
 RUN apk add --no-cache git
 RUN git clone https://github.com/itfactory-tm/itf-steunt-je.git /steun
 
-FROM golang:1.14 as build
+FROM golang:1.16 as build
 
 RUN apt-get update && apt-get install -y libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev git
 

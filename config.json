@@ -63,6 +63,11 @@
         "requestChannelIDs": ["844547099534032926"],
         "advertiseChannelID": "844547099534032926",
         "hiveChannelID": "844547099534032926"
+      },
+      {
+        "requestChannelIDs": ["787346218304274483"],
+        "advertiseChannelID": "771458095489744936",
+        "hiveChannelID": "787346218304274483"
       }
     ]
   },
@@ -148,6 +153,49 @@
       ],
       "roleAdminChannelID": "837217317946654741",
       "defaultRole": "837217317146066986"
+    }
+  },
+
+  "846795857495720016": {
+    "_JSON_Comment_Hack": "Bouw",
+    "welcomeText": "Welkom <@{{.User.ID}}> op de Thomas more Bouw Discord server. Ik stuur je zo een DM om alles inorde te maken.",
+    "welcomeChannelID": "846795857608179712",
+    "welcomeDM": [
+      "Welkom op de Bouw Thomas More server!",
+      "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
+      "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
+      "Als je hulp nodig hebt, typ dan tm!help",
+      "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
+      "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, nice to meet you!"
+    ],
+    "hives": [
+      {
+        "requestChannelIDs": ["846795857788665901", "846795857788665902"],
+        "junkyardCategoryID": "846798509554663514",
+        "textCategoryID": "846795857788665900",
+        "voiceCategoryID": "846795857788665900",
+        "prefix": "",
+        "voiceBitrate": 96000
+      },
+      {
+        "requestChannelIDs": ["846795857788665899"],
+        "junkyardCategoryID": "846798509554663514",
+        "textCategoryID": "846795857788665898",
+        "voiceCategoryID": "846795857788665898",
+        "prefix": "",
+        "voiceBitrate": 96000
+      }
+    ],
+    "roleManagement": {
+      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen? Zodat je toegang krijgt tot de juiste kanalen!",
+      "roles": [
+        {"emoji": "1️⃣", "id": "846795857495720018"},
+        {"emoji": "2️⃣", "id": "846795857495720018"},
+        {"emoji": "3️⃣", "id": "846795857495720020"},
+        {"emoji": "👩‍🎓", "id": "846795857495720021"}
+      ],
+      "roleAdminChannelID": "846795857788665905",
+      "defaultRole": "846795857495720017"
     }
   },
   

@@ -1,6 +1,8 @@
 package moderation
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
@@ -25,10 +27,10 @@ func (m *ModerationCommands) checkMessage(s *discordgo.Session, msg *discordgo.M
 		// reactions are also edit events
 		return
 	}
-	if _, err := m.server.GetDiscordHA().CacheRead("check", fmt.Sprintf("%s%s%s", msg.ChannelID, msg.Author.ID, msg.Content), ""); err != nil {
+	if _, err := m.server.GetDiscordHA().CacheRead("check", hash(fmt.Sprintf("%s%s%s", msg.ChannelID, msg.Author.ID, msg.ID, msg.Content)), ""); err != nil {
 		return
 	}
-	m.server.GetDiscordHA().CacheWrite("check", fmt.Sprintf("%s%s%s", msg.ChannelID, msg.Author.ID, msg.Content), "true", time.Minute)
+	m.server.GetDiscordHA().CacheWrite("check", hash(fmt.Sprintf("%s%s%s", msg.ChannelID, msg.Author.ID, msg.ID, msg.Content)), "true", time.Minute)
 	user, err := m.getUser(s, msg.GuildID, msg.Author.ID)
 	if err != nil {
 		return
@@ -99,4 +101,10 @@ func (m *ModerationCommands) checkReaction(s *discordgo.Session, r *discordgo.Me
 	}
 
 	m.server.GetDiscordHA().CacheWrite("reaction", r.GuildID+r.UserID, i, 2*time.Minute)
+}
+
+func hash(in string) string {
+	hasher := sha256.New()
+	hasher.Write([]byte(in))
+	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 }
