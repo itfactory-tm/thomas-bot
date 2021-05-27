@@ -4,9 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"time"
-
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/kelseyhightower/envconfig"
@@ -58,26 +55,29 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	}
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
-	m := members.NewMemberCommand()
+	/*
+		m := members.NewMemberCommand()
 
-	members, err := dg.GuildMembers(itfDiscord, "", 1000)
-	if err != nil {
-		return fmt.Errorf("error getting members: %w", err)
-	}
+		members, err := dg.GuildMembers(itfDiscord, "", 1000)
+		if err != nil {
+			return fmt.Errorf("error getting members: %w", err)
+		}
 
-	for _, member := range members {
-		send := false
-		for _, role := range member.Roles {
-			if role == "687567949795557386" || role == "687568334379679771" || role == "687568470820388864" || role == "689844328528478262" {
-				send = true
+		for _, member := range members {
+			send := false
+			for _, role := range member.Roles {
+				if role == "687567949795557386" || role == "687568334379679771" || role == "687568470820388864" || role == "689844328528478262" {
+					send = true
+				}
+			}
+			if send {
+				fmt.Println(member.User.Username)
+				m.SendRoleDM(dg, member.User.ID)
+				time.Sleep(30 * time.Second)
 			}
 		}
-		if send {
-			fmt.Println(member.User.Username)
-			m.SendRoleDM(dg, member.User.ID)
-			time.Sleep(30 * time.Second)
-		}
-	}
+
+	*/
 
 	return nil
 }

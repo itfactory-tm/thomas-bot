@@ -198,7 +198,7 @@ func (s *serveCmdOptions) onMessageReactionRemove(sess *discordgo.Session, m *di
 }
 
 func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
-	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
+	for _, handler := range s.onInteractionCreateHandler[i.ApplicationCommandData().Name] {
 		handler(sess, i)
 	}
 }

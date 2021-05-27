@@ -98,8 +98,8 @@ func (g *GiphyCommands) InstallSlashCommands(session *discordgo.Session) error {
 func (g *GiphyCommands) slashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	subject := ""
 
-	if len(i.Data.Options) > 0 {
-		if r, ok := i.Data.Options[0].Value.(string); ok {
+	if len(i.ApplicationCommandData().Options) > 0 {
+		if r, ok := i.ApplicationCommandData().Options[0].Value.(string); ok {
 			subject = r
 		}
 	}
@@ -107,7 +107,7 @@ func (g *GiphyCommands) slashCommand(s *discordgo.Session, i *discordgo.Interact
 	if subject == "" {
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "Something went wrong",
 				Flags:   64,
 			},
@@ -146,7 +146,7 @@ func (g *GiphyCommands) postRandomGif(s *discordgo.Session, i *discordgo.Interac
 	if os.Getenv("THOMASBOT_GIPHYKEY") == "" {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "Giphy key is lacking from deployment",
 				Flags:   64,
 			},
@@ -158,7 +158,7 @@ func (g *GiphyCommands) postRandomGif(s *discordgo.Session, i *discordgo.Interac
 	if err != nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error: %v", err),
 				Flags:   64,
 			},
@@ -171,7 +171,7 @@ func (g *GiphyCommands) postRandomGif(s *discordgo.Session, i *discordgo.Interac
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: "",
 			Embeds:  []*discordgo.MessageEmbed{embed.MessageEmbed},
 		},

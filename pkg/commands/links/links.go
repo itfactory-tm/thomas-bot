@@ -133,8 +133,8 @@ func (l *LinkCommands) registerInfoDagCommand(name, helpText, response string) {
 func (l *LinkCommands) slashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	reply := "I do not know that link"
 
-	if len(i.Data.Options) > 0 {
-		if key, ok := i.Data.Options[0].Value.(string); ok {
+	if len(i.ApplicationCommandData().Options) > 0 {
+		if key, ok := i.ApplicationCommandData().Options[0].Value.(string); ok {
 			if r, ok := l.output[key]; ok {
 				reply = r
 			}
@@ -143,7 +143,7 @@ func (l *LinkCommands) slashCommand(s *discordgo.Session, i *discordgo.Interacti
 
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: reply,
 		},
 	})
