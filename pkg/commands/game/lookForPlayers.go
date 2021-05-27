@@ -326,14 +326,14 @@ func (l *LookCommand) handleReactionAdd(s *discordgo.Session, r *discordgo.Messa
 	}
 
 	if r.Emoji.MessageFormat() == "👋" {
-		_, currentPlayers, backupPlayers, neededPlayers := l.getPlayers(s, message, r.UserID, true, true)
+		_, currentPlayers, backupPlayers, neededPlayers := l.getPlayers(message, r.UserID, true, true)
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
 		if message.Embeds[0].Fields[2].Value == "Now!" && len(currentPlayers) >= neededPlayers {
 			l.startGame(s, r, currentPlayers, backupPlayers, neededPlayers, message)
 		}
 	}
 
-	hostID, currentPlayers, backupPlayers, neededPlayers := l.getPlayers(s, message, r.UserID, true, false)
+	hostID, currentPlayers, backupPlayers, neededPlayers := l.getPlayers(message, r.UserID, true, false)
 
 	if r.Emoji.MessageFormat() == "💾" {
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
@@ -369,12 +369,12 @@ func (l *LookCommand) handleReactionRemove(s *discordgo.Session, r *discordgo.Me
 	}
 
 	if r.Emoji.MessageFormat() == "👋" {
-		_, currentPlayers, backupPlayers, _ := l.getPlayers(s, message, r.UserID, false, true)
+		_, currentPlayers, backupPlayers, _ := l.getPlayers(message, r.UserID, false, true)
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
 	}
 
 	if r.Emoji.MessageFormat() == "💾" {
-		_, currentPlayers, backupPlayers, _ := l.getPlayers(s, message, r.UserID, false, false)
+		_, currentPlayers, backupPlayers, _ := l.getPlayers(message, r.UserID, false, false)
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
 	}
 }
@@ -401,7 +401,7 @@ func (l *LookCommand) checkEmbed(s *discordgo.Session, message *discordgo.Messag
 	return true
 }
 
-func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Message, reactionUser string, add bool, active bool) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
+func (l *LookCommand) getPlayers(message *discordgo.Message, reactionUser string, add bool, active bool) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
 	//Trim out mention
 	hostID = strings.TrimRight(strings.TrimLeft(message.Embeds[0].Fields[0].Value, "<@"), ">")
 	neededPlayers, _ := strconv.Atoi(message.Embeds[0].Fields[1].Value)
@@ -427,7 +427,7 @@ func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Messag
 	if reactionUser != hostID {
 		//There's a better way to do this but i don't know how... (it works tough)
 		activePlayerIndex := 999
-		//Append players without the host and bot
+		//Check if the user is in the list
 		for index, ID := range playersID {
 			if ID == reactionUser {
 				//player in list
@@ -436,16 +436,15 @@ func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Messag
 		}
 
 		backupPlayerIndex := 999
-		//Append backup players without the host and bot
 		for index, ID := range backupPlayersID {
 			if ID == reactionUser {
-				//player in list
 				backupPlayerIndex = index
 			}
 		}
 
 		if active == true && backupPlayerIndex == 999 {
 			if add && activePlayerIndex == 999 {
+				//add to array
 				playersID = append(playersID, reactionUser)
 			}
 			if !add && activePlayerIndex != 999 {
@@ -459,7 +458,6 @@ func (l *LookCommand) getPlayers(s *discordgo.Session, message *discordgo.Messag
 				backupPlayersID = append(backupPlayersID, reactionUser)
 			}
 			if !add && backupPlayerIndex != 999 {
-				//Remove from backup array
 				backupPlayersID = append(backupPlayersID[:backupPlayerIndex], backupPlayersID[backupPlayerIndex+1:]...)
 			}
 		}
@@ -573,7 +571,7 @@ func (l *LookCommand) handleJoinReaction(currentPlayers []string, backupPlayers 
 			backupPlayersString = ""
 			for player, active := range backupPlayers {
 				if active {
-					//If active join selected
+					//join active selected
 					backupPlayersString += fmt.Sprintf("<@%s>\n", player)
 				} else {
 					//If backup selected
