@@ -11,6 +11,15 @@ import (
 )
 
 func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	if i.Member == nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "I cannot do this in DM, sorry",
+			},
+		})
+		return
+	}
 	ch, err := s.UserChannelCreate(i.Member.User.ID)
 	if err != nil {
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -86,27 +95,45 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 
 	e.SetDescription(conf.RoleManagement.Message)
 
-	roles := ""
+	roles := []discordgo.MessageComponent{}
 	for _, crole := range conf.RoleManagement.Roles {
 		role := findRole(guild.Roles, crole.ID)
 		if role != nil {
-			roles += fmt.Sprintf("%s: %s\n", crole.Emoji, role.Name)
+			roles = append(roles, discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label:    role.Name,
+						Style:    discordgo.SecondaryButton,
+						CustomID: "role_" + role.ID,
+						Emoji: discordgo.ButtonEmoji{
+							Name: crole.Emoji,
+						},
+					},
+				},
+			})
 		}
 	}
 
-	e.AddField("Roles", roles)
+	_, err = s.ChannelMessageSendComplex(ch.ID, &discordgo.MessageSend{
+		Embed: e.MessageEmbed,
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label:    "Join Channel",
+						Style:    discordgo.SuccessButton,
+						CustomID: "hive_join",
+						Emoji: discordgo.ButtonEmoji{
+							Name: "👋",
+						},
+					},
+				},
+			},
+		},
+	})
 
-	msg, err := s.ChannelMessageSendEmbed(ch.ID, e.MessageEmbed)
 	if err != nil {
-		log.Println("Role DM error", err)
-		return
-	}
-
-	for _, crole := range conf.RoleManagement.Roles {
-		err := s.MessageReactionAdd(ch.ID, msg.ID, crole.Emoji)
-		if err != nil {
-			log.Printf("Error adding help emoji: %q\n", err)
-		}
+		log.Println(err)
 	}
 }
 
