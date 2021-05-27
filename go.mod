@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/bwmarrin/discordgo v0.23.3-0.20210506151729-0f05488fa0b3
-	github.com/davecgh/go-spew v1.1.1
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/go-audio/wav v1.0.0
