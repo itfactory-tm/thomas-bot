@@ -53,7 +53,7 @@ func (s *ShoutCommand) shout(sess *discordgo.Session, i *discordgo.InteractionCr
 	if err != nil {
 		sess.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("An error happened: %s", err),
 				Flags:   64, // ephemeral
 			},
@@ -66,13 +66,13 @@ func (s *ShoutCommand) shout(sess *discordgo.Session, i *discordgo.InteractionCr
 		ModuleID:  "thomasbot",
 		GuildID:   i.GuildID,
 		ChannelID: ch,
-		File:      fmt.Sprintf("%d.wav", int(i.Data.Options[0].Value.(float64))),
+		File:      fmt.Sprintf("%d.wav", int(i.ApplicationCommandData().Options[0].Value.(float64))),
 		UserID:    i.Member.User.ID,
 	})
 	if err != nil {
 		sess.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error sending voice command: %q", err),
 				Flags:   64, // ephemeral
 			},
@@ -81,7 +81,7 @@ func (s *ShoutCommand) shout(sess *discordgo.Session, i *discordgo.InteractionCr
 
 	sess.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: "Go Go Go",
 		},
 	})

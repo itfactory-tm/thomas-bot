@@ -35,7 +35,7 @@ func (h *HelloCommand) InstallSlashCommands(session *discordgo.Session) error {
 func (h *HelloCommand) SayHello(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: "Beep bop boop! I am Thomas Bot, fork me on GitHub!",
 		},
 	})

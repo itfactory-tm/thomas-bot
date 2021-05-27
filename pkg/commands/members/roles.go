@@ -15,7 +15,7 @@ func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.Int
 	if err != nil {
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "error sending a DM to you",
 				Flags:   64, // ephemeral
 			},
@@ -30,7 +30,7 @@ func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.Int
 	if ch.ID == i.ChannelID {
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "I'm sorry I have no idea which server you are in, please use tm!role in a channel in the Discord server I need to help you with.",
 				Flags:   64, // ephemeral
 			},
@@ -44,7 +44,7 @@ func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.Int
 
 	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: "I sent you a DM!",
 			Flags:   64, // ephemeral
 		},

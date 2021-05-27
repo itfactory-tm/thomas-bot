@@ -73,12 +73,12 @@ func (i *ImagesCommands) Info() []command.Command {
 }
 
 func (i *ImagesCommands) slashCommand(s *discordgo.Session, in *discordgo.InteractionCreate) {
-	if len(in.Data.Options) > 0 {
-		if key, ok := in.Data.Options[0].Value.(string); ok {
+	if len(in.ApplicationCommandData().Options) > 0 {
+		if key, ok := in.ApplicationCommandData().Options[0].Value.(string); ok {
 			if fn, ok := i.images[key]; ok {
 				err := s.InteractionRespond(in.Interaction, &discordgo.InteractionResponse{
 					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionApplicationCommandResponseData{
+					Data: &discordgo.InteractionResponseData{
 						Embeds: []*discordgo.MessageEmbed{
 							fn(s, in),
 						},
@@ -94,7 +94,7 @@ func (i *ImagesCommands) slashCommand(s *discordgo.Session, in *discordgo.Intera
 
 	err := s.InteractionRespond(in.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: "sorry I didn't find that image",
 			Flags:   64,
 		},

@@ -100,7 +100,7 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 	timeString := "Now!"
 	var ok bool
 
-	for _, option := range i.Data.Options {
+	for _, option := range i.ApplicationCommandData().Options {
 		switch option.Name {
 		case "game":
 			name, ok = option.Value.(string)
@@ -162,7 +162,7 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 	}
 	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: content,
 		},
 	})
@@ -305,7 +305,7 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 func (l *LookCommand) sendInvisibleInteractionResponse(s *discordgo.Session, i *discordgo.InteractionCreate, content string) {
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: content,
 			Flags:   64,
 		},

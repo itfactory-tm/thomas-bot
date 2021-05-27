@@ -268,8 +268,16 @@ func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo
 }
 
 func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
-	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
-		handler(sess, i)
+	if i.Type == discordgo.InteractionApplicationCommand {
+		for _, handler := range s.onInteractionCreateHandler[i.ApplicationCommandData().Name] {
+			handler(sess, i)
+		}
+	}
+
+	if i.Type == discordgo.InteractionMessageComponent {
+		for _, handler := range s.onInteractionCreateHandler[i.MessageComponentData().CustomID] {
+			handler(sess, i)
+		}
 	}
 }
 
