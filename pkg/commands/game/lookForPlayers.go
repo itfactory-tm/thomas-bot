@@ -342,17 +342,17 @@ func (l *LookCommand) handleBtnClick(s *discordgo.Session, i *discordgo.Interact
 
 	if i.MessageComponentData().CustomID == "lfp_join" {
 		// check if we need to remove
-		_, _, playersIDs, backupPlayersIDs := l.getPlayers(message)
-		for _, p := range append(playersIDs, backupPlayersIDs...) {
+		_, _, playersIDs, _ := l.getPlayers(message)
+		for _, p := range playersIDs {
 			if p == uid {
 				// handle remove
-				_, currentPlayers, backupPlayers, _ := l.editPlayers(message, uid, false, true)
+				_, currentPlayers, backupPlayers, _ := l.removePlayer(message, uid)
 				l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
 				return
 			}
 		}
 
-		_, currentPlayers, backupPlayers, neededPlayers := l.editPlayers(message, uid, true, true)
+		_, currentPlayers, backupPlayers, neededPlayers := l.addPlayer(message, uid)
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
 		if message.Embeds[0].Fields[2].Value == "Now!" && len(currentPlayers) >= neededPlayers {
 			l.startGame(s, i, currentPlayers, backupPlayers, neededPlayers, message)
@@ -362,8 +362,19 @@ func (l *LookCommand) handleBtnClick(s *discordgo.Session, i *discordgo.Interact
 	}
 
 	if i.MessageComponentData().CustomID == "lfp_backup" {
-		_, currentPlayers, backupPlayers, _ := l.editPlayers(message, uid, true, false)
+		_, _, _, backupPlayersIDs := l.getPlayers(message)
+		for _, p := range backupPlayersIDs {
+			if p == uid {
+				// handle remove
+				_, currentPlayers, backupPlayers, _ := l.removeBackup(message, uid)
+				l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
+				return
+			}
+		}
+
+		_, currentPlayers, backupPlayers, _ := l.addBackup(message, uid)
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
+		return
 	}
 
 	hostID, neededPlayers, playersIDs, backupPlayersIDs := l.getPlayers(message)
@@ -386,7 +397,7 @@ func (l *LookCommand) handleBtnClick(s *discordgo.Session, i *discordgo.Interact
 			l.startGame(s, i, currentPlayers, backupPlayers, neededPlayers, message)
 		}
 	} else if i.MessageComponentData().CustomID == "lfp_delete" {
-		_, currentPlayers, backupPlayers, _ := l.editPlayers(message, uid, false, true)
+		_, currentPlayers, backupPlayers, _ := l.removePlayer(message, uid)
 		l.handleJoinReaction(currentPlayers, backupPlayers, message, s)
 		return
 	}
@@ -414,45 +425,96 @@ func (l *LookCommand) checkEmbed(s *discordgo.Session, message *discordgo.Messag
 	return true
 }
 
-func (l *LookCommand) editPlayers(message *discordgo.Message, reactionUser string, add bool, active bool) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
+func (l *LookCommand) getPlayerIndexes(playersID, backupPlayersID []string, reactionUser string) (int, int) {
+	//There's a better way to do this but i don'+t know how... (it works tough)
+	activePlayerIndex := -1
+	//Check if the user is in the list
+	for index, ID := range playersID {
+		if ID == reactionUser {
+			//player in list
+			activePlayerIndex = index
+		}
+	}
+
+	backupPlayerIndex := -1
+	for index, ID := range backupPlayersID {
+		if ID == reactionUser {
+			backupPlayerIndex = index
+		}
+	}
+	return activePlayerIndex, backupPlayerIndex
+}
+
+func (l *LookCommand) addPlayer(message *discordgo.Message, reactionUser string) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
 	hostID, neededPlayers, playersID, backupPlayersID := l.getPlayers(message)
 
 	if reactionUser != hostID {
-		//There's a better way to do this but i don't know how... (it works tough)
-		activePlayerIndex := -1
-		//Check if the user is in the list
-		for index, ID := range playersID {
-			if ID == reactionUser {
-				//player in list
-				activePlayerIndex = index
-			}
+		activePlayerIndex, backupPlayerIndex := l.getPlayerIndexes(playersID, backupPlayersID, reactionUser)
+
+		// if in neither of the lists add them to players
+		if backupPlayerIndex == -1 && activePlayerIndex == -1 {
+			playersID = append(playersID, reactionUser)
 		}
 
-		backupPlayerIndex := -1
-		for index, ID := range backupPlayersID {
-			if ID == reactionUser {
-				backupPlayerIndex = index
-			}
+		// if in backup move them to active
+		if backupPlayerIndex != -1 && activePlayerIndex == -1 {
+			backupPlayersID = append(backupPlayersID[:backupPlayerIndex], backupPlayersID[backupPlayerIndex+1:]...)
+			playersID = append(playersID, reactionUser)
+		}
+	}
+
+	backupPlayers, activePlayers = l.buildBackup(message, playersID, neededPlayers, backupPlayersID)
+	return hostID, activePlayers, backupPlayers, neededPlayers
+}
+
+func (l *LookCommand) removePlayer(message *discordgo.Message, reactionUser string) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
+	hostID, neededPlayers, playersID, backupPlayersID := l.getPlayers(message)
+
+	if reactionUser != hostID {
+		activePlayerIndex, backupPlayerIndex := l.getPlayerIndexes(playersID, backupPlayersID, reactionUser)
+
+		// remove from both lists! We don't want to see leavers at all
+		if activePlayerIndex != -1 {
+			playersID = append(playersID[:activePlayerIndex], playersID[activePlayerIndex+1:]...)
+		}
+		if backupPlayerIndex != -1 {
+			backupPlayersID = append(backupPlayersID[:backupPlayerIndex], backupPlayersID[backupPlayerIndex+1:]...)
+		}
+	}
+
+	backupPlayers, activePlayers = l.buildBackup(message, playersID, neededPlayers, backupPlayersID)
+	return hostID, activePlayers, backupPlayers, neededPlayers
+}
+
+func (l *LookCommand) addBackup(message *discordgo.Message, reactionUser string) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
+	hostID, neededPlayers, playersID, backupPlayersID := l.getPlayers(message)
+
+	if reactionUser != hostID {
+		activePlayerIndex, backupPlayerIndex := l.getPlayerIndexes(playersID, backupPlayersID, reactionUser)
+
+		// if not a backup today, become one
+		if backupPlayerIndex == -1 {
+			backupPlayersID = append(backupPlayersID, reactionUser)
 		}
 
-		if active && backupPlayerIndex == -1 {
-			if add && activePlayerIndex == -1 {
-				//add to array
-				playersID = append(playersID, reactionUser)
-			}
-			if !add && activePlayerIndex != -1 {
-				//Remove from array
-				playersID = append(playersID[:activePlayerIndex], playersID[activePlayerIndex+1:]...)
-			}
+		// no longer be an active player
+		if activePlayerIndex != -1 {
+			playersID = append(playersID[:activePlayerIndex], playersID[activePlayerIndex+1:]...)
 		}
+	}
 
-		if !active && activePlayerIndex == -1 {
-			if add && backupPlayerIndex == -1 {
-				backupPlayersID = append(backupPlayersID, reactionUser)
-			}
-			if !add && backupPlayerIndex != -1 {
-				backupPlayersID = append(backupPlayersID[:backupPlayerIndex], backupPlayersID[backupPlayerIndex+1:]...)
-			}
+	backupPlayers, activePlayers = l.buildBackup(message, playersID, neededPlayers, backupPlayersID)
+	return hostID, activePlayers, backupPlayers, neededPlayers
+}
+
+func (l *LookCommand) removeBackup(message *discordgo.Message, reactionUser string) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
+	hostID, neededPlayers, playersID, backupPlayersID := l.getPlayers(message)
+
+	if reactionUser != hostID {
+		_, backupPlayerIndex := l.getPlayerIndexes(playersID, backupPlayersID, reactionUser)
+
+		if backupPlayerIndex != -1 {
+			backupPlayersID = append(backupPlayersID[:backupPlayerIndex], backupPlayersID[backupPlayerIndex+1:]...)
 		}
 	}
 
