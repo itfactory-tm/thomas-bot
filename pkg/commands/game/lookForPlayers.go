@@ -446,24 +446,24 @@ func (l *LookCommand) getPlayerIndexes(playersID, backupPlayersID []string, reac
 }
 
 func (l *LookCommand) addPlayer(message *discordgo.Message, reactionUser string) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
-	hostID, neededPlayers, playersID, backupPlayersID := l.getPlayers(message)
+	hostID, neededPlayers, playersIDs, backupPlayersIDs := l.getPlayers(message)
 
 	if reactionUser != hostID {
-		activePlayerIndex, backupPlayerIndex := l.getPlayerIndexes(playersID, backupPlayersID, reactionUser)
+		activePlayerIndex, backupPlayerIndex := l.getPlayerIndexes(playersIDs, backupPlayersIDs, reactionUser)
 
 		// if in neither of the lists add them to players
 		if backupPlayerIndex == -1 && activePlayerIndex == -1 {
-			playersID = append(playersID, reactionUser)
+			playersIDs = append(playersIDs, reactionUser)
 		}
 
 		// if in backup move them to active
 		if backupPlayerIndex != -1 && activePlayerIndex == -1 {
-			backupPlayersID = append(backupPlayersID[:backupPlayerIndex], backupPlayersID[backupPlayerIndex+1:]...)
-			playersID = append(playersID, reactionUser)
+			backupPlayersIDs = append(backupPlayersIDs[:backupPlayerIndex], backupPlayersIDs[backupPlayerIndex+1:]...)
+			playersIDs = append(playersIDs, reactionUser)
 		}
 	}
 
-	backupPlayers, activePlayers = l.buildBackup(message, playersID, neededPlayers, backupPlayersID)
+	backupPlayers, activePlayers = l.buildBackup(message, playersIDs, neededPlayers, backupPlayersIDs)
 	return hostID, activePlayers, backupPlayers, neededPlayers
 }
 
@@ -487,23 +487,24 @@ func (l *LookCommand) removePlayer(message *discordgo.Message, reactionUser stri
 }
 
 func (l *LookCommand) addBackup(message *discordgo.Message, reactionUser string) (hostID string, activePlayers []string, backupPlayers map[string]bool, neededplayers int) {
-	hostID, neededPlayers, playersID, backupPlayersID := l.getPlayers(message)
+	hostID, neededPlayers, playersID, backupPlayersIDs := l.getPlayers(message)
 
 	if reactionUser != hostID {
-		activePlayerIndex, backupPlayerIndex := l.getPlayerIndexes(playersID, backupPlayersID, reactionUser)
-
-		// if not a backup today, become one
-		if backupPlayerIndex == -1 {
-			backupPlayersID = append(backupPlayersID, reactionUser)
-		}
+		activePlayerIndex, backupPlayerIndex := l.getPlayerIndexes(playersID, backupPlayersIDs, reactionUser)
 
 		// no longer be an active player
 		if activePlayerIndex != -1 {
 			playersID = append(playersID[:activePlayerIndex], playersID[activePlayerIndex+1:]...)
 		}
+
+		// if not a backup today, become one
+		if backupPlayerIndex == -1 {
+			backupPlayersIDs = append(backupPlayersIDs, reactionUser)
+		}
+
 	}
 
-	backupPlayers, activePlayers = l.buildBackup(message, playersID, neededPlayers, backupPlayersID)
+	backupPlayers, activePlayers = l.buildBackup(message, playersID, neededPlayers, backupPlayersIDs)
 	return hostID, activePlayers, backupPlayers, neededPlayers
 }
 
@@ -616,7 +617,11 @@ func (l *LookCommand) startGame(s *discordgo.Session, i *discordgo.InteractionCr
 			backupID = append(backupID, player)
 		}
 		//Message first backup players
-		err = l.messagePlayers(s, backupID[:neededPlayers-len(currentPlayers)], message.Embeds[0], fmt.Sprintf("%s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
+		backupsToAdd := neededPlayers - len(currentPlayers)
+		if backupsToAdd > len(backupPlayers) {
+			backupsToAdd = len(backupPlayers)
+		}
+		err = l.messagePlayers(s, backupID[:backupsToAdd], message.Embeds[0], fmt.Sprintf("%s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
 		//Message host about backup players
 		err = l.messagePlayers(s, currentPlayers[:1], message.Embeds[0], fmt.Sprintf("I have notified every joined player and needed backup player(s)! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%s` in the request channel", channel.ID, message.Embeds[0].Title, message.Embeds[0].Fields[1].Value))
 	} else {
