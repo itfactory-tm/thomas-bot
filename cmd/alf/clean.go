@@ -170,7 +170,6 @@ func (v *cleanCmdOptions) checkGuild(guildID string) {
 	}
 
 	if conf == nil || len(conf.Hives) == 0 {
-		// hive guser
 		return
 	}
 
@@ -198,18 +197,29 @@ func (v *cleanCmdOptions) checkGuild(guildID string) {
 			// on first occurance: mark to remove, on second occurance remove
 			if wasMarkedAsRemove := v.shouldRemove[channel.ID]; wasMarkedAsRemove && !inUse {
 				log.Println("Deleting", channel.ID, channel.Name)
-				j, err := v.dg.Channel(conf.JunkyardCategoryID)
-				if err != nil {
-					log.Println(err)
-					continue
+
+				if conf.JunkyardCategoryID == "" {
+					// no junkyard we need to delete
+					_, err := v.dg.ChannelDelete(channel.ID)
+					if err != nil {
+						log.Println(err)
+					}
+				} else {
+					// junkyard is set we need to move it there
+					j, err := v.dg.Channel(conf.JunkyardCategoryID)
+					if err != nil {
+						log.Println(err)
+						continue
+					}
+					_, err = v.dg.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
+						ParentID:             conf.JunkyardCategoryID,
+						PermissionOverwrites: j.PermissionOverwrites,
+					})
+					if err != nil {
+						log.Println(err)
+					}
 				}
-				_, err = v.dg.ChannelEditComplex(channel.ID, &discordgo.ChannelEdit{
-					ParentID:             conf.JunkyardCategoryID,
-					PermissionOverwrites: j.PermissionOverwrites,
-				})
-				if err != nil {
-					log.Println(err)
-				}
+
 				delete(v.shouldRemove, channel.ID)
 			}
 

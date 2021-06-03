@@ -143,14 +143,18 @@ func (h *HiveCommand) installHive(session *discordgo.Session) error {
 }
 
 func (h *HiveCommand) HiveCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	if i.Type != discordgo.InteractionApplicationCommand {
+		return // not the app command
+	}
+
 	hidden := false
 	istext := false
 	var size int
 	var name string
-	if len(i.Data.Options) < 1 || len(i.Data.Options[0].Options) < 1 || len(i.Data.Options[0].Options[0].Options) < 2 {
+	if len(i.ApplicationCommandData().Options) < 1 || len(i.ApplicationCommandData().Options[0].Options) < 1 || len(i.ApplicationCommandData().Options[0].Options[0].Options) < 2 {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "Invalid command options",
 				Flags:   64,
 			},
@@ -158,7 +162,7 @@ func (h *HiveCommand) HiveCommand(s *discordgo.Session, i *discordgo.Interaction
 		return // invalid
 	}
 
-	if i.Data.Options[0].Options[0].Name == "text" {
+	if i.ApplicationCommandData().Options[0].Options[0].Name == "text" {
 		istext = true
 	}
 
@@ -167,7 +171,7 @@ func (h *HiveCommand) HiveCommand(s *discordgo.Session, i *discordgo.Interaction
 		return
 	}
 
-	for _, option := range i.Data.Options[0].Options[0].Options {
+	for _, option := range i.ApplicationCommandData().Options[0].Options[0].Options {
 		switch option.Name {
 		case "name":
 			name, ok = option.Value.(string)
@@ -195,7 +199,7 @@ func (h *HiveCommand) precheck(s *discordgo.Session, i *discordgo.InteractionCre
 	if i.Member == nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "This command does not work in DMs",
 				Flags:   64,
 			},
@@ -207,7 +211,7 @@ func (h *HiveCommand) precheck(s *discordgo.Session, i *discordgo.InteractionCre
 	if err != nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("An error happened: %v", err),
 				Flags:   64,
 			},
@@ -217,7 +221,7 @@ func (h *HiveCommand) precheck(s *discordgo.Session, i *discordgo.InteractionCre
 	if !isHive {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "This command only works in the Requests channels",
 				Flags:   64,
 			},
@@ -240,7 +244,7 @@ func (h *HiveCommand) createChannel(s *discordgo.Session, i *discordgo.Interacti
 	if err != nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("An error happened: %v", err),
 				Flags:   64,
 			},
@@ -251,7 +255,7 @@ func (h *HiveCommand) createChannel(s *discordgo.Session, i *discordgo.Interacti
 	if !isText {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Channel <#%s> has been created!  Reminder: I will delete it when it stays empty for a while", newChan.ID),
 				Flags:   64,
 			},
@@ -259,7 +263,7 @@ func (h *HiveCommand) createChannel(s *discordgo.Session, i *discordgo.Interacti
 	} else if !hidden {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Channel <#%s> has been created!", newChan.ID),
 				Flags:   64,
 			},
@@ -273,22 +277,25 @@ func (h *HiveCommand) createChannel(s *discordgo.Session, i *discordgo.Interacti
 
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "Channel has been created! Your channel is hidden, react 👋 below to join",
 				Embeds:  []*discordgo.MessageEmbed{e.MessageEmbed},
+				Components: []discordgo.MessageComponent{
+					discordgo.ActionsRow{
+						Components: []discordgo.MessageComponent{
+							discordgo.Button{
+								Label:    "Join Channel",
+								Style:    discordgo.SuccessButton,
+								CustomID: "hive_join",
+								Emoji: discordgo.ButtonEmoji{
+									Name: "👋",
+								},
+							},
+						},
+					},
+				},
 			},
 		})
-		messages, err := s.ChannelMessages(i.ChannelID, 10, "", "", "")
-		if err != nil {
-			return
-		}
-
-		for _, msg := range messages {
-			if len(msg.Embeds) > 0 && len(msg.Embeds[0].Fields) > 1 && msg.Embeds[0].Fields[1].Value == newChan.ID {
-				s.MessageReactionAdd(i.ChannelID, msg.ID, "👋")
-				break
-			}
-		}
 	}
 }
 
@@ -390,7 +397,7 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, i *discordgo.InteractionC
 	if err != nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "Error getting channel info",
 				Flags:   64,
 			},
@@ -407,7 +414,7 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, i *discordgo.InteractionC
 	if !isHive || h.isPrivilegedChannel(channel.ID, conf) {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "This command only works in hive created channels",
 				Flags:   64,
 			},
@@ -419,7 +426,7 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, i *discordgo.InteractionC
 		if !strings.HasPrefix(channel.Name, conf.Prefix) {
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionApplicationCommandResponseData{
+				Data: &discordgo.InteractionResponseData{
 					Content: "This command only works in hive created channels with correct prefix",
 					Flags:   64,
 				},
@@ -444,7 +451,7 @@ func (h *HiveCommand) SayArchive(s *discordgo.Session, i *discordgo.InteractionC
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: "Channel is archived",
 		},
 	})
@@ -457,7 +464,7 @@ func (h *HiveCommand) SayLeave(s *discordgo.Session, i *discordgo.InteractionCre
 	if err != nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: err.Error(),
 				Flags:   64,
 			},
@@ -468,7 +475,7 @@ func (h *HiveCommand) SayLeave(s *discordgo.Session, i *discordgo.InteractionCre
 	if !isHive || h.isPrivilegedChannel(i.ChannelID, conf) {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
+			Data: &discordgo.InteractionResponseData{
 				Content: "This command only works in hive created channels, consider using Discord's mute instead",
 				Flags:   64,
 			},
@@ -497,73 +504,8 @@ func (h *HiveCommand) SayLeave(s *discordgo.Session, i *discordgo.InteractionCre
 	}
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
+		Data: &discordgo.InteractionResponseData{
 			Content: fmt.Sprintf("<@%s> has left the chat", i.Member.User.ID),
 		},
 	})
-}
-
-func (h *HiveCommand) handleReaction(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
-	message, err := s.ChannelMessage(r.ChannelID, r.MessageID)
-	if err != nil {
-		log.Println("Cannot get message of reaction", r.ChannelID)
-		return
-	}
-
-	if message.Author.ID != s.State.User.ID {
-		return // not the bot user
-	}
-
-	if len(message.Embeds) < 1 {
-		return // not an embed
-	}
-
-	if len(message.Embeds[0].Fields) < 2 {
-		return // not the correct embed
-	}
-
-	if message.Embeds[0].Title != "Hive Channel" {
-		return // not the hive message
-	}
-
-	channel, err := s.Channel(message.Embeds[0].Fields[len(message.Embeds[0].Fields)-1].Value)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	conf, isHive, err := h.getConfigForRequestChannel(r.GuildID, r.ChannelID)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	if !isHive {
-		//s.ChannelMessageSend(r.ChannelID, "Sorry category not allowed, try privilege escalating otherwise!")
-		return
-	}
-
-	if channel.ParentID != conf.VoiceCategoryID && channel.ParentID != conf.TextCategoryID {
-		// channel no longer in hive
-		return
-	}
-
-	err = s.ChannelPermissionSet(channel.ID, r.UserID, discordgo.PermissionOverwriteTypeMember, defaultAllows, 0)
-	if err != nil {
-		log.Println("Cannot set permissions", err)
-		return
-	}
-
-	// send message if user was not in channel before, we do keep changing the permissions to handle bugs in old permissions
-	inChannel := false
-	for _, ow := range channel.PermissionOverwrites {
-		if ow.Type == discordgo.PermissionOverwriteTypeMember && ow.ID == r.UserID {
-			inChannel = true
-			break
-		}
-	}
-
-	if !inChannel {
-		s.ChannelMessageSend(channel.ID, fmt.Sprintf("Welcome <@%s>, you can leave any time by saying `/leave`", r.UserID))
-	}
 }

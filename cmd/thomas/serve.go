@@ -163,7 +163,14 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	dg.UpdateStreamingStatus(0, fmt.Sprintf("tm!help (version %s)", revision), "")
+	go func() {
+		for {
+			guilds, _ := dg.UserGuilds(100, "", "")
+
+			dg.UpdateListeningStatus(fmt.Sprintf("%d servers (version %s)", len(guilds), revision))
+			time.Sleep(time.Minute)
+		}
+	}()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
@@ -268,8 +275,16 @@ func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo
 }
 
 func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
-	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
-		handler(sess, i)
+	if i.Type == discordgo.InteractionApplicationCommand {
+		for _, handler := range s.onInteractionCreateHandler[i.ApplicationCommandData().Name] {
+			handler(sess, i)
+		}
+	}
+
+	if i.Type == discordgo.InteractionMessageComponent {
+		for _, handler := range s.onInteractionCreateHandler[i.MessageComponentData().CustomID] {
+			handler(sess, i)
+		}
 	}
 }
 

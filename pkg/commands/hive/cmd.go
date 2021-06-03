@@ -25,6 +25,7 @@ func (h *HiveCommand) Register(registry command.Registry, server command.Server)
 
 	if !h.isBob {
 		registry.RegisterInteractionCreate("hive", h.HiveCommand)
+		registry.RegisterInteractionCreate("hive_join", h.handleJoin)
 	}
 }
 

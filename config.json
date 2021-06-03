@@ -75,8 +75,25 @@
   "694621018970390538": {
     "_JSON_Comment_Hack": "Trains",
     "welcomeText": "Spoor 1, de IC trein met bestemming <@{{.User.ID}}> komt aan, spoor 1. Deze trein stopt in Welkom-Centraal en Geel. Deze trein stopt uitzonderlijk niet in Haat-Noord. De 1ste klas plaatsen zijn overal.",
-    "welcomeChannelID": "694621018970390541"
-  },
+    "welcomeChannelID": "694621018970390541",
+    "hives": [
+      {
+        "requestChannelIDs": ["847444804937580594"],
+        "junkyardCategoryID": "",
+        "textCategoryID": "847444741851578399",
+        "voiceCategoryID": "847444741851578399",
+        "prefix": "",
+        "voiceBitrate": 96000
+      }
+    ],
+    "lookingForPlayers": [
+      {
+        "requestChannelIDs": ["847444804937580594"],
+        "advertiseChannelID": "847444804937580594",
+        "hiveChannelID": "847444804937580594"
+      }
+    ]
+},
   "689786403596533841": {
     "_JSON_Comment_Hack": "TM graduaten",
     "welcomeText": "Welkom <@{{.User.ID}}> op de IT Graduaten Thomas More Discord server. Je wordt automatisch toegevoegd als Gast. Indien je student of alumnus bent en toegang wil tot de studenten- of alumnikanalen, gelieve dan op de <#689821990907019282> pagina je jaar te selecteren.",
