@@ -595,12 +595,7 @@ func (l *LookCommand) startGame(s *discordgo.Session, i *discordgo.InteractionCr
 
 	//Make the voice channel
 	h := hive.NewHiveCommand(l.db)
-	channelSize := neededPlayers
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	channel, err := h.CreateVoiceChannel(s, hiveconf, message.Embeds[0].Title, hiveconf.VoiceCategoryID, i.GuildID, channelSize, false)
+	channel, err := h.CreateVoiceChannel(s, hiveconf, message.Embeds[0].Title, hiveconf.VoiceCategoryID, i.GuildID, neededPlayers, false)
 	if err != nil {
 		log.Println(err)
 		return
@@ -615,17 +610,19 @@ func (l *LookCommand) startGame(s *discordgo.Session, i *discordgo.InteractionCr
 	//Notify players, except the host
 	err = l.messagePlayers(s, activePlayers[1:], message.Embeds[0], fmt.Sprintf("%s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%d` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, neededPlayers))
 	if len(activePlayers) < neededPlayers && len(backupPlayers) != 0 {
-		//Message first backup players
+		//Find out how many backup players need to be invited
 		backupsToAdd := neededPlayers - len(activePlayers)
 		if backupsToAdd > len(backupPlayers) {
 			backupsToAdd = len(backupPlayers)
 		}
+		//Message needed backup players
 		err = l.messagePlayers(s, backupPlayers[:backupsToAdd], message.Embeds[0], fmt.Sprintf("%s is starting now! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%d` in the request channel", message.Embeds[0].Title, channel.ID, message.Embeds[0].Title, neededPlayers))
-		//Message host about backup players
+		//Get needed backup players
 		var backupPlayersString string
 		for _, backupPlayer := range backupPlayers[:backupsToAdd] {
 			backupPlayersString += fmt.Sprintf("\n<@%s>", backupPlayer)
 		}
+		//Message host about backup players
 		err = l.messagePlayers(s, activePlayers[:1], message.Embeds[0], fmt.Sprintf("I have notified every joined player and needed backup player(s)! You can join the channel here! <#%s>\nIf this does not show up, you make one yourself with `/hive type voice name:%s size:%d` in the request channel\n**Notified backup players:**%s", channel.ID, message.Embeds[0].Title, neededPlayers, backupPlayersString))
 	} else {
 		//Message host
