@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/pronostiek"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
@@ -192,6 +194,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		shout.NewShoutCommand(),
 		hive.NewHiveCommand(s.db),
 		game.NewLookCommand(s.db),
+		pronostiek.NewPronostiekCommand(),
 	}
 
 	for _, handler := range s.handlers {
