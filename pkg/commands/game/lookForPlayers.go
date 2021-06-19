@@ -75,7 +75,9 @@ func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 		},
 	}
 
-	slash.InstallSlashCommand(s, choo, app)
+	if err := slash.InstallSlashCommand(s, choo, app); err != nil {
+		return fmt.Errorf("error installing lfp in choo: %w", err)
+	}
 
 	if err := slash.InstallSlashCommand(s, tmGaming, app); err != nil {
 		return fmt.Errorf("error installing lfp in TM Gaming: %w", err)
