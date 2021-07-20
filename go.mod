@@ -13,7 +13,7 @@ require (
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/hraban/opus v0.0.0-20191117073431-57179dff69a6
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/meyskens/discord-ha v0.0.0-20210527121027-4175c27f57b9
+	github.com/meyskens/discord-ha v0.0.0-20210720154558-9710aa2545d8
 	github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd
 	github.com/sanzaru/go-giphy v0.0.0-20180211202227-c353d5ec6ee8
 	github.com/spf13/cobra v0.0.3
