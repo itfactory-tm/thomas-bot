@@ -84,6 +84,15 @@
         "voiceBitrate": 96000
       }
     ],
+    "roleManagement": {
+      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+      "roles": [
+        {"emoji": "1️⃣", "id": "847468727087661097"},
+        {"emoji": "2️⃣", "id": "847468771387768852"}
+      ],
+      "roleAdminChannelID": "698103703680450580",
+      "defaultRole": "837217317146066986"
+    },
     "lookingForPlayers": [
       {
         "requestChannelIDs": ["847444804937580594"],
@@ -91,7 +100,7 @@
         "hiveChannelID": "847444804937580594"
       }
     ]
-},
+  },
   "689786403596533841": {
     "_JSON_Comment_Hack": "TM graduaten",
     "welcomeText": "Welkom <@{{.User.ID}}> op de IT Graduaten Thomas More Discord server. Je wordt automatisch toegevoegd als Gast. Indien je student of alumnus bent en toegang wil tot de studenten- of alumnikanalen, gelieve dan op de <#689821990907019282> pagina je jaar te selecteren.",

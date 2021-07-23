@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strings"
 	"syscall"
 	"time"
 
@@ -279,13 +280,17 @@ func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo
 
 func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
 	if i.Type == discordgo.InteractionApplicationCommand {
-		for _, handler := range s.onInteractionCreateHandler[i.ApplicationCommandData().Name] {
+		// what we're doing here is allowing the app to set a custom ID after -- to pass along hidden values like an ID
+		name := strings.Split(i.ApplicationCommandData().Name, "--")[0]
+		for _, handler := range s.onInteractionCreateHandler[name] {
 			handler(sess, i)
 		}
 	}
 
 	if i.Type == discordgo.InteractionMessageComponent {
-		for _, handler := range s.onInteractionCreateHandler[i.MessageComponentData().CustomID] {
+		// what we're doing here is allowing the app to set a custom ID after -- to pass along hidden values like an ID
+		name := strings.Split(i.MessageComponentData().CustomID, "--")[0]
+		for _, handler := range s.onInteractionCreateHandler[name] {
 			handler(sess, i)
 		}
 	}
