@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/pronostiek"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
@@ -163,7 +165,14 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	dg.UpdateStreamingStatus(0, fmt.Sprintf("tm!help (version %s)", revision), "")
+	go func() {
+		for {
+			guilds, _ := dg.UserGuilds(100, "", "")
+
+			dg.UpdateListeningStatus(fmt.Sprintf("%d servers (version %s)", len(guilds), revision))
+			time.Sleep(time.Minute)
+		}
+	}()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
@@ -185,6 +194,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		shout.NewShoutCommand(),
 		hive.NewHiveCommand(s.db),
 		game.NewLookCommand(s.db),
+		pronostiek.NewPronostiekCommand(),
 	}
 
 	for _, handler := range s.handlers {

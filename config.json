@@ -94,7 +94,14 @@
       ],
       "roleAdminChannelID": "837217317946654741",
       "defaultRole": "837217317146066986"
-    }
+    },
+    "lookingForPlayers": [
+      {
+        "requestChannelIDs": ["847444804937580594"],
+        "advertiseChannelID": "847444804937580594",
+        "hiveChannelID": "847444804937580594"
+      }
+    ]
   },
   "689786403596533841": {
     "_JSON_Comment_Hack": "TM graduaten",
