@@ -7,12 +7,10 @@
       "Welcome to the IT Factory Discord!",
       "My name is Thomas Bot, I am a bot who can help you!",
       "New to Discord? No problem we got a manual for you: https://itf.to/discord-help",
-      "If you need help just type tm!help",
-      "Warning, i am only able to reply to messages starting with `tm!`, not to normal questions.",
       "Please set your name for our Discord server to your actual name, this will help us to identify you and let you in! Thank you!"
     ],
     "roleManagement": {
-      "message": "We need to assign you a role inside our Discord which will help you gain access to the class specific channels.\nSelect the following emoji(s) for roles you want to request, note that our moderation team has to approve these first.",
+      "message": "We need to assign you a role inside our Discord which will help you gain access to the class specific channels.\nSelect the roles you want to request, note that our moderation team has to approve these first.",
       "roles": [
         {"emoji": "1️⃣", "id": "687567949795557386"},
         {"emoji": "2️⃣", "id": "687568334379679771"},
@@ -144,8 +142,6 @@
       "Welkom op de Organisatie en Management Thomas More server!",
       "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
       "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
-      "Als je hulp nodig hebt, typ dan tm!help",
-      "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
       "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, nice to meet you!"
     ],
     "hives": [
@@ -181,8 +177,6 @@
       "Welkom op de Bouw Thomas More server!",
       "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
       "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
-      "Als je hulp nodig hebt, typ dan tm!help",
-      "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
       "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, nice to meet you!"
     ],
     "hives": [
@@ -224,9 +218,7 @@
       "Welkom op de ICE Cube Discord server!",
       "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
       "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
-      "Als je hulp nodig hebt, typ dan tm!help",
-      "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
-      "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, ICE to meet you!"
+      "Wijzig je je naam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, ICE to meet you!"
     ],
     "roleManagement": {
       "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
