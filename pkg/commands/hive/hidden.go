@@ -8,7 +8,7 @@ import (
 )
 
 func (h *HiveCommand) handleJoin(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	if i.Type != discordgo.InteractionMessageComponent || i.MessageComponentData().CustomID != "hive_join" {
+	if i.Type != discordgo.InteractionApplicationCommand || i.MessageComponentData().CustomID != "hive_join" {
 		return
 	}
 
