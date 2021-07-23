@@ -22,6 +22,8 @@ const tmGaming = "773847927910432789"
 const itf = "687565213943332875"
 const choo = "694621018970390538"
 
+var reg = regexp.MustCompile(`^[A-Za-z0-9 ]+$`)
+
 // LookCommand contains the /lookforplayers command
 type LookCommand struct {
 	db db.Database
@@ -75,7 +77,9 @@ func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 		},
 	}
 
-	slash.InstallSlashCommand(s, choo, app)
+	if err := slash.InstallSlashCommand(s, choo, app); err != nil {
+		return fmt.Errorf("error installing lfp in choo: %w", err)
+	}
 
 	if err := slash.InstallSlashCommand(s, tmGaming, app); err != nil {
 		return fmt.Errorf("error installing lfp in TM Gaming: %w", err)
@@ -117,7 +121,7 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 				l.sendInvisibleInteractionResponse(s, i, "Your game needs to be between 2-25 characters long")
 				return
 			}
-			if matched, _ := regexp.MatchString(`^[A-Za-z0-9 ]+$`, name); !matched {
+			if matched := reg.MatchString(name); !matched {
 				l.sendInvisibleInteractionResponse(s, i, "Your game cannot contain any special characters")
 				return
 			}
@@ -419,10 +423,8 @@ func (l *LookCommand) checkEmbed(s *discordgo.Session, message *discordgo.Messag
 	}
 
 	channel, _ := s.Channel(message.ChannelID)
-	if channel.Type != discordgo.ChannelTypeGuildText {
-		return false // not from a guild
-	}
-	return true
+
+	return channel.Type == discordgo.ChannelTypeGuildText
 }
 
 func (l *LookCommand) getPlayerIndexes(playersID, backupPlayersID []string, reactionUser string) (int, int) {
