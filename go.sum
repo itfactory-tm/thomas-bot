@@ -227,10 +227,10 @@ github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaO
 github.com/mattn/go-isatty v0.0.3/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
 github.com/matttproud/golang_protobuf_extensions v1.0.1 h1:4hp9jkHxhMHkqkrB3Ix0jegS5sx/RkqARlsWZ6pIwiU=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/meyskens/discord-ha v0.0.0-20210527121027-4175c27f57b9 h1:7qB5Ss3GbghRCBuuWXYrq0xp46quzeRhxdmeGCwG48w=
-github.com/meyskens/discord-ha v0.0.0-20210527121027-4175c27f57b9/go.mod h1:u8uwh/+ECiJ/bY3M1hfgSF2NuFi0IGAkEA05pC5xSdY=
-github.com/meyskens/discordgo v0.23.3-0.20210527115245-354a2cda7019 h1:73S3QlVQivKXWKv0D4zdJhLjS6Q1L/5rW3CfcIzyebA=
-github.com/meyskens/discordgo v0.23.3-0.20210527115245-354a2cda7019/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
+github.com/meyskens/discord-ha v0.0.0-20210723094030-8791e408bab7 h1:rPbHy7dVJUzjVSE7/pW+7/JyjxgOGkikSXS+6uvmwLE=
+github.com/meyskens/discord-ha v0.0.0-20210723094030-8791e408bab7/go.mod h1:QpnvQEcrsH8bCce7hGhhj0tYuOMGKWGILHTRmElASVs=
+github.com/meyskens/discordgo v0.23.3-0.20210723093830-80a9f1364942 h1:AMm3QNLw9i+O2RoJOe6K0A3NlX2XeXF+zyvXgDuqZKo=
+github.com/meyskens/discordgo v0.23.3-0.20210723093830-80a9f1364942/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
 github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd h1:n0QVTkt3UwQ9166YyvKgMCXIm02r5ZZZtadIIfkmzbI=
 github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd/go.mod h1:HIolLCBpnd1SJS+7IJSH7C/PjUfJZGOkHraw6N3nuQI=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=

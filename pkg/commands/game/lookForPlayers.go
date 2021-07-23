@@ -274,7 +274,7 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 						Label:    "Join",
 						Style:    discordgo.SuccessButton,
 						CustomID: "lfp_join",
-						Emoji: discordgo.ButtonEmoji{
+						Emoji: discordgo.ComponentEmoji{
 							Name: "👋",
 						},
 					},
@@ -282,7 +282,7 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 						Label:    "Join as Backup",
 						Style:    discordgo.SecondaryButton,
 						CustomID: "lfp_backup",
-						Emoji: discordgo.ButtonEmoji{
+						Emoji: discordgo.ComponentEmoji{
 							Name: "💾",
 						},
 					},
@@ -294,7 +294,7 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 						Label:    "Delete",
 						Style:    discordgo.DangerButton,
 						CustomID: "lfp_delete",
-						Emoji: discordgo.ButtonEmoji{
+						Emoji: discordgo.ComponentEmoji{
 							Name: "🗑",
 						},
 					},
@@ -302,7 +302,7 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 						Label:    "Start",
 						Style:    discordgo.SuccessButton,
 						CustomID: "lfp_start",
-						Emoji: discordgo.ButtonEmoji{
+						Emoji: discordgo.ComponentEmoji{
 							Name: "🎮",
 						},
 					},

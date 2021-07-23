@@ -29,9 +29,10 @@ func NewMemberCommand(conn db.Database) *MemberCommands {
 // Register registers the handlers
 func (m *MemberCommands) Register(registry command.Registry, server command.Server) {
 	registry.RegisterInteractionCreate("role", m.roleSlashCommand)
+	registry.RegisterInteractionCreate("rolereq", m.handleRoleRequest)
+	registry.RegisterInteractionCreate("roleresponse", m.handleRolePermissionResponse)
+
 	registry.RegisterGuildMemberAddHandler(m.onGuildMemberAdd)
-	registry.RegisterMessageReactionAddHandler(m.handleRolePermissionReaction)
-	registry.RegisterMessageReactionAddHandler(m.handleRoleReaction)
 }
 
 // InstallSlashCommands registers the slash commands
