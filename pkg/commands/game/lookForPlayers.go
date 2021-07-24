@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
@@ -200,8 +199,8 @@ func (l *LookCommand) SearchCommand(s *discordgo.Session, i *discordgo.Interacti
 				l.sendInvisibleInteractionResponse(s, i, "Please enter a valid time in format 15:45.")
 				return
 			}
-			if _, err := time.Parse("15:04", timeString); err != nil {
-				l.sendInvisibleInteractionResponse(s, i, "Please enter your time in format hh:mm (For example 15:50)")
+			if len(timeString) > 25 {
+				l.sendInvisibleInteractionResponse(s, i, "Please enter a valid time, >25 characters is a very weird time")
 				return
 			}
 		}
