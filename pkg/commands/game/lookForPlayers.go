@@ -24,6 +24,49 @@ const choo = "694621018970390538"
 
 var reg = regexp.MustCompile(`^[A-Za-z0-9 ]+$`)
 
+var buttons = []discordgo.MessageComponent{
+	discordgo.ActionsRow{
+		Components: []discordgo.MessageComponent{
+			discordgo.Button{
+				Label:    "Join",
+				Style:    discordgo.SuccessButton,
+				CustomID: "lfp_join",
+				Emoji: discordgo.ComponentEmoji{
+					Name: "👋",
+				},
+			},
+			discordgo.Button{
+				Label:    "Join as Backup",
+				Style:    discordgo.SecondaryButton,
+				CustomID: "lfp_backup",
+				Emoji: discordgo.ComponentEmoji{
+					Name: "💾",
+				},
+			},
+		},
+	},
+	discordgo.ActionsRow{
+		Components: []discordgo.MessageComponent{
+			discordgo.Button{
+				Label:    "Delete",
+				Style:    discordgo.DangerButton,
+				CustomID: "lfp_delete",
+				Emoji: discordgo.ComponentEmoji{
+					Name: "🗑",
+				},
+			},
+			discordgo.Button{
+				Label:    "Start",
+				Style:    discordgo.SuccessButton,
+				CustomID: "lfp_start",
+				Emoji: discordgo.ComponentEmoji{
+					Name: "🎮",
+				},
+			},
+		},
+	},
+}
+
 // LookCommand contains the /lookforplayers command
 type LookCommand struct {
 	db db.Database
@@ -266,49 +309,8 @@ func (l *LookCommand) createInviteEmbed(s *discordgo.Session, i *discordgo.Inter
 	}
 
 	message := &discordgo.MessageSend{
-		Embed: embed,
-		Components: []discordgo.MessageComponent{
-			discordgo.ActionsRow{
-				Components: []discordgo.MessageComponent{
-					discordgo.Button{
-						Label:    "Join",
-						Style:    discordgo.SuccessButton,
-						CustomID: "lfp_join",
-						Emoji: discordgo.ComponentEmoji{
-							Name: "👋",
-						},
-					},
-					discordgo.Button{
-						Label:    "Join as Backup",
-						Style:    discordgo.SecondaryButton,
-						CustomID: "lfp_backup",
-						Emoji: discordgo.ComponentEmoji{
-							Name: "💾",
-						},
-					},
-				},
-			},
-			discordgo.ActionsRow{
-				Components: []discordgo.MessageComponent{
-					discordgo.Button{
-						Label:    "Delete",
-						Style:    discordgo.DangerButton,
-						CustomID: "lfp_delete",
-						Emoji: discordgo.ComponentEmoji{
-							Name: "🗑",
-						},
-					},
-					discordgo.Button{
-						Label:    "Start",
-						Style:    discordgo.SuccessButton,
-						CustomID: "lfp_start",
-						Emoji: discordgo.ComponentEmoji{
-							Name: "🎮",
-						},
-					},
-				},
-			},
-		},
+		Embed:      embed,
+		Components: buttons,
 	}
 
 	if roleID != "" {
@@ -680,7 +682,12 @@ func (l *LookCommand) handleJoinReaction(activePlayers, activeBackupPlayers, bac
 	//Backup Players list
 	message.Embeds[0].Fields[4].Value = backupPlayersString
 
-	_, err := s.ChannelMessageEditEmbed(message.ChannelID, message.ID, message.Embeds[0])
+	_, err := s.ChannelMessageEditComplex(&discordgo.MessageEdit{
+		Components: buttons,
+		Embed:      message.Embeds[0],
+		ID:         message.ID,
+		Channel:    message.ChannelID,
+	})
 	if err != nil {
 		log.Println(err)
 	}
