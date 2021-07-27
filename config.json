@@ -129,7 +129,45 @@
         "prefix": "",
         "voiceBitrate": 96000
       }
-    ]
+    ],
+    "roleManagement": {
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten in welk jaar je zit?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "869545881714696232"},
+            {"emoji": "2️⃣", "id": "869545964296360006"},
+            {"emoji": "3️⃣", "id": "869546015542378507"},
+            {"emoji": "👩‍🎓", "id": "869546015542378507"}
+          ]
+        },
+        {
+          "message": "En wat is je afstudeerrichting?",
+          "roles": [
+            {"emoji": "🌐", "id": "869546074258411540"},
+            {"emoji": "💻", "id": "869546121767321630"},
+            {"emoji": "🤖", "id": "869546192441339944"}
+          ]
+        },
+        {
+          "message": "En welke op campus zit je?",
+          "roles": [
+            {"emoji": "💛", "id": "869542118622920734"},
+            {"emoji": "🐑", "id": "869542225477001216"},
+            {"emoji": "🪵", "id": "869542172733628486"}
+          ]
+        },
+        {
+          "message": "Als laatste: avond of dag?",
+          "roles": [
+            {"emoji": "🌞", "id": "869546248661782538"},
+            {"emoji": "🌙", "id": "869546248661782538"}
+          ]
+        }
+      ],
+      "roleAdminChannelID": "837217317946654741",
+      "defaultRole": "837217317146066986"
+    }
   },
 
   "773847927910432789": {
