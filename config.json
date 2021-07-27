@@ -118,7 +118,7 @@
   },
   "689786403596533841": {
     "_JSON_Comment_Hack": "TM graduaten",
-    "welcomeText": "Welkom <@{{.User.ID}}> op de IT Graduaten Thomas More Discord server. Je wordt automatisch toegevoegd als Gast. Indien je student of alumnus bent en toegang wil tot de studenten- of alumnikanalen, gelieve dan op de <#689821990907019282> pagina je jaar te selecteren.",
+    "welcomeText": "Welkom <@{{.User.ID}}> op de IT Graduaten Thomas More Discord server. Je wordt automatisch toegevoegd als Gast, ik heb je een DM gestuurd voor je juiste rollen aan te vragen.",
     "welcomeChannelID": "689786403596533845",
     "hives": [
       {
