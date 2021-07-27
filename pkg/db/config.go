@@ -21,17 +21,20 @@ type HiveConfiguration struct {
 }
 
 type RoleManagementConfiguration struct {
-	Message            string `json:"message"`
 	RoleAdminChannelID string `json:"roleAdminChannelID"`
 	DefaultRole        string `json:"defaultRole"`
 
-	Roles []Role `json:"roles"`
+	RoleSets []RoleSet `json:"roleSets"`
+}
+
+type RoleSet struct {
+	Message string `json:"message"`
+	Roles   []Role `json:"roles"`
 }
 
 type Role struct {
 	ID    string `json:"id"`
 	Emoji string `json:"emoji"`
-	//Name  string `json:"name"`
 }
 
 type LookingForPlayersConfiguration struct {

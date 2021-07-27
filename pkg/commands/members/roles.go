@@ -77,7 +77,7 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 		return
 	}
 
-	if len(conf.RoleManagement.Roles) <= 0 {
+	if len(conf.RoleManagement.RoleSets) <= 0 {
 		s.ChannelMessageSend(ch.ID, "I'm sorry this server hasn't told me any roles I am allowed to give you :(")
 		return
 	}
@@ -88,47 +88,49 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 		return
 	}
 
-	roles := []discordgo.SelectMenuOption{}
-	for _, crole := range conf.RoleManagement.Roles {
-		role := findRole(guild.Roles, crole.ID)
-		if role != nil {
-			roles = append(roles, discordgo.SelectMenuOption{
-				Label:       role.Name,
-				Value:       role.ID,
-				Description: role.Name,
-				Emoji: discordgo.ComponentEmoji{
-					Name: crole.Emoji,
-				},
-				Default: false,
-			})
+	for _, rs := range conf.RoleManagement.RoleSets {
+		roles := []discordgo.SelectMenuOption{}
+		for _, crole := range rs.Roles {
+			role := findRole(guild.Roles, crole.ID)
+			if role != nil {
+				roles = append(roles, discordgo.SelectMenuOption{
+					Label:       role.Name,
+					Value:       role.ID,
+					Description: role.Name,
+					Emoji: discordgo.ComponentEmoji{
+						Name: crole.Emoji,
+					},
+					Default: false,
+				})
+			}
 		}
-	}
 
-	// discord requires the maximum options to be as long as the list but not more than 25
-	maxValues := len(roles)
-	if maxValues > 25 {
-		maxValues = 25
-	}
+		// discord requires the maximum options to be as long as the list but not more than 25
+		maxValues := len(roles)
+		if maxValues > 25 {
+			maxValues = 25
+		}
 
-	_, err = s.ChannelMessageSendComplex(ch.ID, &discordgo.MessageSend{
-		Content: conf.RoleManagement.Message,
-		Components: []discordgo.MessageComponent{
-			discordgo.ActionsRow{
-				Components: []discordgo.MessageComponent{
-					discordgo.SelectMenu{
-						MinValues:   1,
-						MaxValues:   maxValues,
-						CustomID:    "rolereq--" + guildID,
-						Placeholder: "Select the roles you want to request",
-						Options:     roles,
+		_, err = s.ChannelMessageSendComplex(ch.ID, &discordgo.MessageSend{
+			Content: rs.Message,
+			Components: []discordgo.MessageComponent{
+				discordgo.ActionsRow{
+					Components: []discordgo.MessageComponent{
+						discordgo.SelectMenu{
+							MinValues:   1,
+							MaxValues:   maxValues,
+							CustomID:    "rolereq--" + guildID,
+							Placeholder: "Select the roles you want to request",
+							Options:     roles,
+						},
 					},
 				},
 			},
-		},
-	})
+		})
 
-	if err != nil {
-		log.Println(err)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 

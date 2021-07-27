@@ -10,14 +10,18 @@
       "Please set your name for our Discord server to your actual name, this will help us to identify you and let you in! Thank you!"
     ],
     "roleManagement": {
-      "message": "We need to assign you a role inside our Discord which will help you gain access to the class specific channels.\nSelect the roles you want to request, note that our moderation team has to approve these first.",
-      "roles": [
-        {"emoji": "1️⃣", "id": "687567949795557386"},
-        {"emoji": "2️⃣", "id": "687568334379679771"},
-        {"emoji": "3️⃣", "id": "687568470820388864"},
-        {"emoji": "👩‍💻", "id": "689844328528478262"},
-        {"emoji": "👩‍🎓", "id": "688368287255494702"},
-        {"emoji": "👩‍🏫", "id": "687567374198767617"}
+      "roleSets": [
+        {
+          "message": "We need to assign you a role inside our Discord which will help you gain access to the class specific channels.\nSelect the roles you want to request, note that our moderation team has to approve these first.",
+          "roles": [
+            {"emoji": "1️⃣", "id": "687567949795557386"},
+            {"emoji": "2️⃣", "id": "687568334379679771"},
+            {"emoji": "3️⃣", "id": "687568470820388864"},
+            {"emoji": "👩‍💻", "id": "689844328528478262"},
+            {"emoji": "👩‍🎓", "id": "688368287255494702"},
+            {"emoji": "👩‍🏫", "id": "687567374198767617"}
+          ]
+        }
       ],
       "roleAdminChannelID": "739512119338467449",
       "defaultRole": "687568536356257890"
@@ -85,10 +89,21 @@
       }
     ],
     "roleManagement": {
-      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
-      "roles": [
-        {"emoji": "1️⃣", "id": "847468727087661097"},
-        {"emoji": "2️⃣", "id": "847468771387768852"}
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "847468727087661097"},
+            {"emoji": "2️⃣", "id": "847468771387768852"}
+          ]
+        },
+        {
+          "message": "Zou je nog even willen laten weten welke secundaire rol ik je moet toekennen?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "869549320305790986"},
+            {"emoji": "2️⃣", "id": "869549357467336705"}
+          ]
+        }
       ],
       "roleAdminChannelID": "698103703680450580",
       "defaultRole": "837217317146066986"
@@ -164,14 +179,23 @@
       }
     ],
     "roleManagement": {
-      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen? Selecteer je jaar **en** je afstudeerrichting zodat je toegang krijgt tot de juiste kanalen!",
-      "roles": [
-        {"emoji": "1️⃣", "id": "837217317146066987"},
-        {"emoji": "2️⃣", "id": "837217317146066988"},
-        {"emoji": "3️⃣", "id": "837217317146066989"},
-        {"emoji": "👩‍🎓", "id": "837217317146066990"},
-        {"emoji": "👩‍💼", "id": "839806284127535114"},
-        {"emoji": "🏢", "id": "839806624729137172"}
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten in welk jaar je zit?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "837217317146066987"},
+            {"emoji": "2️⃣", "id": "837217317146066988"},
+            {"emoji": "3️⃣", "id": "837217317146066989"},
+            {"emoji": "👩‍🎓", "id": "837217317146066990"}
+          ]
+        },
+        {
+          "message": "En wat is je afstudeerrichting?",
+          "roles": [
+            {"emoji": "👩‍💼", "id": "839806284127535114"},
+            {"emoji": "🏢", "id": "839806624729137172"}
+          ]
+        }
       ],
       "roleAdminChannelID": "837217317946654741",
       "defaultRole": "837217317146066986"
@@ -207,12 +231,16 @@
       }
     ],
     "roleManagement": {
-      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen? Zodat je toegang krijgt tot de juiste kanalen!",
-      "roles": [
-        {"emoji": "1️⃣", "id": "846795857495720018"},
-        {"emoji": "2️⃣", "id": "846795857495720018"},
-        {"emoji": "3️⃣", "id": "846795857495720020"},
-        {"emoji": "👩‍🎓", "id": "846795857495720021"}
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten in welk jaar je zit?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "846795857495720018"},
+            {"emoji": "2️⃣", "id": "846795857495720018"},
+            {"emoji": "3️⃣", "id": "846795857495720020"},
+            {"emoji": "👩‍🎓", "id": "846795857495720021"}
+          ]
+        }
       ],
       "roleAdminChannelID": "846795857788665905",
       "defaultRole": "846795857495720017"
@@ -230,15 +258,19 @@
       "Wijzig je je naam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, ICE to meet you!"
     ],
     "roleManagement": {
-      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
-      "roles": [
-        {"emoji": "🍩", "id": "808987908668653568"},
-        {"emoji": "🔈", "id": "808988046854455357"},
-        {"emoji": "❤️", "id": "808988176164323358"},
-        {"emoji": "🤵‍♀️", "id": "808988256095961139"},
-        {"emoji": "🦸‍♀️", "id": "809374332655763526"},
-        {"emoji": "👩‍🔧", "id": "814101557863776267"},
-        {"emoji": "📓", "id": "812053913964118065"}
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+          "roles": [
+            {"emoji": "🍩", "id": "808987908668653568"},
+            {"emoji": "🔈", "id": "808988046854455357"},
+            {"emoji": "❤️", "id": "808988176164323358"},
+            {"emoji": "🤵‍♀️", "id": "808988256095961139"},
+            {"emoji": "🦸‍♀️", "id": "809374332655763526"},
+            {"emoji": "👩‍🔧", "id": "814101557863776267"},
+            {"emoji": "📓", "id": "812053913964118065"}
+          ]
+        }
       ],
       "roleAdminChannelID": "808991336904130570",
       "defaultRole": "808987692619661363"
