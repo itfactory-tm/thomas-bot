@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -131,6 +132,8 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 		if err != nil {
 			log.Println(err)
 		}
+
+		time.Sleep(3 * time.Second)
 	}
 }
 
