@@ -278,7 +278,7 @@ func (h *HiveCommand) createChannel(s *discordgo.Session, i *discordgo.Interacti
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "Channel has been created! Your channel is hidden, react 👋 below to join",
+				Content: "Channel has been created! Your channel is hidden, click 👋 below to join",
 				Embeds:  []*discordgo.MessageEmbed{e.MessageEmbed},
 				Components: []discordgo.MessageComponent{
 					discordgo.ActionsRow{
