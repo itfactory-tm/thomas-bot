@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/itfactory-tm/thomas-bot/pkg/db"
 )
 
 func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -211,12 +212,20 @@ func (m *MemberCommands) handleRoleRequest(s *discordgo.Session, i *discordgo.In
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
 						discordgo.Button{
-							Label: "Allow",
+							Label: "Add Role",
 							Style: discordgo.SuccessButton,
 							Emoji: discordgo.ComponentEmoji{
-								Name: "✅",
+								Name: "➕",
 							},
-							CustomID: fmt.Sprintf("roleresponse--allow--%s--%s", role.ID, i.User.ID),
+							CustomID: fmt.Sprintf("roleresponse--add--%s--%s", role.ID, i.User.ID),
+						},
+						discordgo.Button{
+							Label: "Replace role of type",
+							Style: discordgo.SecondaryButton,
+							Emoji: discordgo.ComponentEmoji{
+								Name: "🔄",
+							},
+							CustomID: fmt.Sprintf("roleresponse--replace--%s--%s", role.ID, i.User.ID),
 						},
 						discordgo.Button{
 							Label: "Deny",
@@ -225,14 +234,6 @@ func (m *MemberCommands) handleRoleRequest(s *discordgo.Session, i *discordgo.In
 								Name: "❌",
 							},
 							CustomID: fmt.Sprintf("roleresponse--deny--%s--%s", role.ID, i.User.ID),
-						},
-						discordgo.Button{
-							Label: "Remove others and assign",
-							Style: discordgo.SecondaryButton,
-							Emoji: discordgo.ComponentEmoji{
-								Name: "☝️",
-							},
-							CustomID: fmt.Sprintf("roleresponse--only--%s--%s", role.ID, i.User.ID),
 						},
 					},
 				},
@@ -271,20 +272,25 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		return
 	}
 
-	if permType == "only" {
-		member, err := s.GuildMember(i.GuildID, userID)
-		if err != nil {
-			s.InteractionRespond(i.Interaction,
-				&discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Content: fmt.Sprintf("Error getting roles of <@%s>, aborting operation: %q\n", userID, err),
-					},
-				})
-			return
+	// remove default role
+	if conf.RoleManagement.DefaultRole != "" {
+		s.GuildMemberRoleRemove(i.GuildID, userID, conf.RoleManagement.DefaultRole)
+	}
+
+	if permType == "replace" {
+		var currentRoleSet db.RoleSet
+
+		for _, rs := range conf.RoleManagement.RoleSets {
+			for _, r := range rs.Roles {
+				if r.ID == roleID {
+					currentRoleSet = rs
+					break
+				}
+			}
 		}
-		for _, role := range member.Roles {
-			s.GuildMemberRoleRemove(i.GuildID, userID, role)
+
+		for _, role := range currentRoleSet.Roles {
+			s.GuildMemberRoleRemove(i.GuildID, userID, role.ID)
 		}
 	}
 
