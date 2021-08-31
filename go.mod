@@ -3,6 +3,7 @@ module github.com/itfactory-tm/thomas-bot
 go 1.14
 
 require (
+	github.com/arran4/golang-ical v0.0.0-20210807024147-770fa87aff1d
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
@@ -15,8 +16,8 @@ require (
 	github.com/meyskens/discord-ha v0.0.0-20210723094030-8791e408bab7
 	github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd
 	github.com/sanzaru/go-giphy v0.0.0-20180211202227-c353d5ec6ee8
-	github.com/spf13/cobra v0.0.3
-	github.com/spf13/pflag v1.0.3
+	github.com/spf13/cobra v1.1.3
+	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
 	go.mongodb.org/mongo-driver v1.5.1
 	go.uber.org/multierr v1.7.0 // indirect

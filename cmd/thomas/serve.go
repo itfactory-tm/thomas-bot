@@ -33,6 +33,7 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/links"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/moderation"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/schedule"
 	discordha "github.com/meyskens/discord-ha"
 )
 
@@ -196,6 +197,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		hive.NewHiveCommand(s.db),
 		game.NewLookCommand(s.db),
 		pronostiek.NewPronostiekCommand(),
+		schedule.NewScheduleCommand(s.db),
 	}
 
 	for _, handler := range s.handlers {

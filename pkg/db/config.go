@@ -1,6 +1,7 @@
 package db
 
 type Configuration struct {
+	GuildID          string   `json:"guildID"`
 	WelcomeChannelID string   `json:"welcomeChannelID"`
 	WelcomeText      string   `json:"welcomeText"`
 	WelcomeDM        []string `json:"welcomeDM"`
@@ -9,6 +10,7 @@ type Configuration struct {
 
 	Hives             []HiveConfiguration              `json:"hives"`
 	LookingForPlayers []LookingForPlayersConfiguration `json:"lookingForPlayers"`
+	Schedules         []ScheduleConfiguration          `json:"schedules"`
 }
 
 type HiveConfiguration struct {
@@ -41,4 +43,9 @@ type LookingForPlayersConfiguration struct {
 	RequestChannelIDs  []string `json:"requestChannelIDs"`
 	AdvertiseChannelID string   `json:"advertiseChannelID"`
 	HiveChannelID      string   `json:"hiveChannelID"`
+}
+
+type ScheduleConfiguration struct {
+	ClassName string `json:"className"`
+	URL       string `json:"url"`
 }

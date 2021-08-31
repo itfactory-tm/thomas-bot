@@ -16,7 +16,18 @@ func (l *LocalDatabase) ConfigForGuild(guildID string) (*Configuration, error) {
 	if !ok {
 		return nil, errors.New("guild not in database")
 	}
+
+	config.GuildID = guildID
 	return &config, nil
+}
+
+func (l *LocalDatabase) GetAllConfigurations() ([]Configuration, error) {
+	configs := make([]Configuration, 0)
+	for key, config := range l.config {
+		config.GuildID = key
+		configs = append(configs, config)
+	}
+	return configs, nil
 }
 
 func NewLocalDB(path string) (Database, error) {

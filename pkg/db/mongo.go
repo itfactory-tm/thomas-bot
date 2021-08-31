@@ -24,6 +24,21 @@ func (m *MongoDatabase) ConfigForGuild(guildID string) (*Configuration, error) {
 	return &conf, nil
 }
 
+func (m *MongoDatabase) GetAllConfigurations() ([]Configuration, error) {
+	var confs []Configuration
+	res, err := m.conn.Collection("configuration").Find(context.TODO(), bson.D{})
+	if err != nil {
+		return nil, err
+	}
+
+	err = res.All(context.Background(), &confs)
+	if err != nil {
+		return nil, err
+	}
+
+	return confs, nil
+}
+
 func NewMongoDB(url, db string) (Database, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
