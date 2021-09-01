@@ -261,6 +261,28 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		return
 	}
 
+	dm, err := s.UserChannelCreate(userID)
+	if err != nil {
+		return
+	}
+
+	var role *discordgo.Role
+	guildRoles, err := s.GuildRoles(i.GuildID)
+	if err != nil {
+		log.Println("error getting guild roles", err)
+		return
+	}
+	for _, gr := range guildRoles {
+		if gr.ID == roleID {
+			role = gr
+			break
+		}
+	}
+
+	if role == nil {
+		return
+	}
+
 	if permType == "deny" {
 		s.InteractionRespond(i.Interaction,
 			&discordgo.InteractionResponse{
@@ -269,6 +291,7 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 					Content: fmt.Sprintf("<@%s> has denied to give <@%s> the role <@&%s>", i.Member.User.ID, userID, roleID),
 				},
 			})
+		s.ChannelMessageSend(dm.ID, fmt.Sprintf("I'm sorry, your request for role %q has been denied.", role.Name))
 		return
 	}
 
@@ -314,28 +337,6 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 				Content: fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s>", i.Member.User.ID, roleID, userID),
 			},
 		})
-
-	dm, err := s.UserChannelCreate(userID)
-	if err != nil {
-		return
-	}
-
-	var role *discordgo.Role
-	guildRoles, err := s.GuildRoles(i.GuildID)
-	if err != nil {
-		log.Println("error getting guild roles", err)
-		return
-	}
-	for _, gr := range guildRoles {
-		if gr.ID == roleID {
-			role = gr
-			break
-		}
-	}
-
-	if role == nil {
-		return
-	}
 
 	s.ChannelMessageSend(dm.ID, fmt.Sprintf("Good news! your request for role %q has been approved!", role.Name))
 }
