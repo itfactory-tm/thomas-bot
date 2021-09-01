@@ -331,13 +331,17 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		return
 	}
 
-	s.InteractionRespond(i.Interaction,
+	err = s.InteractionRespond(i.Interaction,
 		&discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s>", i.Member.User.ID, roleID, userID),
 			},
 		})
+	if err != nil {
+		log.Println("error responding to interaction", err)
+		return
+	}
 
 	s.ChannelMessageSend(dm.ID, fmt.Sprintf("Good news! your request for role %q has been approved!", role.Name))
 }
