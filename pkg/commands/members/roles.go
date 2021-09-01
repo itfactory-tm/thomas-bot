@@ -174,6 +174,7 @@ func (m *MemberCommands) handleRoleRequest(s *discordgo.Session, i *discordgo.In
 		return
 	}
 
+L:
 	for _, val := range i.MessageComponentData().Values {
 
 		var role *discordgo.Role
@@ -191,13 +192,13 @@ func (m *MemberCommands) handleRoleRequest(s *discordgo.Session, i *discordgo.In
 
 		if role == nil {
 			s.ChannelMessageSend(ch.ID, "Oh no! I cannot find that role any longer...")
-			break
+			continue L
 		}
 
 		for _, mr := range member.Roles {
 			if mr == val {
 				s.ChannelMessageSend(ch.ID, fmt.Sprintf("Oopsie! You already have the role %q, no worries I will not re-request it!", role.Name))
-				break
+				continue L
 			}
 		}
 
