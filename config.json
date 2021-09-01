@@ -21,6 +21,16 @@
             {"emoji": "👩‍🎓", "id": "688368287255494702"},
             {"emoji": "👩‍🏫", "id": "687567374198767617"}
           ]
+        },
+         {
+          "message": "Which specialisation do/did you (plan to) follow? No worries this is not a binding contract, just for your buddies to know!",
+          "roles": [
+            {"emoji": "👩‍💻", "id": "882541584892178452"},
+            {"emoji": "🧠", "id": "882541696804606012"},
+            {"emoji": "🌐", "id": "882541824395325470"},
+            {"emoji": "🧭", "id": "882541923351560214"},
+            {"emoji": "⚡", "id": "882541999989866497"},
+          ]
         }
       ],
       "roleAdminChannelID": "739512119338467449",
