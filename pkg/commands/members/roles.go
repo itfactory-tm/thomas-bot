@@ -336,9 +336,10 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 
 	err = s.InteractionRespond(i.Interaction,
 		&discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Type: discordgo.InteractionResponseUpdateMessage,
 			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s>", i.Member.User.ID, roleID, userID),
+				Content:    fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s>", i.Member.User.ID, roleID, userID),
+				Components: []discordgo.MessageComponent{},
 			},
 		})
 	if err != nil {
