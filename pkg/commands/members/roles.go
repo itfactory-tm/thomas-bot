@@ -320,7 +320,7 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 
 	err = s.GuildMemberRoleAdd(i.GuildID, userID, roleID)
 	if err != nil {
-		s.InteractionRespond(i.Interaction,
+		err2 := s.InteractionRespond(i.Interaction,
 			&discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
@@ -328,6 +328,9 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 				},
 			})
 		log.Printf("Error assigning role %q\n", err)
+		if err2 != nil {
+			log.Println("Error sending response", err2)
+		}
 		return
 	}
 
@@ -340,6 +343,7 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		})
 	if err != nil {
 		log.Println("error responding to interaction", err)
+		s.ChannelMessageSend(i.ChannelID, fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s> (and interaction response failed, sad)", i.Member.User.ID, roleID, userID))
 		return
 	}
 
