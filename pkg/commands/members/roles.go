@@ -8,6 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
+	"golang.org/x/net/context"
 )
 
 func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -245,9 +246,20 @@ L:
 }
 
 func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponsePong,
-	})
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go func() {
+		for {
+			select {
+			case <-time.After(100 * time.Millisecond):
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponsePong,
+				})
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
 	data := strings.Split(i.MessageComponentData().CustomID, "--")
 	if len(data) < 4 {
 		return // not valid ID
@@ -299,10 +311,6 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		s.ChannelMessageSend(dm.ID, fmt.Sprintf("I'm sorry, your request for role %q has been denied.", role.Name))
 		return
 	}
-
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponsePong,
-	})
 
 	// remove default role
 	if conf.RoleManagement.DefaultRole != "" {
