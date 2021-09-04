@@ -8,7 +8,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
-	"golang.org/x/net/context"
 )
 
 func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -246,20 +245,10 @@ L:
 }
 
 func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	go func() {
-		for {
-			select {
-			case <-time.After(100 * time.Millisecond):
-				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponsePong,
-				})
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseDeferredMessageUpdate,
+	})
+
 	data := strings.Split(i.MessageComponentData().CustomID, "--")
 	if len(data) < 4 {
 		return // not valid ID
@@ -300,14 +289,13 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 	}
 
 	if permType == "deny" {
-		s.InteractionRespond(i.Interaction,
-			&discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseUpdateMessage,
-				Data: &discordgo.InteractionResponseData{
-					Content:    fmt.Sprintf("<@%s> has denied to give <@%s> the role <@&%s>", i.Member.User.ID, userID, roleID),
-					Components: []discordgo.MessageComponent{},
-				},
-			})
+		msg := fmt.Sprintf("<@%s> denied the request for role <@&%s>", userID, role.ID)
+		s.ChannelMessageEditComplex(&discordgo.MessageEdit{
+			Channel:    i.Message.ChannelID,
+			ID:         i.Message.ID,
+			Content:    &msg,
+			Components: []discordgo.MessageComponent{},
+		})
 		s.ChannelMessageSend(dm.ID, fmt.Sprintf("I'm sorry, your request for role %q has been denied.", role.Name))
 		return
 	}
@@ -334,34 +322,24 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		}
 	}
 
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponsePong,
-	})
-
 	err = s.GuildMemberRoleAdd(i.GuildID, userID, roleID)
 	if err != nil {
-		err2 := s.InteractionRespond(i.Interaction,
-			&discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: fmt.Sprintf("Error assigning role %q\n", err),
-				},
-			})
+		msg := fmt.Sprintf("Error assigning role %q\n", err)
+		s.ChannelMessageEditComplex(&discordgo.MessageEdit{
+			Channel: i.Message.ChannelID,
+			ID:      i.Message.ID,
+			Content: &msg,
+		})
 		log.Printf("Error assigning role %q\n", err)
-		if err2 != nil {
-			log.Println("Error sending response", err2)
-		}
 		return
 	}
 
-	err = s.InteractionRespond(i.Interaction,
-		&discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseUpdateMessage,
-			Data: &discordgo.InteractionResponseData{
-				Content:    fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s>", i.Member.User.ID, roleID, userID),
-				Components: []discordgo.MessageComponent{},
-			},
-		})
+	msg := fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s>", i.Member.User.ID, roleID, userID)
+	_, err = s.ChannelMessageEditComplex(&discordgo.MessageEdit{
+		Channel: i.Message.ChannelID,
+		ID:      i.Message.ID,
+		Content: &msg,
+	})
 	if err != nil {
 		log.Println("error responding to interaction", err)
 		s.ChannelMessageSend(i.ChannelID, fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s> (and interaction response failed, sad)", i.Member.User.ID, roleID, userID))
