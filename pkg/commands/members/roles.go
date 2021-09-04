@@ -245,6 +245,9 @@ L:
 }
 
 func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponsePong,
+	})
 	data := strings.Split(i.MessageComponentData().CustomID, "--")
 	if len(data) < 4 {
 		return // not valid ID
@@ -297,6 +300,10 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		return
 	}
 
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponsePong,
+	})
+
 	// remove default role
 	if conf.RoleManagement.DefaultRole != "" {
 		s.GuildMemberRoleRemove(i.GuildID, userID, conf.RoleManagement.DefaultRole)
@@ -318,6 +325,10 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 			s.GuildMemberRoleRemove(i.GuildID, userID, role.ID)
 		}
 	}
+
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponsePong,
+	})
 
 	err = s.GuildMemberRoleAdd(i.GuildID, userID, roleID)
 	if err != nil {
