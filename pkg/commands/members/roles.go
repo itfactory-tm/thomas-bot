@@ -301,8 +301,15 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 	}
 
 	// remove default role
+	user, err := s.GuildMember(i.GuildID, userID)
+	if err != nil {
+		log.Println("error getting user", err)
+		return
+	}
 	if conf.RoleManagement.DefaultRole != "" {
-		s.GuildMemberRoleRemove(i.GuildID, userID, conf.RoleManagement.DefaultRole)
+		if hasRole(user, conf.RoleManagement.DefaultRole) {
+			s.GuildMemberRoleRemove(i.GuildID, userID, conf.RoleManagement.DefaultRole)
+		}
 	}
 
 	if permType == "replace" {
@@ -318,7 +325,9 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		}
 
 		for _, role := range currentRoleSet.Roles {
-			s.GuildMemberRoleRemove(i.GuildID, userID, role.ID)
+			if hasRole(user, role.ID) {
+				s.GuildMemberRoleRemove(i.GuildID, userID, role.ID)
+			}
 		}
 	}
 
@@ -347,4 +356,13 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 	}
 
 	s.ChannelMessageSend(dm.ID, fmt.Sprintf("Good news! your request for role %q has been approved!", role.Name))
+}
+
+func hasRole(user *discordgo.Member, roleID string) bool {
+	for _, r := range user.Roles {
+		if r == roleID {
+			return true
+		}
+	}
+	return false
 }
