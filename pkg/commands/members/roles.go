@@ -355,7 +355,7 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 		return
 	}
 
-	s.ChannelMessageSend(dm.ID, fmt.Sprintf("Good news! your request for role %q has been approved!", role.Name))
+	s.ChannelMessageSend(dm.ID, fmt.Sprintf("Good news! Your request for role %q has been approved!", role.Name))
 }
 
 func hasRole(user *discordgo.Member, roleID string) bool {
