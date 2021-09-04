@@ -289,7 +289,7 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 	}
 
 	if permType == "deny" {
-		msg := fmt.Sprintf("<@%s> denied the request for role <@&%s>", userID, role.ID)
+		msg := fmt.Sprintf("<@%s> denied the request from <@%s> for role <@&%s>", i.Member.User.ID, userID, role.ID)
 		s.ChannelMessageEditComplex(&discordgo.MessageEdit{
 			Channel:    i.Message.ChannelID,
 			ID:         i.Message.ID,
