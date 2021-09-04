@@ -287,9 +287,10 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 	if permType == "deny" {
 		s.InteractionRespond(i.Interaction,
 			&discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Type: discordgo.InteractionResponseUpdateMessage,
 				Data: &discordgo.InteractionResponseData{
-					Content: fmt.Sprintf("<@%s> has denied to give <@%s> the role <@&%s>", i.Member.User.ID, userID, roleID),
+					Content:    fmt.Sprintf("<@%s> has denied to give <@%s> the role <@&%s>", i.Member.User.ID, userID, roleID),
+					Components: []discordgo.MessageComponent{},
 				},
 			})
 		s.ChannelMessageSend(dm.ID, fmt.Sprintf("I'm sorry, your request for role %q has been denied.", role.Name))
