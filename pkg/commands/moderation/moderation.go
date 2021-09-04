@@ -37,6 +37,17 @@ func (m *ModerationCommands) InstallSlashCommands(session *discordgo.Session) er
 
 func (m *ModerationCommands) checkMessageCreateAsync(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	go m.checkMessage(s, msg)
+
+	// check if dm or not
+	c, err := s.UserChannelCreate(msg.Author.ID)
+	if err != nil {
+		return
+	}
+
+	if c.ID == msg.ChannelID {
+		s.ChannelMessageSend(msg.ChannelID, "Oh my... human language... let me try... 01101001 01100110 00100000 01111001 01101111 01110101 00100000 01100011 01100001 01101110 00100000 01110010 01100101 01100001 01100100 00100000 01110100 01101000 01101001 01110011 00101100 00100000 01100011 01101111 01101110 01110100 01110010 01101001 01100010 01110101 01110100 01100101 00100000 01101111 01101110 00100000 01100111 01101001 01110100 01101000 01110101 01100010...\n\n Oh no, I still cannot understand humans. I'm sorry if you need me type `/` to get a list of things I can do for you!")
+		return
+	}
 }
 
 func (m *ModerationCommands) checkMessageUpdateAsync(s *discordgo.Session, msg *discordgo.MessageUpdate) {
