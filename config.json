@@ -38,6 +38,15 @@
     },
     "hives": [
       {
+        "_hack": "class select",
+        "requestChannelIDs": ["887379990407168060"],
+        "junkyardCategoryID": "780775904082395136",
+        "textCategoryID": "760854741847638076",
+        "voiceCategoryID": "760854741847638076",
+        "prefix": "",
+        "voiceBitrate": 128000
+      },
+      {
         "requestChannelIDs": ["775453791801049119", "794973874634752040"],
         "junkyardCategoryID": "780775904082395136",
         "textCategoryID": "775436992136871957",
