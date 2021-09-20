@@ -6,17 +6,21 @@ import (
 	"log"
 	"time"
 
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
-
 	"github.com/bwmarrin/discordgo"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
+	"github.com/itfactory-tm/thomas-bot/pkg/db"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
 )
 
-const itfDiscord = "687565213943332875"
-
 func init() {
 	rootCmd.AddCommand(NewServeCmd())
+}
+
+var studentRoles = map[string]bool{
+	"687567949795557386": true,
+	"687568334379679771": true,
+	"687568470820388864": true,
 }
 
 type serveCmdOptions struct {
@@ -58,25 +62,58 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 	}
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
-	m := members.NewMemberCommand()
-
-	members, err := dg.GuildMembers(itfDiscord, "", 1000)
+	dbConn, err := db.NewLocalDB("./config.json")
 	if err != nil {
-		return fmt.Errorf("error getting members: %w", err)
+		return fmt.Errorf("error creating database connection: %w", err)
+	}
+
+	roleCMD := members.NewMemberCommand(dbConn)
+
+	// get all members
+	var members []*discordgo.Member
+	needsMore := true
+	after := ""
+	for needsMore {
+		var newMembers []*discordgo.Member
+		newMembers, err = dg.GuildMembers("687565213943332875", after, 1000)
+		if err != nil {
+			return fmt.Errorf("error getting members: %w", err)
+		}
+		members = append(members, newMembers...)
+		if len(newMembers) < 1000 {
+			needsMore = false
+		} else {
+			after = newMembers[len(newMembers)-1].User.ID
+		}
 	}
 
 	for _, member := range members {
-		send := false
+		isStudent := false
+		// check if member is in the student role
 		for _, role := range member.Roles {
-			if role == "687567949795557386" || role == "687568334379679771" || role == "687568470820388864" || role == "689844328528478262" {
-				send = true
+			if studentRoles[role] {
+				isStudent = true
+				break
 			}
 		}
-		if send {
-			fmt.Println(member.User.Username)
-			m.SendRoleDM(dg, member.User.ID)
-			time.Sleep(30 * time.Second)
+
+		if !isStudent {
+			continue
 		}
+
+		// create DM
+		dm, err := dg.UserChannelCreate(member.User.ID)
+		if err != nil {
+			log.Printf("error creating DM channel for %q: %s\n", member.User.ID, err)
+			continue
+		}
+
+		// send message
+		dg.ChannelMessageSend(dm.ID, "Hi there! The new academic year is almost here :) I am checking up on all students to give them new roles for next semester. Can you let me know which ones you want below?")
+		roleCMD.SendRoleDM(dg, "687565213943332875", member.User.ID)
+		log.Printf("Sent roles request to %q\n", member.User.ID)
+
+		time.Sleep(time.Second * 10)
 	}
 
 	return nil

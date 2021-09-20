@@ -7,24 +7,45 @@
       "Welcome to the IT Factory Discord!",
       "My name is Thomas Bot, I am a bot who can help you!",
       "New to Discord? No problem we got a manual for you: https://itf.to/discord-help",
-      "If you need help just type tm!help",
-      "Warning, i am only able to reply to messages starting with `tm!`, not to normal questions.",
       "Please set your name for our Discord server to your actual name, this will help us to identify you and let you in! Thank you!"
     ],
     "roleManagement": {
-      "message": "We need to assign you a role inside our Discord which will help you gain access to the class specific channels.\nSelect the following emoji(s) for roles you want to request, note that our moderation team has to approve these first.",
-      "roles": [
-        {"emoji": "1️⃣", "id": "687567949795557386"},
-        {"emoji": "2️⃣", "id": "687568334379679771"},
-        {"emoji": "3️⃣", "id": "687568470820388864"},
-        {"emoji": "👩‍💻", "id": "689844328528478262"},
-        {"emoji": "👩‍🎓", "id": "688368287255494702"},
-        {"emoji": "👩‍🏫", "id": "687567374198767617"}
+      "roleSets": [
+        {
+          "message": "We need to assign you a role inside our Discord which will help you gain access to the class specific channels.\nSelect the roles you want to request, note that our moderation team has to approve these first.",
+          "roles": [
+            {"emoji": "1️⃣", "id": "687567949795557386"},
+            {"emoji": "2️⃣", "id": "687568334379679771"},
+            {"emoji": "3️⃣", "id": "687568470820388864"},
+            {"emoji": "👩‍💻", "id": "689844328528478262"},
+            {"emoji": "👩‍🎓", "id": "688368287255494702"},
+            {"emoji": "👩‍🏫", "id": "687567374198767617"}
+          ]
+        },
+         {
+          "message": "Which specialisation do/did you (plan to) follow? No worries this is not a binding contract, just for your buddies to know!",
+          "roles": [
+            {"emoji": "👩‍💻", "id": "882541584892178452"},
+            {"emoji": "🧠", "id": "882541696804606012"},
+            {"emoji": "🌐", "id": "882541824395325470"},
+            {"emoji": "🧭", "id": "882541923351560214"},
+            {"emoji": "⚡", "id": "882541999989866497"}
+          ]
+        }
       ],
       "roleAdminChannelID": "739512119338467449",
       "defaultRole": "687568536356257890"
     },
     "hives": [
+      {
+        "_hack": "class select",
+        "requestChannelIDs": ["887379990407168060"],
+        "junkyardCategoryID": "780775904082395136",
+        "textCategoryID": "760854741847638076",
+        "voiceCategoryID": "760854741847638076",
+        "prefix": "",
+        "voiceBitrate": 128000
+      },
       {
         "requestChannelIDs": ["775453791801049119", "794973874634752040"],
         "junkyardCategoryID": "780775904082395136",
@@ -69,17 +90,142 @@
         "advertiseChannelID": "771458095489744936",
         "hiveChannelID": "787346218304274483"
       }
+    ],
+    "schedules": [
+      {
+        "className": "1ITF 01-01",
+        "URL": "https://rooster.thomasmore.be/ical?612e4995&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzI1&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=-1JqYWxl5kcKG6sGU_Ul0OrNWH4qotkazVitJdfuCsU="
+      },
+      {
+        "className": "1ITF 03-04",
+        "URL": "https://rooster.thomasmore.be/ical?612e4a8a&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzI3&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=LK5-cncsznmwofQHJD_gxj7VSs20D3xgQICL2LlX11s="
+      },
+      {
+        "className": "1ITF 05-06",
+        "URL": "https://rooster.thomasmore.be/ical?612e4ab9&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzI5&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=fod_yH-37fACYPBj4UfTIkXjPAkpBJ1JJqLgrlT6BXE="
+      },
+      {
+        "className": "1ITF 07-08",
+        "URL": "https://rooster.thomasmore.be/ical?612e4ad4&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzJC&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=OaCshJR7pMqn_wGg6kXStERLKDfQQqodY_IkSASAs-0="
+      },
+      {
+        "className": "1ITF 09-10",
+        "URL": "https://rooster.thomasmore.be/ical?612e4af8&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzJE&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=quaPduRK5dtiJ9oIR1he5zmMXybmB1x5eSH7FggelHc="
+      },
+      {
+        "className": "1ITF 11-12",
+        "URL": "https://rooster.thomasmore.be/ical?612e4b63&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzJG&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=CE0aapswxkw_6hemFv0IklytGYxwX4LqvG_tGIKbi0A="
+      },
+      {
+        "className": "1ITF 13-14",
+        "URL": "https://rooster.thomasmore.be/ical?612e4b84&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzMx&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=iYXAqH3w9n7kReFU6cqWQfFMZxfmaSQdtd-UOYg8dXU="
+      },
+      {
+        "className": "1ACS",
+        "URL": "https://rooster.thomasmore.be/ical?612e4ba8&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzNF&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=RMKSZtGUav5UjtvhIzHK0T6OJf7cRmi_PfUHfGVvefY="
+      },
+      {
+        "className": "2ACS",
+        "URL": "https://rooster.thomasmore.be/ical?612e4bbc&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzQw&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=j3kKJl8yl1QDqEIF4kbHKA4gOV79j5uU0OIzg7_0rdg="
+      },
+      {
+        "className": "2APPAI 01",
+        "URL": "https://rooster.thomasmore.be/ical?612f68b1&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDRBMjJE&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=UcyW8ZQFjIFETf8UI7CggrZXYZrf6qdUhL3DPeFtopI="
+      },
+      {
+        "className": "2APPAI 02",
+        "URL": "https://rooster.thomasmore.be/ical?612f68c0&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDRBMjJF&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=cb3PNBOubKUxtb3ORZ6BrzIllWm-R7PYqKUqjZiBFgM="
+      },
+      {
+        "className": "2CCS 01",
+        "URL": "https://rooster.thomasmore.be/ical?612f68ee&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzM1&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=icPQIHxjzikaiPKvN_cBKYhm1frhxndkhZfznUWR2MU="
+      },
+      {
+        "className": "2CCS 02",
+        "URL": "https://rooster.thomasmore.be/ical?612f68fa&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzM2&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=v2lYBT7aDk02Rj60NQ00goV5JXBHX5Qlut4gnpEAMQU="
+      },
+      {
+        "className": "3APP 01",
+        "URL": "https://rooster.thomasmore.be/ical?612f69eb&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDRBMjJG&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=GE8hrHw5WGwVj5S5EQH5eugLrFhoMyyhSc8X1Weow1E="
+      },
+      {
+        "className": "3APP 02",
+        "URL": "https://rooster.thomasmore.be/ical?612f6a00&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDRBMjMw&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=hjxGJKGXK8AZJPWqIYqs6aPuSxTPP-RUG74Cc8r0RtQ="
+      },
+      {
+        "className": "3AI 01",
+        "URL": "https://rooster.thomasmore.be/ical?612f6a1c&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzQx&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=Ty1eCYUf2EISG7Pa6OX7N9KgwFmo61NORJkSFLLRHOA="
+      },
+      {
+        "className": "3AI 02",
+        "URL": "https://rooster.thomasmore.be/ical?612f6a2b&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzQy&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=_e-F3mb1MGVbKl9E7afT5GqhzXE2rNpBgVUZwf28xJ8="
+      },
+      {
+        "className": "3CCS 01",
+        "URL": "https://rooster.thomasmore.be/ical?612f698b&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzNC&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=4yXBluGSHVpGFW7ukQBC49olqjBH_4gBJWsM8TfSBLA="
+      },
+      {
+        "className": "3CCS 02",
+        "URL": "https://rooster.thomasmore.be/ical?612f699a&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzND&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=Q8C3ywlxW-2Ked0pBE73FGLXPlP-K3_yetz5E-B_4S4="
+      },
+      {
+        "className": "3IOT",
+        "URL": "https://rooster.thomasmore.be/ical?612e4ce5&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzNB&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=ynsz40KJLvsG7PSC1w2BDhohyltTUJ1OPIxUTqcgtXA="
+      }
     ]
   },
   
   "694621018970390538": {
     "_JSON_Comment_Hack": "Trains",
     "welcomeText": "Spoor 1, de IC trein met bestemming <@{{.User.ID}}> komt aan, spoor 1. Deze trein stopt in Welkom-Centraal en Geel. Deze trein stopt uitzonderlijk niet in Haat-Noord. De 1ste klas plaatsen zijn overal.",
-    "welcomeChannelID": "694621018970390541"
+    "welcomeChannelID": "694621018970390541",
+    "hives": [
+      {
+        "requestChannelIDs": ["847444804937580594"],
+        "junkyardCategoryID": "",
+        "textCategoryID": "847444741851578399",
+        "voiceCategoryID": "847444741851578399",
+        "prefix": "",
+        "voiceBitrate": 96000
+      }
+    ],
+    "roleManagement": {
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "847468727087661097"},
+            {"emoji": "2️⃣", "id": "847468771387768852"}
+          ]
+        },
+        {
+          "message": "Zou je nog even willen laten weten welke secundaire rol ik je moet toekennen?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "869549320305790986"},
+            {"emoji": "2️⃣", "id": "869549357467336705"}
+          ]
+        }
+      ],
+      "roleAdminChannelID": "698103703680450580",
+      "defaultRole": "837217317146066986"
+    },
+    "lookingForPlayers": [
+      {
+        "requestChannelIDs": ["847444804937580594"],
+        "advertiseChannelID": "847444804937580594",
+        "hiveChannelID": "847444804937580594"
+      }
+    ],
+    "schedules": [
+      {
+        "className": "Maartje",
+        "URL": "https://rooster.thomasmore.be/ical?612e48c3&group=true&timetable=!MjAyMSFzdGFmZiE3MDk0QzJBNzVFQzFFMjNCMjMyRjM1N0ZFMkZCMURFNQ==&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=Z7n9wRTS7zdjWhIGKH91esU-ETdNKsz__SPKolA15uo="
+      }
+    ]
   },
   "689786403596533841": {
     "_JSON_Comment_Hack": "TM graduaten",
-    "welcomeText": "Welkom <@{{.User.ID}}> op de IT Graduaten Thomas More Discord server. Je wordt automatisch toegevoegd als Gast. Indien je student of alumnus bent en toegang wil tot de studenten- of alumnikanalen, gelieve dan op de <#689821990907019282> pagina je jaar te selecteren.",
+    "welcomeText": "Welkom <@{{.User.ID}}> op de IT Graduaten Thomas More Discord server. Je wordt automatisch toegevoegd als Gast, ik heb je een DM gestuurd voor je juiste rollen aan te vragen.",
     "welcomeChannelID": "689786403596533845",
     "hives": [
       {
@@ -90,7 +236,45 @@
         "prefix": "",
         "voiceBitrate": 96000
       }
-    ]
+    ],
+    "roleManagement": {
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten in welk jaar je zit?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "869545881714696232"},
+            {"emoji": "2️⃣", "id": "869545964296360006"},
+            {"emoji": "3️⃣", "id": "869546015542378507"},
+            {"emoji": "👩‍🎓", "id": "689836552079278228"}
+          ]
+        },
+        {
+          "message": "En wat is je afstudeerrichting?",
+          "roles": [
+            {"emoji": "🌐", "id": "869546074258411540"},
+            {"emoji": "💻", "id": "869546121767321630"},
+            {"emoji": "🤖", "id": "869546192441339944"}
+          ]
+        },
+        {
+          "message": "En welke op campus zit je?",
+          "roles": [
+            {"emoji": "💛", "id": "869542118622920734"},
+            {"emoji": "🐑", "id": "869542172733628486"},
+            {"emoji": "🪵", "id": "869542225477001216"}
+          ]
+        },
+        {
+          "message": "Als laatste: avond of dag?",
+          "roles": [
+            {"emoji": "🌞", "id": "869546248661782538"},
+            {"emoji": "🌙", "id": "869546279368261632"}
+          ]
+        }
+      ],
+      "roleAdminChannelID": "869540179919110144",
+      "defaultRole": "689819133206200590"
+    }
   },
 
   "773847927910432789": {
@@ -127,8 +311,6 @@
       "Welkom op de Organisatie en Management Thomas More server!",
       "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
       "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
-      "Als je hulp nodig hebt, typ dan tm!help",
-      "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
       "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, nice to meet you!"
     ],
     "hives": [
@@ -142,14 +324,23 @@
       }
     ],
     "roleManagement": {
-      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen? Selecteer je jaar **en** je afstudeerrichting zodat je toegang krijgt tot de juiste kanalen!",
-      "roles": [
-        {"emoji": "1️⃣", "id": "837217317146066987"},
-        {"emoji": "2️⃣", "id": "837217317146066988"},
-        {"emoji": "3️⃣", "id": "837217317146066989"},
-        {"emoji": "👩‍🎓", "id": "837217317146066990"},
-        {"emoji": "👩‍💼", "id": "839806284127535114"},
-        {"emoji": "🏢", "id": "839806624729137172"}
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten in welk jaar je zit?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "837217317146066987"},
+            {"emoji": "2️⃣", "id": "837217317146066988"},
+            {"emoji": "3️⃣", "id": "837217317146066989"},
+            {"emoji": "👩‍🎓", "id": "837217317146066990"}
+          ]
+        },
+        {
+          "message": "En wat is je afstudeerrichting?",
+          "roles": [
+            {"emoji": "👩‍💼", "id": "839806284127535114"},
+            {"emoji": "🏢", "id": "839806624729137172"}
+          ]
+        }
       ],
       "roleAdminChannelID": "837217317946654741",
       "defaultRole": "837217317146066986"
@@ -164,8 +355,6 @@
       "Welkom op de Bouw Thomas More server!",
       "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
       "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
-      "Als je hulp nodig hebt, typ dan tm!help",
-      "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
       "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, nice to meet you!"
     ],
     "hives": [
@@ -187,12 +376,16 @@
       }
     ],
     "roleManagement": {
-      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen? Zodat je toegang krijgt tot de juiste kanalen!",
-      "roles": [
-        {"emoji": "1️⃣", "id": "846795857495720018"},
-        {"emoji": "2️⃣", "id": "846795857495720018"},
-        {"emoji": "3️⃣", "id": "846795857495720020"},
-        {"emoji": "👩‍🎓", "id": "846795857495720021"}
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten in welk jaar je zit?",
+          "roles": [
+            {"emoji": "1️⃣", "id": "846795857495720018"},
+            {"emoji": "2️⃣", "id": "846795857495720018"},
+            {"emoji": "3️⃣", "id": "846795857495720020"},
+            {"emoji": "👩‍🎓", "id": "846795857495720021"}
+          ]
+        }
       ],
       "roleAdminChannelID": "846795857788665905",
       "defaultRole": "846795857495720017"
@@ -207,20 +400,23 @@
       "Welkom op de ICE Cube Discord server!",
       "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
       "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
-      "Als je hulp nodig hebt, typ dan tm!help",
-      "Opgelet, ik begrijp enkel vragen die starten met `tm!`, ik kan niet antwoorden op andere vragen.",
-      "Wijzig je je gebruikersnaam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, ICE to meet you!"
+      "Wijzig je je naam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, ICE to meet you!"
     ],
     "roleManagement": {
-      "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
-      "roles": [
-        {"emoji": "🍩", "id": "808987908668653568"},
-        {"emoji": "🔈", "id": "808988046854455357"},
-        {"emoji": "❤️", "id": "808988176164323358"},
-        {"emoji": "🤵‍♀️", "id": "808988256095961139"},
-        {"emoji": "🦸‍♀️", "id": "809374332655763526"},
-        {"emoji": "👩‍🔧", "id": "814101557863776267"},
-        {"emoji": "📓", "id": "812053913964118065"}
+      "roleSets": [
+        {
+          "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+          "roles": [
+            {"emoji": "🍩", "id": "808987908668653568"},
+            {"emoji": "🔈", "id": "808988046854455357"},
+            {"emoji": "❤️", "id": "808988176164323358"},
+            {"emoji": "🤵‍♀️", "id": "808988256095961139"},
+            {"emoji": "🦸‍♀️", "id": "809374332655763526"},
+            {"emoji": "👩‍🔧", "id": "814101557863776267"},
+            {"emoji": "📓", "id": "812053913964118065"},
+            {"emoji": "🧑‍🎓", "id": "886933821524684811"}
+          ]
+        }
       ],
       "roleAdminChannelID": "808991336904130570",
       "defaultRole": "808987692619661363"

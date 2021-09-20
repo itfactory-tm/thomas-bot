@@ -9,8 +9,11 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strings"
 	"syscall"
 	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/pronostiek"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/game"
 
@@ -31,6 +34,7 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/links"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/members"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/moderation"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/schedule"
 	discordha "github.com/meyskens/discord-ha"
 )
 
@@ -164,7 +168,14 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	dg.UpdateStreamingStatus(0, fmt.Sprintf("tm!help (version %s)", revision), "")
+	go func() {
+		for {
+			guilds, _ := dg.UserGuilds(100, "", "")
+
+			dg.UpdateListeningStatus(fmt.Sprintf("%d servers (version %s)", len(guilds), revision))
+			time.Sleep(time.Minute)
+		}
+	}()
 
 	log.Println("Thomas Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
@@ -187,6 +198,8 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		hive.NewHiveCommand(s.db),
 		game.NewLookCommand(s.db),
 		menu.NewMenuCommand(),
+		pronostiek.NewPronostiekCommand(),
+		schedule.NewScheduleCommand(s.db),
 	}
 
 	for _, handler := range s.handlers {
@@ -270,8 +283,20 @@ func (s *serveCmdOptions) onGuildMemberAdd(sess *discordgo.Session, m *discordgo
 }
 
 func (s *serveCmdOptions) onInteractionCreate(sess *discordgo.Session, i *discordgo.InteractionCreate) {
-	for _, handler := range s.onInteractionCreateHandler[i.Data.Name] {
-		handler(sess, i)
+	if i.Type == discordgo.InteractionApplicationCommand {
+		// what we're doing here is allowing the app to set a custom ID after -- to pass along hidden values like an ID
+		name := strings.Split(i.ApplicationCommandData().Name, "--")[0]
+		for _, handler := range s.onInteractionCreateHandler[name] {
+			handler(sess, i)
+		}
+	}
+
+	if i.Type == discordgo.InteractionMessageComponent {
+		// what we're doing here is allowing the app to set a custom ID after -- to pass along hidden values like an ID
+		name := strings.Split(i.MessageComponentData().CustomID, "--")[0]
+		for _, handler := range s.onInteractionCreateHandler[name] {
+			handler(sess, i)
+		}
 	}
 }
 
