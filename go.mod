@@ -10,7 +10,6 @@ require (
 	github.com/go-audio/wav v1.0.0
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-	github.com/google/uuid v1.2.0 // indirect
 	github.com/hraban/opus v0.0.0-20191117073431-57179dff69a6
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/meyskens/discord-ha v0.0.0-20210723094030-8791e408bab7
@@ -21,12 +20,8 @@ require (
 	github.com/spf13/viper v1.7.1
 	go.mongodb.org/mongo-driver v1.5.1
 	go.uber.org/multierr v1.7.0 // indirect
-	go.uber.org/zap v1.17.0 // indirect
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
-	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
-	google.golang.org/genproto v0.0.0-20210524171403-669157292da3 // indirect
-	google.golang.org/grpc v1.38.0 // indirect
+	golang.org/x/net v0.0.0-20210508051633-16afe75a6701 // indirect
+	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2 // indirect
 	mvdan.cc/xurls/v2 v2.2.0
 )
 

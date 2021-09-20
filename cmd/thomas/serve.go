@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/menu"
 	"log"
 	"os"
 	"os/signal"
@@ -196,6 +197,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		shout.NewShoutCommand(),
 		hive.NewHiveCommand(s.db),
 		game.NewLookCommand(s.db),
+		menu.NewMenuCommand(),
 		pronostiek.NewPronostiekCommand(),
 		schedule.NewScheduleCommand(s.db),
 	}
