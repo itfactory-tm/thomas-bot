@@ -65,6 +65,10 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Name:  "Geel",
 						Value: "Geel",
 					},
+					{
+						Name:  "Lier",
+						Value: "Lier",
+					},
 					/*{
 						Name:  "De Nayer",
 						Value: "De Nayer",
