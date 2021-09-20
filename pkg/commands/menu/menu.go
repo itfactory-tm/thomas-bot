@@ -1,18 +1,42 @@
 package menu
 
 import (
-	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 	"log"
 	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/embed"
+	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"io/ioutil"
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
+
+	"encoding/json"
 )
 
 const apiString = "https://tmmenumanagement.azurewebsites.net/api/Menu/"
+
+// only works for Geel...
+type MenuData struct {
+	Curdate time.Time `json:"curdate"`
+	Rowkey  string    `json:"rowkey"`
+	Kitchen struct {
+		Description string `json:"Description"`
+		Campus      string `json:"Campus"`
+	} `json:"kitchen"`
+	Items []struct {
+		ShortDescriptionNL string `json:"ShortDescriptionNL"`
+		ShortDescriptionEN string `json:"ShortDescriptionEN"`
+		Category           struct {
+			ID     string `json:"ID"`
+			NameNL string `json:"NameNL"`
+			NameEN string `json:"NameEN"`
+		} `json:"Category"`
+		ChoiceGroups []interface{} `json:"choiceGroups"`
+	} `json:"items"`
+}
 
 type MenuCommand struct{}
 
@@ -28,43 +52,43 @@ func (h *MenuCommand) Register(registry command.Registry, server command.Server)
 //	InstallSlashCommands registers the slash commands
 func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 	app := discordgo.ApplicationCommand{
-		Name: "menu",
+		Name:        "menu",
 		Description: "Loads the cafetaria menu",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
-				Type: discordgo.ApplicationCommandOptionString,
-				Name: "campus",
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "campus",
 				Description: "The campus to get the menu from",
-				Required: true,
+				Required:    true,
 				Choices: []*discordgo.ApplicationCommandOptionChoice{
 					{
-						Name: "Geel",
+						Name:  "Geel",
 						Value: "Geel",
 					},
-					{
-						Name: "De Nayer",
+					/*{
+						Name:  "De Nayer",
 						Value: "De Nayer",
 					},
 					{
-						Name: "Lier",
+						Name:  "Lier",
 						Value: "Lier",
 					},
 					{
-						Name: "Antwerpen",
+						Name:  "Antwerpen",
 						Value: "Antwerpen",
 					},
 					{
-						Name: "Mechelen",
+						Name:  "Mechelen",
 						Value: "Mechelen",
 					},
 					{
-						Name: "Turnhout",
+						Name:  "Turnhout",
 						Value: "Turnhout",
 					},
 					{
-						Name: "Vorselaar",
+						Name:  "Vorselaar",
 						Value: "Vorselaar",
-					},
+					},*/
 				},
 			},
 		},
@@ -80,44 +104,41 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 //	SayMenu relays the menu
 //	TODO: pull the different meals from the api
 func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	var selectedCampus = i.Data.Options[0].Value.(string)
+	var selectedCampus = i.ApplicationCommandData().Options[0].Value.(string)
 
-	embed := &discordgo.MessageEmbed{
-		Title: "Menu campus "+selectedCampus+" | "+time.Now().Format("2 Jan"),
-		Color: 0x33FF33,
-		Fields: []*discordgo.MessageEmbedField{
-			{
-				Name: "Meal",
-				Value: "🥪 Sandwich\n"+
-					"🍲 Main course\n"+
-					"🥣 Soup\n"+
-					"🥗 Vegetarian\n",
-					Inline: true,
-			},
-			{
-				Name: "Item",
-				Value: "Cheese Sandwich\n"+
-					"Spaghetti\n"+
-					"Pea soup\n"+
-					"Quinoa Salad\n",
-				Inline: true,
-			},
-		},
+	data := GetSiteContent(selectedCampus)
+
+	currentMenu := []MenuData{}
+	for _, item := range data {
+		// if is today or after today
+		if item.Curdate.After(time.Now()) || item.Curdate.Day() == time.Now().Day() {
+			currentMenu = append(currentMenu, item)
+		}
+	}
+
+	embeds := []*discordgo.MessageEmbed{}
+	for _, item := range currentMenu {
+		e := embed.NewEmbed()
+		e.Title = item.Curdate.Format("Monday")
+		for _, item := range item.Items {
+			e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
+		}
+
+		embeds = append(embeds, e.MessageEmbed)
 	}
 
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
-			Content: "Here is the menu: "+GetSiteContent(selectedCampus),
-			Embeds: []*discordgo.MessageEmbed{
-				embed,
-			},
+		Data: &discordgo.InteractionResponseData{
+			Content: "Here is the menu: ",
+			Embeds:  embeds,
 		},
 	})
 
-	if(err!=nil){
+	if err != nil {
 		log.Println(err)
 	}
+
 }
 
 // Info return the commands in this package
@@ -126,8 +147,8 @@ func (h *MenuCommand) Info() []command.Command {
 }
 
 //	GetSiteContent returns the json from the api
-func GetSiteContent(campus string) string {
-	res, err := http.Get(apiString+campus)
+func GetSiteContent(campus string) []MenuData {
+	res, err := http.Get(apiString + campus)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -138,5 +159,11 @@ func GetSiteContent(campus string) string {
 		log.Fatalf(err.Error())
 	}
 
-	return string(content)
+	dataStr := ""
+	json.Unmarshal(content, &dataStr) // yes the data is sent inside a string
+
+	data := []MenuData{}
+	json.Unmarshal([]byte(dataStr), &data)
+
+	return data
 }
