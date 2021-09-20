@@ -427,7 +427,7 @@
         "textCategoryID": "808989126187679766",
         "voiceCategoryID": "808989186911895553",
         "prefix": "",
-        "voiceBitrate": 128000
+        "voiceBitrate": 96000
       },
       {
         "requestChannelIDs": ["808991034759315518"],
@@ -435,7 +435,7 @@
         "textCategoryID": "808990827602640936",
         "voiceCategoryID": "808990827602640936",
         "prefix": "",
-        "voiceBitrate": 128000
+        "voiceBitrate": 96000
       }
     ]
   }
