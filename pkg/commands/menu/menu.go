@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
-
 	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"io/ioutil"
@@ -17,7 +16,7 @@ import (
 	"encoding/json"
 )
 
-const apiString = "https://tmmenumanagement.azurewebsites.net/api/WeekMenu/"
+const apiString = "https://tmmenumanagement.azurewebsites.net/api/Menu/"
 
 // only works for Geel...
 // not anymore!
@@ -70,17 +69,13 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Name:  "Lier",
 						Value: "Lier",
 					},
-					{
-						Name:  "Turnhout",
-						Value: "Turnhout",
-					},
-					{
-						Name:  "Vorselaar",
-						Value: "Vorselaar",
-					},
 					/*{
 						Name:  "De Nayer",
-						Value: "De Nayer", //De Nayer gebruikt "undefined"
+						Value: "De Nayer",
+					},
+					{
+						Name:  "Lier",
+						Value: "Lier",
 					},
 					{
 						Name:  "Antwerpen",
@@ -89,19 +84,15 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 					{
 						Name:  "Mechelen",
 						Value: "Mechelen",
+					},
+					{
+						Name:  "Turnhout",
+						Value: "Turnhout",
+					},
+					{
+						Name:  "Vorselaar",
+						Value: "Vorselaar",
 					},*/
-					/*
-						----------------
-							Bijkomend
-						----------------
-						Antwerpen campus Sanderus gebruikt "undefined"
-						Antwerpen campus Sint-Andries gebruikt "undefined"
-						De Nayer gebruikt "undefined"
-						Campus De Ham gebruikt "Mechelen"
-						Campus De Vest gebruikt "Mechelen"
-						Campus Kruidtuin gebruikt "Mechelen"
-						Campus Lucas Faydherbe gebruikt "Mechelen"
-					*/
 				},
 			},
 		},
@@ -120,102 +111,24 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 	var selectedCampus = i.ApplicationCommandData().Options[0].Value.(string)
 
 	data := GetSiteContent(selectedCampus)
-	if len(data) == 0 {
-		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "That campus does not have a menu for this week yet!",
-			},
-		})
 
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
-
-	ndata := data[0]
-	pdata := ndata.(map[string]interface{})
-
-	var items map[string]interface{}
-	var startDate time.Time
-
-	// retrieve list of categories and the startdate
-	for k, v := range pdata {
-		switch k {
-		case "items":
-			items = v.(map[string]interface{})
-		case "startdate":
-			startDate, _ = time.Parse(time.RFC3339, v.(string))
-		}
-	}
-
-	var categoryWeeks []map[string]interface{}
-
-	// extrapolate categories from list
-	for _, v := range items {
-		categoryWeeks = append(categoryWeeks, v.(map[string]interface{}))
-	}
-
-	var finalMenu WeekMenu
-
-	// initialize finalMenu dates for later use
-	for a := range finalMenu.Days {
-		finalMenu.Days[a].Date = startDate.Add(time.Duration(a * 86400000000000)) //24h * 3600s/h * 1000 000 000ns/s
-	}
-
-	// Pull the actual menu data from the categories
-	// and group by week
-	for _, categoryweek := range categoryWeeks {
-		for k, v := range categoryweek {
-			var dayJ, _ = json.Marshal(v)
-			var day CategoryDay
-			err := json.Unmarshal(dayJ, &day) // easiest way to get our CategoryDay struct out is by converting to and from JSON
-			if err != nil {
-				log.Fatalf(err.Error())
-			}
-			switch k {
-			case "Monday":
-				finalMenu.Days[0].MenuItems = append(finalMenu.Days[0].MenuItems, day)
-			case "Tuesday":
-				finalMenu.Days[1].MenuItems = append(finalMenu.Days[1].MenuItems, day)
-			case "Wednesday":
-				finalMenu.Days[2].MenuItems = append(finalMenu.Days[2].MenuItems, day)
-			case "Thursday":
-				finalMenu.Days[3].MenuItems = append(finalMenu.Days[3].MenuItems, day)
-			case "Friday":
-				finalMenu.Days[4].MenuItems = append(finalMenu.Days[4].MenuItems, day)
-			}
+	currentMenu := []MenuData{}
+	for _, item := range data {
+		// if is today or after today
+		if item.Curdate.After(time.Now()) || item.Curdate.Day() == time.Now().Day() {
+			currentMenu = append(currentMenu, item)
 		}
 	}
 
 	embeds := []*discordgo.MessageEmbed{}
-	for _, day := range finalMenu.Days {
-		if day.Date.After(time.Now()) || day.Date.Day() == time.Now().Day() {
-			e := embed.NewEmbed()
-
-			e.Title = day.Date.Format("Monday")
-
-			// Check if the fields contain data
-			for _, item := range day.MenuItems {
-				if item.ShortDescriptionEN == "" {
-					if item.ShortDescriptionNL != "" {
-						e.AddField(item.Category.NameNL, item.ShortDescriptionNL)
-					} else if item.Category.NameEN != "" {
-						e.AddField(item.Category.NameEN, "There is no "+item.Category.NameEN+" available today")
-					}
-				} else {
-					e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
-				}
-			}
-			if len(e.Fields) == 0 {
-				e.AddField("​", "There is no menu available this day")
-			}
-
-			e.InlineAllFields()
-
-			embeds = append(embeds, e.MessageEmbed)
+	for _, item := range currentMenu {
+		e := embed.NewEmbed()
+		e.Title = item.Curdate.Format("Monday")
+		for _, item := range item.Items {
+			e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
 		}
+
+		embeds = append(embeds, e.MessageEmbed)
 	}
 
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -238,32 +151,23 @@ func (h *MenuCommand) Info() []command.Command {
 }
 
 //	GetSiteContent returns the json from the api
-func GetSiteContent(campus string) []interface{} {
+func GetSiteContent(campus string) []MenuData {
 	res, err := http.Get(apiString + campus)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	content, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
-	err = res.Body.Close()
+	res.Body.Close()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	dataStr := ""
-	err = json.Unmarshal(content, &dataStr) // yes the data is sent inside a string
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	json.Unmarshal(content, &dataStr) // yes the data is sent inside a string
 
-	var data []interface{}
-	err = json.Unmarshal([]byte(dataStr), &data)
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	data := []MenuData{}
+	json.Unmarshal([]byte(dataStr), &data)
 
 	return data
 }
