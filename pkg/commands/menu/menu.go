@@ -20,25 +20,7 @@ import (
 const apiString = "https://tmmenumanagement.azurewebsites.net/api/WeekMenu/"
 
 // only works for Geel...
-type MenuData struct {
-	Curdate time.Time `json:"curdate"`
-	Rowkey  string    `json:"rowkey"`
-	Kitchen struct {
-		Description string `json:"Description"`
-		Campus      string `json:"Campus"`
-	} `json:"kitchen"`
-	Items []struct {
-		ShortDescriptionNL string `json:"ShortDescriptionNL"`
-		ShortDescriptionEN string `json:"ShortDescriptionEN"`
-		Category           struct {
-			ID     string `json:"ID"`
-			NameNL string `json:"NameNL"`
-			NameEN string `json:"NameEN"`
-		} `json:"Category"`
-		ChoiceGroups []interface{} `json:"choiceGroups"`
-	} `json:"items"`
-}
-
+// not anymore!
 type WeekMenu struct {
 	Days [5]struct {
 		MenuItems []CategoryDay
