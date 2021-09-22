@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
+
 	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
 	"io/ioutil"
@@ -16,7 +17,7 @@ import (
 	"encoding/json"
 )
 
-const apiString = "https://tmmenumanagement.azurewebsites.net/api/Menu/"
+const apiString = "https://tmmenumanagement.azurewebsites.net/api/WeekMenu/"
 
 // only works for Geel...
 type MenuData struct {
@@ -36,6 +37,24 @@ type MenuData struct {
 		} `json:"Category"`
 		ChoiceGroups []interface{} `json:"choiceGroups"`
 	} `json:"items"`
+}
+
+type WeekMenu struct {
+	Days [5]struct {
+		MenuItems []CategoryDay
+		Date      time.Time
+	}
+}
+
+type CategoryDay struct {
+	ShortDescriptionNL string
+	ShortDescriptionEN string
+	Category           struct {
+		ID     string
+		NameNL string
+		NameEN string
+	}
+	ChoiceGroups []interface{}
 }
 
 type MenuCommand struct{}
@@ -112,23 +131,83 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 
 	data := GetSiteContent(selectedCampus)
 
-	currentMenu := []MenuData{}
-	for _, item := range data {
-		// if is today or after today
-		if item.Curdate.After(time.Now()) || item.Curdate.Day() == time.Now().Day() {
-			currentMenu = append(currentMenu, item)
+	ndata := data[0]
+	pdata := ndata.(map[string]interface{})
+
+	println(data)
+	println(ndata)
+	println(pdata)
+
+	for k, v := range pdata {
+		switch vv := v.(type) {
+		case string:
+			println(k, "is string", vv)
+		case interface{}:
+			println(k, "is struct", vv)
+		}
+	}
+
+	var items map[string]interface{}
+	var startDate time.Time
+
+	for k, v := range pdata {
+		switch k {
+		case "items":
+			items = v.(map[string]interface{})
+		case "startdate":
+			startDate, _ = time.Parse(time.RFC3339, v.(string))
+		}
+	}
+
+	println(startDate.Day())
+
+	var categoryWeeks []map[string]interface{}
+
+	for k, v := range items {
+		categoryWeeks = append(categoryWeeks, v.(map[string]interface{}))
+		println("struct ", k, "is present with value address ", v)
+	}
+
+	var finalMenu WeekMenu
+
+	for _, categoryweek := range categoryWeeks {
+		for k, v := range categoryweek {
+			println("Day", k, "has been found!")
+			var dayJ, _ = json.Marshal(v)
+			var day CategoryDay
+			json.Unmarshal(dayJ, &day)
+			switch k {
+			case "Monday":
+				finalMenu.Days[0].MenuItems = append(finalMenu.Days[0].MenuItems, day)
+				finalMenu.Days[0].Date = startDate
+			case "Tuesday":
+				finalMenu.Days[1].MenuItems = append(finalMenu.Days[1].MenuItems, day)
+				finalMenu.Days[1].Date = startDate.Add(24 * time.Hour)
+			case "Wednesday":
+				finalMenu.Days[2].MenuItems = append(finalMenu.Days[2].MenuItems, day)
+				finalMenu.Days[2].Date = startDate.Add(2 * 24 * time.Hour)
+			case "Thursday":
+				finalMenu.Days[3].MenuItems = append(finalMenu.Days[3].MenuItems, day)
+				finalMenu.Days[3].Date = startDate.Add(3 * 24 * time.Hour)
+			case "Friday":
+				finalMenu.Days[4].MenuItems = append(finalMenu.Days[4].MenuItems, day)
+				finalMenu.Days[4].Date = startDate.Add(4 * 24 * time.Hour)
+			}
 		}
 	}
 
 	embeds := []*discordgo.MessageEmbed{}
-	for _, item := range currentMenu {
-		e := embed.NewEmbed()
-		e.Title = item.Curdate.Format("Monday")
-		for _, item := range item.Items {
-			e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
-		}
+	for _, day := range finalMenu.Days {
+		if day.Date.After(time.Now()) || day.Date.Day() == time.Now().Day() {
+			e := embed.NewEmbed()
 
-		embeds = append(embeds, e.MessageEmbed)
+			e.Title = day.Date.Format("Monday")
+			for _, item := range day.MenuItems {
+				e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
+			}
+
+			embeds = append(embeds, e.MessageEmbed)
+		}
 	}
 
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -151,7 +230,7 @@ func (h *MenuCommand) Info() []command.Command {
 }
 
 //	GetSiteContent returns the json from the api
-func GetSiteContent(campus string) []MenuData {
+func GetSiteContent(campus string) []interface{} {
 	res, err := http.Get(apiString + campus)
 	if err != nil {
 		log.Fatalf(err.Error())
@@ -166,7 +245,7 @@ func GetSiteContent(campus string) []MenuData {
 	dataStr := ""
 	json.Unmarshal(content, &dataStr) // yes the data is sent inside a string
 
-	data := []MenuData{}
+	var data []interface{}
 	json.Unmarshal([]byte(dataStr), &data)
 
 	return data
