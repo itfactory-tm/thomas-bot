@@ -92,6 +92,10 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Name:  "Turnhout",
 						Value: "Turnhout",
 					},
+					{
+						Name:  "Vorselaar",
+						Value: "Vorselaar",
+					},
 					/*{
 						Name:  "De Nayer",
 						Value: "De Nayer", //De Nayer gebruikt "undefined"
@@ -103,11 +107,19 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 					{
 						Name:  "Mechelen",
 						Value: "Mechelen",
-					},
-					{
-						Name:  "Vorselaar",
-						Value: "Vorselaar",
 					},*/
+					/*
+						----------------
+							Bijkomend
+						----------------
+						Antwerpen campus Sanderus gebruikt "undefined"
+						Antwerpen campus Sint-Andries gebruikt "undefined"
+						De Nayer gebruikt "undefined"
+						Campus De Ham gebruikt "Mechelen"
+						Campus De Vest gebruikt "Mechelen"
+						Campus Kruidtuin gebruikt "Mechelen"
+						Campus Lucas Faydherbe gebruikt "Mechelen"
+					*/
 				},
 			},
 		},
@@ -146,6 +158,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 	var items map[string]interface{}
 	var startDate time.Time
 
+	// retrieve list of categories and the startdate
 	for k, v := range pdata {
 		switch k {
 		case "items":
@@ -157,21 +170,25 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 
 	var categoryWeeks []map[string]interface{}
 
+	// extrapolate categories from list
 	for _, v := range items {
 		categoryWeeks = append(categoryWeeks, v.(map[string]interface{}))
 	}
 
 	var finalMenu WeekMenu
 
+	// initialize finalMenu dates for later use
 	for a := range finalMenu.Days {
 		finalMenu.Days[a].Date = startDate.Add(time.Duration(a * 86400000000000)) //24h * 3600s/h * 1000 000 000ns/s
 	}
 
+	// Pull the actual menu data from the categories
+	// and group by week
 	for _, categoryweek := range categoryWeeks {
 		for k, v := range categoryweek {
 			var dayJ, _ = json.Marshal(v)
 			var day CategoryDay
-			err := json.Unmarshal(dayJ, &day)
+			err := json.Unmarshal(dayJ, &day) // easiest way to get our CategoryDay struct out is by converting to and from JSON
 			if err != nil {
 				log.Fatalf(err.Error())
 			}
@@ -196,6 +213,8 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 			e := embed.NewEmbed()
 
 			e.Title = day.Date.Format("Monday")
+
+			// Check if the fields contain data
 			for _, item := range day.MenuItems {
 				if item.ShortDescriptionEN == "" {
 					if item.ShortDescriptionNL != "" {
@@ -208,8 +227,10 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 				}
 			}
 			if len(e.Fields) == 0 {
-				e.AddField("​", "There is no menu available today")
+				e.AddField("​", "There is no menu available this day")
 			}
+
+			e.InlineAllFields()
 
 			embeds = append(embeds, e.MessageEmbed)
 		}
