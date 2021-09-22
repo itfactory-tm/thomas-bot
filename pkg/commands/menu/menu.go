@@ -88,13 +88,13 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Name:  "Lier",
 						Value: "Lier",
 					},
+					{
+						Name:  "Turnhout",
+						Value: "Turnhout",
+					},
 					/*{
 						Name:  "De Nayer",
-						Value: "De Nayer",
-					},
-					{
-						Name:  "Lier",
-						Value: "Lier",
+						Value: "De Nayer", //De Nayer gebruikt "undefined"
 					},
 					{
 						Name:  "Antwerpen",
@@ -103,10 +103,6 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 					{
 						Name:  "Mechelen",
 						Value: "Mechelen",
-					},
-					{
-						Name:  "Turnhout",
-						Value: "Turnhout",
 					},
 					{
 						Name:  "Vorselaar",
@@ -130,22 +126,22 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 	var selectedCampus = i.ApplicationCommandData().Options[0].Value.(string)
 
 	data := GetSiteContent(selectedCampus)
+	if len(data) == 0 {
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "That campus does not have a menu for this week yet!",
+			},
+		})
+
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
 
 	ndata := data[0]
 	pdata := ndata.(map[string]interface{})
-
-	println(data)
-	println(ndata)
-	println(pdata)
-
-	for k, v := range pdata {
-		switch vv := v.(type) {
-		case string:
-			println(k, "is string", vv)
-		case interface{}:
-			println(k, "is struct", vv)
-		}
-	}
 
 	var items map[string]interface{}
 	var startDate time.Time
@@ -159,39 +155,37 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		}
 	}
 
-	println(startDate.Day())
-
 	var categoryWeeks []map[string]interface{}
 
-	for k, v := range items {
+	for _, v := range items {
 		categoryWeeks = append(categoryWeeks, v.(map[string]interface{}))
-		println("struct ", k, "is present with value address ", v)
 	}
 
 	var finalMenu WeekMenu
 
+	for a := range finalMenu.Days {
+		finalMenu.Days[a].Date = startDate.Add(time.Duration(a * 86400000000000)) //24h * 3600s/h * 1000 000 000ns/s
+	}
+
 	for _, categoryweek := range categoryWeeks {
 		for k, v := range categoryweek {
-			println("Day", k, "has been found!")
 			var dayJ, _ = json.Marshal(v)
 			var day CategoryDay
-			json.Unmarshal(dayJ, &day)
+			err := json.Unmarshal(dayJ, &day)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
 			switch k {
 			case "Monday":
 				finalMenu.Days[0].MenuItems = append(finalMenu.Days[0].MenuItems, day)
-				finalMenu.Days[0].Date = startDate
 			case "Tuesday":
 				finalMenu.Days[1].MenuItems = append(finalMenu.Days[1].MenuItems, day)
-				finalMenu.Days[1].Date = startDate.Add(24 * time.Hour)
 			case "Wednesday":
 				finalMenu.Days[2].MenuItems = append(finalMenu.Days[2].MenuItems, day)
-				finalMenu.Days[2].Date = startDate.Add(2 * 24 * time.Hour)
 			case "Thursday":
 				finalMenu.Days[3].MenuItems = append(finalMenu.Days[3].MenuItems, day)
-				finalMenu.Days[3].Date = startDate.Add(3 * 24 * time.Hour)
 			case "Friday":
 				finalMenu.Days[4].MenuItems = append(finalMenu.Days[4].MenuItems, day)
-				finalMenu.Days[4].Date = startDate.Add(4 * 24 * time.Hour)
 			}
 		}
 	}
@@ -203,7 +197,18 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 
 			e.Title = day.Date.Format("Monday")
 			for _, item := range day.MenuItems {
-				e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
+				if item.ShortDescriptionEN == "" {
+					if item.ShortDescriptionNL != "" {
+						e.AddField(item.Category.NameNL, item.ShortDescriptionNL)
+					} else if item.Category.NameEN != "" {
+						e.AddField(item.Category.NameEN, "There is no "+item.Category.NameEN+" available today")
+					}
+				} else {
+					e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
+				}
+			}
+			if len(e.Fields) == 0 {
+				e.AddField("​", "There is no menu available today")
 			}
 
 			embeds = append(embeds, e.MessageEmbed)
@@ -237,16 +242,25 @@ func GetSiteContent(campus string) []interface{} {
 	}
 
 	content, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	err = res.Body.Close()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	dataStr := ""
-	json.Unmarshal(content, &dataStr) // yes the data is sent inside a string
+	err = json.Unmarshal(content, &dataStr) // yes the data is sent inside a string
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 
 	var data []interface{}
-	json.Unmarshal([]byte(dataStr), &data)
+	err = json.Unmarshal([]byte(dataStr), &data)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 
 	return data
 }
