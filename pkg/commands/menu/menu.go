@@ -39,24 +39,6 @@ type CategoryDay struct {
 	ChoiceGroups []interface{}
 }
 
-type WeekMenu struct {
-	Days [5]struct {
-		MenuItems []CategoryDay
-		Date      time.Time
-	}
-}
-
-type CategoryDay struct {
-	ShortDescriptionNL string
-	ShortDescriptionEN string
-	Category           struct {
-		ID     string
-		NameNL string
-		NameEN string
-	}
-	ChoiceGroups []interface{}
-}
-
 type MenuCommand struct{}
 
 func NewMenuCommand() *MenuCommand {
@@ -152,8 +134,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		return
 	}
 
-	ndata := data[0]
-	pdata := ndata.(map[string]interface{})
+	pdata := data[0].(map[string]interface{})
 
 	var items map[string]interface{}
 	var startDate time.Time
@@ -277,6 +258,20 @@ func GetSiteContent(campus string) []interface{} {
 		log.Fatalf(err.Error())
 	}
 
+	/*
+		Omzetten naar een slice van een interface?!??
+
+		Wat betekent dit en waarom wordt ik hier ziek van?
+		Er is een groot probleem; er staan ID's in de JSON als namen,
+		waardoor we geen structuur met vaste namen kunnen declareren
+		(dit gaat, maar encoding/json zet structs met onbekende structuur
+		dan om naar lege structs)
+
+		door om te zetten naar dit formaat wordt alles behouden, maar moeten
+		we alles manueel uit de data halen.
+		Bovendien zal alles kapot gaan als er iets zou veranderen aan de
+		structuur van de data
+	*/
 	var data []interface{}
 	err = json.Unmarshal([]byte(dataStr), &data)
 	if err != nil {
