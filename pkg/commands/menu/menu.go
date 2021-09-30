@@ -120,6 +120,21 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 	var selectedCampus = i.ApplicationCommandData().Options[0].Value.(string)
 
 	data := GetSiteContent(selectedCampus)
+
+	if data == nil {
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "We can't get the menu at this time, try again later",
+			},
+		})
+
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
 	if len(data) == 0 {
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -217,6 +232,20 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		}
 	}
 
+	if len(embeds) == 0 {
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "That campus does not have a menu for this week yet!",
+			},
+		})
+
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
@@ -241,6 +270,9 @@ func GetSiteContent(campus string) []interface{} {
 	res, err := http.Get(apiString + campus)
 	if err != nil {
 		log.Fatalf(err.Error())
+	}
+	if res.StatusCode != 200 {
+		return nil
 	}
 
 	content, err := ioutil.ReadAll(res.Body)
