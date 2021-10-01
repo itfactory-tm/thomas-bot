@@ -78,6 +78,14 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Name:  "Vorselaar",
 						Value: "Vorselaar",
 					},
+					{
+						Name:  "Mechelen",
+						Value: "Mechelen",
+					},
+					{
+						Name:  "De Nayer",
+						Value: "De%20Nayer",
+					},
 					/*{
 						Name:  "De Nayer",
 						Value: "De Nayer", //De Nayer gebruikt "undefined"
