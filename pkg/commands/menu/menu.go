@@ -134,59 +134,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		return
 	}
 
-	pdata := data[0].(map[string]interface{})
-
-	var items map[string]interface{}
-	var startDate time.Time
-
-	// retrieve list of categories and the startdate
-	for k, v := range pdata {
-		switch k {
-		case "items":
-			items = v.(map[string]interface{})
-		case "startdate":
-			startDate, _ = time.Parse(time.RFC3339, v.(string))
-		}
-	}
-
-	var categoryWeeks []map[string]interface{}
-
-	// extrapolate categories from list
-	for _, v := range items {
-		categoryWeeks = append(categoryWeeks, v.(map[string]interface{}))
-	}
-
-	var finalMenu WeekMenu
-
-	// initialize finalMenu dates for later use
-	for a := range finalMenu.Days {
-		finalMenu.Days[a].Date = startDate.Add(time.Duration(a * 86400000000000)) //24h * 3600s/h * 1000 000 000ns/s
-	}
-
-	// Pull the actual menu data from the categories
-	// and group by week
-	for _, categoryweek := range categoryWeeks {
-		for k, v := range categoryweek {
-			var dayJ, _ = json.Marshal(v)
-			var day CategoryDay
-			err := json.Unmarshal(dayJ, &day) // easiest way to get our CategoryDay struct out is by converting to and from JSON
-			if err != nil {
-				log.Fatalf(err.Error())
-			}
-			switch k {
-			case "Monday":
-				finalMenu.Days[0].MenuItems = append(finalMenu.Days[0].MenuItems, day)
-			case "Tuesday":
-				finalMenu.Days[1].MenuItems = append(finalMenu.Days[1].MenuItems, day)
-			case "Wednesday":
-				finalMenu.Days[2].MenuItems = append(finalMenu.Days[2].MenuItems, day)
-			case "Thursday":
-				finalMenu.Days[3].MenuItems = append(finalMenu.Days[3].MenuItems, day)
-			case "Friday":
-				finalMenu.Days[4].MenuItems = append(finalMenu.Days[4].MenuItems, day)
-			}
-		}
-	}
+	finalMenu := parseWeekmenu(data)
 
 	embeds := []*discordgo.MessageEmbed{}
 	for _, day := range finalMenu.Days {
@@ -217,10 +165,15 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		}
 	}
 
+	content := "Here is the menu: "
+	if len(embeds) == 0 {
+		content = "The menu for this week is not yet available"
+	}
+
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Content: "Here is the menu: ",
+			Content: content,
 			Embeds:  embeds,
 		},
 	})
@@ -229,6 +182,63 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		log.Println(err)
 	}
 
+}
+
+// parseWeekmenu parses the menu from the data
+func parseWeekmenu(data []interface{}) (menu WeekMenu) {
+	pdata := data[0].(map[string]interface{})
+
+	var items map[string]interface{}
+	var startDate time.Time
+
+	// retrieve list of categories and the startdate
+	for k, v := range pdata {
+		switch k {
+		case "items":
+			items = v.(map[string]interface{})
+		case "startdate":
+			startDate, _ = time.Parse(time.RFC3339, v.(string))
+		}
+	}
+
+	var categoryWeeks []map[string]interface{}
+
+	// extrapolate categories from list
+	for _, v := range items {
+		categoryWeeks = append(categoryWeeks, v.(map[string]interface{}))
+	}
+
+	// initialize finalMenu dates for later use
+	for a := range menu.Days {
+		menu.Days[a].Date = startDate.Add(time.Duration(a * 86400000000000)) //24h * 3600s/h * 1000 000 000ns/s
+	}
+
+	// Pull the actual menu data from the categories
+	// and group by week
+	for _, categoryweek := range categoryWeeks {
+		for k, v := range categoryweek {
+			var dayJ, _ = json.Marshal(v)
+			var day CategoryDay
+			err := json.Unmarshal(dayJ, &day) // easiest way to get our CategoryDay struct out is by converting to and from JSON
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+			switch k {
+			case "Monday":
+				menu.Days[0].MenuItems = append(menu.Days[0].MenuItems, day)
+			case "Tuesday":
+				menu.Days[1].MenuItems = append(menu.Days[1].MenuItems, day)
+			case "Wednesday":
+				menu.Days[2].MenuItems = append(menu.Days[2].MenuItems, day)
+			case "Thursday":
+				menu.Days[3].MenuItems = append(menu.Days[3].MenuItems, day)
+			case "Friday":
+				menu.Days[4].MenuItems = append(menu.Days[4].MenuItems, day)
+			}
+		}
+	}
+
+	return menu
 }
 
 // Info return the commands in this package
