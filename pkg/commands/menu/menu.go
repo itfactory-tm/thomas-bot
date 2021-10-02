@@ -78,25 +78,25 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Name:  "Vorselaar",
 						Value: "Vorselaar",
 					},
-					/*{
+					{
+						Name:  "Mechelen",
+						Value: "Mechelen",
+					},
+					{
 						Name:  "De Nayer",
-						Value: "De Nayer", //De Nayer gebruikt "undefined"
+						Value: "De%20Nayer",
 					},
 					{
 						Name:  "Antwerpen",
 						Value: "Antwerpen",
 					},
-					{
-						Name:  "Mechelen",
-						Value: "Mechelen",
-					},*/
 					/*
 						----------------
 							Bijkomend
 						----------------
 						Antwerpen campus Sanderus gebruikt "undefined"
 						Antwerpen campus Sint-Andries gebruikt "undefined"
-						De Nayer gebruikt "undefined"
+						De Nayer gebruikt "De%20Nayer" -> html encoded
 						Campus De Ham gebruikt "Mechelen"
 						Campus De Vest gebruikt "Mechelen"
 						Campus Kruidtuin gebruikt "Mechelen"
@@ -120,6 +120,21 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 	var selectedCampus = i.ApplicationCommandData().Options[0].Value.(string)
 
 	data := GetSiteContent(selectedCampus)
+
+	if data == nil {
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "We can't get the menu at this time, try again later",
+			},
+		})
+
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
 	if len(data) == 0 {
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -251,6 +266,9 @@ func GetSiteContent(campus string) []interface{} {
 	res, err := http.Get(apiString + campus)
 	if err != nil {
 		log.Fatalf(err.Error())
+	}
+	if res.StatusCode != 200 {
+		return nil
 	}
 
 	content, err := ioutil.ReadAll(res.Body)
