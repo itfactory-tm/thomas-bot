@@ -1,6 +1,8 @@
 package menu
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -104,6 +106,22 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 					*/
 				},
 			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "language",
+				Description: "Your preferred language",
+				Required:    false,
+				Choices: []*discordgo.ApplicationCommandOptionChoice{
+					{
+						Name:  "Nederlands",
+						Value: "nl",
+					},
+					{
+						Name:  "English",
+						Value: "en",
+					},
+				},
+			},
 		},
 	}
 
@@ -115,9 +133,9 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 }
 
 //	SayMenu relays the menu
-//	TODO: pull the different meals from the api
 func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	var selectedCampus = i.ApplicationCommandData().Options[0].Value.(string)
+	var language = i.ApplicationCommandData().Options[1].Value.(string)
 
 	data := GetSiteContent(selectedCampus)
 
@@ -212,14 +230,11 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 
 			// Check if the fields contain data
 			for _, item := range day.MenuItems {
-				if item.ShortDescriptionEN == "" {
-					if item.ShortDescriptionNL != "" {
-						e.AddField(item.Category.NameNL, item.ShortDescriptionNL)
-					} else if item.Category.NameEN != "" {
-						e.AddField(item.Category.NameEN, "There is no "+item.Category.NameEN+" available today")
-					}
-				} else {
-					e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
+				itemName, itemDescription, err := GetItemText(item, language)
+				fmt.Println(itemName)
+				fmt.Println(itemDescription)
+				if err == nil {
+					e.AddField(itemName, itemDescription)
 				}
 			}
 			if len(e.Fields) == 0 {
@@ -258,6 +273,104 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		log.Println(err)
 	}
 
+}
+
+// GetItemText returns the item strings with the correct language
+// attempts to retrieve the requested info
+// TODO: is it possible to pass a list of languages and their responses to generalize this function?
+func GetItemText(item CategoryDay, language string) (itemName string, itemDescription string, err error) {
+	err = nil
+
+	switch language {
+	case "nl":
+		if item.Category.NameEN == "" && item.Category.NameNL == "" {
+			return "", "", errors.New("no categories found")
+		}
+
+		itemName, itemDescription, err = GetDutchText(item)
+		if err != nil {
+			itemName, itemDescription, err = GetEnglishText(item)
+		}
+		break
+
+	case "en":
+		if item.Category.NameEN == "" && item.Category.NameNL == "" {
+			return "", "", errors.New("no categories found")
+		}
+
+		itemName, itemDescription, err = GetEnglishText(item)
+		if err != nil {
+			itemName, itemDescription, err = GetDutchText(item)
+		}
+		break
+
+	default:
+		if item.Category.NameEN == "" && item.Category.NameNL == "" {
+			return "", "", errors.New("no categories found")
+		}
+
+		itemName, itemDescription, err = GetDutchText(item)
+		if err != nil {
+			itemName, itemDescription, err = GetEnglishText(item)
+		}
+		break
+	}
+
+	// let's check if all there are no descriptions
+	if err != nil {
+		switch language {
+		case "nl":
+			itemDescription = "Er is geen " + itemName + " beschikbaar vandaag"
+			break
+
+		case "en":
+			itemDescription = "There is no " + itemName + " available today"
+			break
+
+		default:
+			itemDescription = "Er is geen " + itemName + " beschikbaar vandaag"
+		}
+	}
+
+	return itemName, itemDescription, nil
+}
+
+func GetDutchText(item CategoryDay) (itemName string, itemDescription string, err error) {
+	err = nil
+
+	// missing description is fatal, missing category name is not
+	// unless both names are missing
+	if item.ShortDescriptionNL == "" {
+		err = errors.New("required description missing")
+		itemDescription = ""
+	} else {
+		itemDescription = item.ShortDescriptionNL
+	}
+	if item.Category.NameNL == "" {
+		itemName = item.Category.NameEN
+	} else {
+		itemName = item.Category.NameNL
+	}
+	return itemName, itemDescription, err
+}
+
+func GetEnglishText(item CategoryDay) (itemName string, itemDescription string, err error) {
+	err = nil
+
+	// missing description is fatal, missing category name is not
+	// unless both names are missing
+	if item.ShortDescriptionEN == "" {
+		err = errors.New("required description missing")
+		itemDescription = ""
+	} else {
+		itemDescription = item.ShortDescriptionEN
+	}
+	if item.Category.NameEN == "" {
+		itemName = item.Category.NameNL
+	} else {
+		itemName = item.Category.NameEN
+	}
+	return item.Category.NameEN, item.ShortDescriptionEN, err
 }
 
 // Info return the commands in this package
