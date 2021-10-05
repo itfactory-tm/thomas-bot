@@ -41,11 +41,18 @@ type CategoryDay struct {
 }
 
 type ResponseTexts struct {
+	Language       string
+	LanguageCode   string
 	TryLater       string
 	NoWeekMenu     string
 	NoDayMenu      string
 	PoliteResponse string
+	NoItem         func(itemName string) string
 }
+
+// we return quite a bit of text, so globals
+var localisation ResponseTexts
+var supportedLanguages = [2]string{"nl", "en"}
 
 type MenuCommand struct{}
 
@@ -150,9 +157,18 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 			break
 		case "language":
 			language = option.Value.(string)
+			// if language is not supported go for default
+			for index, lang := range supportedLanguages {
+				if language == lang {
+					break
+				}
+				if index == len(supportedLanguages)-1 {
+					language = ""
+				}
+			}
 		}
 	}
-	var responses = GetResponseTexts(language)
+	localisation = GetResponseTexts(language)
 
 	data := GetSiteContent(selectedCampus)
 
@@ -160,7 +176,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: responses.TryLater,
+				Content: localisation.TryLater,
 			},
 		})
 
@@ -174,7 +190,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: responses.NoWeekMenu,
+				Content: localisation.NoWeekMenu,
 			},
 		})
 
@@ -253,7 +269,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 				}
 			}
 			if len(e.Fields) == 0 {
-				e.AddField("​", responses.NoDayMenu)
+				e.AddField("​", localisation.NoDayMenu)
 			}
 
 			e.InlineAllFields()
@@ -266,7 +282,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: responses.NoWeekMenu,
+				Content: localisation.NoWeekMenu,
 			},
 		})
 
@@ -279,7 +295,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Content: responses.PoliteResponse,
+			Content: localisation.PoliteResponse,
 			Embeds:  embeds,
 		},
 	})
@@ -293,24 +309,33 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 func GetResponseTexts(language string) (responses ResponseTexts) {
 	switch language {
 	case "nl":
+		responses.Language = "Nederlands"
+		responses.LanguageCode = "nl"
 		responses.TryLater = "We kunnen momenteel niet aan het menu, probeer het later nog eens"
 		responses.NoWeekMenu = "Deze campus heeft nog geen menu voor deze week!"
 		responses.NoDayMenu = "Er is geen menu op deze dag"
 		responses.PoliteResponse = "Hier is het menu: "
+		responses.NoItem = func(itemName string) string { return "Er is geen " + itemName + " beschikbaar vandaag" }
 		break
 
 	case "en":
+		responses.Language = "English"
+		responses.LanguageCode = "en"
 		responses.TryLater = "We can't get the menu at this time, try again later"
 		responses.NoWeekMenu = "That campus does not have a menu for this week yet!"
 		responses.NoDayMenu = "There is no menu available this day"
 		responses.PoliteResponse = "Here is the menu: "
+		responses.NoItem = func(itemName string) string { return "There is no " + itemName + " available today" }
 		break
 
 	default:
+		responses.Language = "Nederlands"
+		responses.LanguageCode = ""
 		responses.TryLater = "We kunnen momenteel niet aan het menu, probeer het later nog eens"
 		responses.NoWeekMenu = "Deze campus heeft nog geen menu voor deze week!"
 		responses.NoDayMenu = "Er is geen menu op deze dag"
 		responses.PoliteResponse = "Hier is het menu: "
+		responses.NoItem = func(itemName string) string { return "Er is geen " + itemName + " beschikbaar vandaag" }
 		break
 	}
 
@@ -360,18 +385,7 @@ func GetItemText(item CategoryDay, language string) (itemName string, itemDescri
 
 	// let's check if all there are no descriptions
 	if err != nil {
-		switch language {
-		case "nl":
-			itemDescription = "Er is geen " + itemName + " beschikbaar vandaag"
-			break
-
-		case "en":
-			itemDescription = "There is no " + itemName + " available today"
-			break
-
-		default:
-			itemDescription = "Er is geen " + itemName + " beschikbaar vandaag"
-		}
+		itemDescription = localisation.NoItem(itemName)
 	}
 
 	return itemName, itemDescription, nil
