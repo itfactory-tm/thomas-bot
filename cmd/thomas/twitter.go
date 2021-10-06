@@ -104,6 +104,12 @@ func (t *twitterCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			return
 		}
 
+		// trending tweet safeguard
+		if tweet.QuotedStatus != nil {
+			// quoted tweet, ignoring
+			return
+		}
+
 		// it is project season relaxing our requirements
 		// make sure I do not regret this!
 

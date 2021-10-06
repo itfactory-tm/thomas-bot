@@ -189,6 +189,58 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		return
 	}
 
+	finalMenu := parseWeekmenu(data)
+
+	embeds := []*discordgo.MessageEmbed{}
+	for _, day := range finalMenu.Days {
+		if day.Date.After(time.Now()) || day.Date.Day() == time.Now().Day() {
+			e := embed.NewEmbed()
+
+			e.Title = day.Date.Format("Monday")
+
+			// Check if the fields contain data
+			for _, item := range day.MenuItems {
+				if item.ShortDescriptionEN == "" {
+					if item.ShortDescriptionNL != "" {
+						e.AddField(item.Category.NameNL, item.ShortDescriptionNL)
+					} else if item.Category.NameEN != "" {
+						e.AddField(item.Category.NameEN, "There is no "+item.Category.NameEN+" available today")
+					}
+				} else {
+					e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
+				}
+			}
+			if len(e.Fields) == 0 {
+				e.AddField("​", "There is no menu available this day")
+			}
+
+			e.InlineAllFields()
+
+			embeds = append(embeds, e.MessageEmbed)
+		}
+	}
+
+	content := "Here is the menu: "
+	if len(embeds) == 0 {
+		content = "The menu for this week is not yet available"
+	}
+
+	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: content,
+			Embeds:  embeds,
+		},
+	})
+
+	if err != nil {
+		log.Println(err)
+	}
+
+}
+
+// parseWeekmenu parses the menu from the data
+func parseWeekmenu(data []interface{}) (menu WeekMenu) {
 	pdata := data[0].(map[string]interface{})
 
 	var items map[string]interface{}
@@ -211,11 +263,9 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		categoryWeeks = append(categoryWeeks, v.(map[string]interface{}))
 	}
 
-	var finalMenu WeekMenu
-
 	// initialize finalMenu dates for later use
-	for a := range finalMenu.Days {
-		finalMenu.Days[a].Date = startDate.Add(time.Duration(a * 86400000000000)) //24h * 3600s/h * 1000 000 000ns/s
+	for a := range menu.Days {
+		menu.Days[a].Date = startDate.Add(time.Duration(a * 86400000000000)) //24h * 3600s/h * 1000 000 000ns/s
 	}
 
 	// Pull the actual menu data from the categories
@@ -230,69 +280,19 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 			}
 			switch k {
 			case "Monday":
-				finalMenu.Days[0].MenuItems = append(finalMenu.Days[0].MenuItems, day)
+				menu.Days[0].MenuItems = append(menu.Days[0].MenuItems, day)
 			case "Tuesday":
-				finalMenu.Days[1].MenuItems = append(finalMenu.Days[1].MenuItems, day)
+				menu.Days[1].MenuItems = append(menu.Days[1].MenuItems, day)
 			case "Wednesday":
-				finalMenu.Days[2].MenuItems = append(finalMenu.Days[2].MenuItems, day)
+				menu.Days[2].MenuItems = append(menu.Days[2].MenuItems, day)
 			case "Thursday":
-				finalMenu.Days[3].MenuItems = append(finalMenu.Days[3].MenuItems, day)
+				menu.Days[3].MenuItems = append(menu.Days[3].MenuItems, day)
 			case "Friday":
-				finalMenu.Days[4].MenuItems = append(finalMenu.Days[4].MenuItems, day)
+				menu.Days[4].MenuItems = append(menu.Days[4].MenuItems, day)
 			}
 		}
 	}
-
-	embeds := []*discordgo.MessageEmbed{}
-	for _, day := range finalMenu.Days {
-		if day.Date.After(time.Now()) || day.Date.Day() == time.Now().Day() {
-			e := embed.NewEmbed()
-
-			e.Title = day.Date.Format("Monday")
-
-			// Check if the fields contain data
-			for _, item := range day.MenuItems {
-				itemName, itemDescription, err := GetItemText(item, language)
-				if err == nil {
-					e.AddField(itemName, itemDescription)
-				}
-			}
-			if len(e.Fields) == 0 {
-				e.AddField("​", localisation.NoDayMenu)
-			}
-
-			e.InlineAllFields()
-
-			embeds = append(embeds, e.MessageEmbed)
-		}
-	}
-
-	if len(embeds) == 0 {
-		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: localisation.NoWeekMenu,
-			},
-		})
-
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
-
-	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: localisation.PoliteResponse,
-			Embeds:  embeds,
-		},
-	})
-
-	if err != nil {
-		log.Println(err)
-	}
-
+	return menu
 }
 
 // GetItemText returns the item strings with the correct language
