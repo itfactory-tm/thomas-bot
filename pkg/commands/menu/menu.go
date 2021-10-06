@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -38,6 +39,9 @@ type CategoryDay struct {
 	}
 	ChoiceGroups []interface{}
 }
+
+// we return quite a bit of text, so globals
+var localisation ResponseTexts
 
 type MenuCommand struct{}
 
@@ -104,6 +108,22 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 					*/
 				},
 			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "language",
+				Description: "Your preferred language",
+				Required:    false,
+				Choices: []*discordgo.ApplicationCommandOptionChoice{
+					{
+						Name:  "Nederlands",
+						Value: "nl",
+					},
+					{
+						Name:  "English",
+						Value: "en",
+					},
+				},
+			},
 		},
 	}
 
@@ -115,9 +135,29 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 }
 
 //	SayMenu relays the menu
-//	TODO: pull the different meals from the api
 func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	var selectedCampus = i.ApplicationCommandData().Options[0].Value.(string)
+	var selectedCampus string
+	var language = ""
+
+	for _, option := range i.ApplicationCommandData().Options {
+		switch option.Name {
+		case "campus":
+			selectedCampus = option.Value.(string)
+			break
+		case "language":
+			language = option.Value.(string)
+			// if language is not supported go for default
+			for index, lang := range supportedLanguages {
+				if language == lang {
+					break
+				}
+				if index == len(supportedLanguages)-1 {
+					language = ""
+				}
+			}
+		}
+	}
+	localisation = GetResponseTexts(language)
 
 	data := GetSiteContent(selectedCampus)
 
@@ -125,7 +165,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "We can't get the menu at this time, try again later",
+				Content: localisation.TryLater,
 			},
 		})
 
@@ -139,7 +179,7 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "That campus does not have a menu for this week yet!",
+				Content: localisation.NoWeekMenu,
 			},
 		})
 
@@ -252,8 +292,94 @@ func parseWeekmenu(data []interface{}) (menu WeekMenu) {
 			}
 		}
 	}
-
 	return menu
+}
+
+// GetItemText returns the item strings with the correct language
+// attempts to retrieve the requested info
+// TODO: is it possible to pass a list of languages and their responses to generalize this function?
+func GetItemText(item CategoryDay, language string) (itemName string, itemDescription string, err error) {
+	err = nil
+
+	switch language {
+	case "nl":
+		if item.Category.NameEN == "" && item.Category.NameNL == "" {
+			return "", "", errors.New("no categories found")
+		}
+
+		itemName, itemDescription, err = GetDutchText(item)
+		if err != nil {
+			itemName, itemDescription, err = GetEnglishText(item)
+		}
+		break
+
+	case "en":
+		if item.Category.NameEN == "" && item.Category.NameNL == "" {
+			return "", "", errors.New("no categories found")
+		}
+
+		itemName, itemDescription, err = GetEnglishText(item)
+		if err != nil {
+			itemName, itemDescription, err = GetDutchText(item)
+		}
+		break
+
+	default:
+		if item.Category.NameEN == "" && item.Category.NameNL == "" {
+			return "", "", errors.New("no categories found")
+		}
+
+		itemName, itemDescription, err = GetDutchText(item)
+		if err != nil {
+			itemName, itemDescription, err = GetEnglishText(item)
+		}
+		break
+	}
+
+	// let's check if all there are no descriptions
+	if err != nil {
+		itemDescription = localisation.NoItem(itemName)
+	}
+
+	return itemName, itemDescription, nil
+}
+
+func GetDutchText(item CategoryDay) (itemName string, itemDescription string, err error) {
+	err = nil
+
+	// missing description is fatal, missing category name is not
+	// unless both names are missing
+	if item.ShortDescriptionNL == "" {
+		err = errors.New("required description missing")
+		itemDescription = ""
+	} else {
+		itemDescription = item.ShortDescriptionNL
+	}
+	if item.Category.NameNL == "" {
+		itemName = item.Category.NameEN
+	} else {
+		itemName = item.Category.NameNL
+	}
+	return itemName, itemDescription, err
+}
+
+func GetEnglishText(item CategoryDay) (itemName string, itemDescription string, err error) {
+	err = nil
+
+	// missing description is fatal, missing category name is not
+	// unless both names are missing
+	if item.ShortDescriptionEN == "" {
+		err = errors.New("required description missing")
+		itemDescription = ""
+	} else {
+		itemDescription = item.ShortDescriptionEN
+	}
+	if item.Category.NameEN == "" {
+		itemName = item.Category.NameNL
+	} else {
+		itemName = item.Category.NameEN
+	}
+	return item.Category.NameEN, item.ShortDescriptionEN, err
 }
 
 // Info return the commands in this package
