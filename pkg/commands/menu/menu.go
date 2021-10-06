@@ -200,18 +200,14 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 
 			// Check if the fields contain data
 			for _, item := range day.MenuItems {
-				if item.ShortDescriptionEN == "" {
-					if item.ShortDescriptionNL != "" {
-						e.AddField(item.Category.NameNL, item.ShortDescriptionNL)
-					} else if item.Category.NameEN != "" {
-						e.AddField(item.Category.NameEN, "There is no "+item.Category.NameEN+" available today")
-					}
-				} else {
-					e.AddField(item.Category.NameEN, item.ShortDescriptionEN)
+				itemName, itemDescription, err := GetItemText(item, language)
+
+				if err == nil {
+					e.AddField(itemName, itemDescription)
 				}
 			}
 			if len(e.Fields) == 0 {
-				e.AddField("​", "There is no menu available this day")
+				e.AddField("​", localisation.NoDayMenu)
 			}
 
 			e.InlineAllFields()
@@ -220,9 +216,9 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 		}
 	}
 
-	content := "Here is the menu: "
+	content := localisation.PoliteResponse
 	if len(embeds) == 0 {
-		content = "The menu for this week is not yet available"
+		content = localisation.NoWeekMenu
 	}
 
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
