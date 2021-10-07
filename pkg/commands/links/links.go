@@ -93,7 +93,7 @@ func (l *LinkCommands) buildLinks() {
 	l.registerInfoDagCommand("studenten", "Link naar studenten info", "Op zoek naar meer algemene info rondom verder studeren? https://www.thomasmore.be/studenten")
 	l.registerLinkCommand("studentenraad", "Contact opnemen met de studentenraad", "Wil je contact opnemen met de studentenraad? Stuur ze een mailtje via: studentenraad.itfactory@thomasmore.be")
 	l.registerInfoDagCommand("stuvo", "Link naar Stuvo", "Heb je nood aan een goed gesprek? Neem dan zeker contact op met Stuvo: https://thomasmore365.sharepoint.com/sites/s-Studentenvoorzieningen")
-	l.registerLinkCommand("template", "Link naar TM huisstijl templates", "Hier vind je de TM huisstijl templates: https://static.eyskens.me/tm-template/ppt-new.pptx, https://static.eyskens.me/tm-template/ppt-old.pptx, https://static.eyskens.me/tm-template/word-nl.docx, https://static.eyskens.me/tm-template/word-en.docx")
+	l.registerLinkCommand("template", "Link naar TM huisstijl templates", "Hier vind je de TM huisstijl templates: \nhttps://static.eyskens.me/tm-template/ppt-new.pptx, \nhttps://static.eyskens.me/tm-template/ppt-old.pptx, \nhttps://static.eyskens.me/tm-template/word-nl.docx, \nhttps://static.eyskens.me/tm-template/word-en.docx")
 	l.registerLinkCommand("twitch", "Link naar ITF Twitch kanaal", "Af en toe livestreamen we wat games op ons Twitch kanaal: https://www.twitch.tv/itfactorygaming")
 	l.registerLinkCommand("wallet", "Link naar wallet", "Hoeveel staat er nog op mijn studentenkaart? https://thomasmore.mynetpay.be/")
 	//l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\nGeitjes: https://www.twitch.tv/tmgeitlive")
