@@ -97,7 +97,8 @@ func (l *LinkCommands) buildLinks() {
 	l.registerLinkCommand("twitch", "Link naar ITF Twitch kanaal", "Af en toe livestreamen we wat games op ons Twitch kanaal: https://www.twitch.tv/itfactorygaming")
 	l.registerLinkCommand("wallet", "Link naar wallet", "Hoeveel staat er nog op mijn studentenkaart? https://thomasmore.mynetpay.be/")
 	//l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\nGeitjes: https://www.twitch.tv/tmgeitlive")
-	l.registerInfoDagCommand("website", "Link naar Thomas More website", "Bezoek onze website: https://thomasmore.be/opleidingen/professionele-bachelor/it-factory")}
+	l.registerInfoDagCommand("website", "Link naar Thomas More website", "Bezoek onze website: https://thomasmore.be/opleidingen/professionele-bachelor/it-factory")
+	l.registerLinkCommand("atomos", "Link naar Atomos kalender", "Hier vind je de Atomos kalender: https://atomosvzw.be/kalender.php")}
 
 func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
 	l.infos = append(l.infos, command.Command{
