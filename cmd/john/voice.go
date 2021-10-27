@@ -124,7 +124,7 @@ func (v *voiceCmdOptions) connectVoice(dg *discordgo.Session, connected chan str
 
 	dgv, err := dg.ChannelVoiceJoin(guildID, channelID, false, true)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 
