@@ -15,6 +15,8 @@ RUN go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./cmd/joh
 
 FROM ubuntu:20.04
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update && apt-get install -y libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev curl
 
 RUN mkdir -p /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot
