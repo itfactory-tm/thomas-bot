@@ -394,25 +394,21 @@
   
   "808273924600365058": {
     "_JSON_Comment_Hack": "Ice Cube",
-    "welcomeText": "Welkom <@{{.User.ID}}> in de  **ICE Cube** Discord server.",
+    "welcomeText": "Welcome <@{{.User.ID}}> to the  **ICE Cube** Discord server.",
     "welcomeChannelID": "808395496556986428",
     "welcomeDM": [
-      "Welkom op de ICE Cube Discord server!",
-      "Mijn naam is Thomas Bot, ik ben een robot die jou kan helpen!",
-      "Nieuw op Discord? Geen reden tot paniek! Wedden dat je heel snel merkt hoe alles werkt? Voor wie graag wat meer leest is dit een prima handleiding: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
-      "Wijzig je je naam op onze Discord server in jouw echte naam? Dit helpt ons om jou beter te leren kennen en je toegang te verlenen. Dankjewel, ICE to meet you!"
+      "Welkom to the ICE Cube Discord Server",
+      "My name is Thomas Bot, a friendly bot which will guide you!",
+      "New to Discord? Don't panic! It's a friendly & easy to learn platform, here's a beginner guide: https://support.discord.com/hc/en-us/articles/360045138571-Beginner-s-Guide-to-Discord",
+      "Please change your nickname on our server to your real name, this makes a more familiary environment, (n)ICE to meet you!"
     ],
     "roleManagement": {
       "roleSets": [
         {
-          "message": "Zou je nog even willen laten weten welke rol ik je moet toekennen?",
+          "message": "Can you let me know which roles you'd like to be assigned?",
           "roles": [
-            {"emoji": "🍩", "id": "808987908668653568"},
-            {"emoji": "🔈", "id": "808988046854455357"},
             {"emoji": "❤️", "id": "808988176164323358"},
             {"emoji": "🤵‍♀️", "id": "808988256095961139"},
-            {"emoji": "🦸‍♀️", "id": "809374332655763526"},
-            {"emoji": "📓", "id": "812053913964118065"},
             {"emoji": "🧑‍🎓", "id": "886933821524684811"}
           ]
         }
