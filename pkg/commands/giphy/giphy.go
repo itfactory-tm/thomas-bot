@@ -167,7 +167,7 @@ func (g *GiphyCommands) postRandomGif(s *discordgo.Session, i *discordgo.Interac
 	}
 
 	embed := embed.NewEmbed()
-	embed.SetImage(data.Data.Fixed_height_downsampled_url)
+	embed.SetImage(data.Data.Images.Fixed_height.Url)
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
