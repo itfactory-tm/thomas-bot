@@ -560,6 +560,8 @@ github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb
 github.com/sanposhiho/wastedassign/v2 v2.0.6/go.mod h1:KyZ0MWTwxxBmfwn33zh3k1dmsbF2ud9pAAGfoLfjhtI=
 github.com/sanzaru/go-giphy v0.0.0-20180211202227-c353d5ec6ee8 h1:i6eP2Hp68IJgrNSiUoExFbIlZ9yt8kFaSsoiYcjPeK8=
 github.com/sanzaru/go-giphy v0.0.0-20180211202227-c353d5ec6ee8/go.mod h1:VblnnSJiiid/UB7WgpUdpzoanVG3HdlEH7/J5Xr+JYQ=
+github.com/sanzaru/go-giphy v0.0.0-20211118160211-e9e78e55bc7a h1:yY7ZsTCKYqUt/Lf/bsLms8hxvAMnIQPR9i2A8ApK0VI=
+github.com/sanzaru/go-giphy v0.0.0-20211118160211-e9e78e55bc7a/go.mod h1:VblnnSJiiid/UB7WgpUdpzoanVG3HdlEH7/J5Xr+JYQ=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/securego/gosec/v2 v2.8.0/go.mod h1:hJZ6NT5TqoY+jmOsaxAV4cXoEdrMRLVaNPnSpUCvCZs=
 github.com/sergi/go-diff v1.1.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=

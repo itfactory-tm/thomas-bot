@@ -14,7 +14,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/meyskens/discord-ha v0.0.0-20210723094030-8791e408bab7
 	github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd
-	github.com/sanzaru/go-giphy v0.0.0-20180211202227-c353d5ec6ee8
+	github.com/sanzaru/go-giphy v0.0.0-20211118160211-e9e78e55bc7a
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
