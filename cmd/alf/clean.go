@@ -230,7 +230,7 @@ func (v *cleanCmdOptions) checkGuild(guildID string) {
 
 func (v *cleanCmdOptions) getConfigForRequestCategory(conf *db.Configuration, channel *discordgo.Channel) (*db.HiveConfiguration, bool, error) {
 	for _, hive := range conf.Hives {
-		if channel.ParentID == hive.VoiceCategoryID || channel.ParentID == hive.TextCategoryID {
+		if channel.ParentID == hive.VoiceCategoryID {
 			return &hive, true, nil
 		}
 	}
