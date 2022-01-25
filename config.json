@@ -86,6 +86,14 @@
         "voiceCategoryID": "715889606750634015",
         "prefix": "pauze-",
         "voiceBitrate": 128000
+      },
+      {
+        "requestChannelIDs": ["931882935299231774"],
+        "junkyardCategoryID": "780775904082395136",
+        "textCategoryID": "931882403612483614",
+        "voiceCategoryID": "931882403612483614",
+        "prefix": "op1-vl-",
+        "voiceBitrate": 128000
       }
     ],
     "lookingForPlayers": [
