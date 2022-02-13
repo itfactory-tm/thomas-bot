@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"math/rand"
 	"text/template"
 	"time"
 
@@ -13,6 +14,8 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 )
+
+var welcomeEmoji = []string{"💗", "✨", "🤩", "👾", "💫", "🎀", "🌟"}
 
 // MemberCommands contains the tm!role command and welcome messages
 type MemberCommands struct {
@@ -77,7 +80,11 @@ func (m *MemberCommands) onGuildMemberAdd(s *discordgo.Session, g *discordgo.Gui
 		if err != nil {
 			log.Println(err)
 		}
-		err = s.MessageReactionAdd(conf.WelcomeChannelID, welcome.ID, "💗")
+		// seed the random number generator
+		rand.Seed(time.Now().UnixNano())
+
+		// pick random emoji from welcomeEmoji
+		err = s.MessageReactionAdd(conf.WelcomeChannelID, welcome.ID, welcomeEmoji[rand.Intn(len(welcomeEmoji))])
 		if err != nil {
 			log.Println(err)
 		}
