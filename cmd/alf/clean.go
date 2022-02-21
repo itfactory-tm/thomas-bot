@@ -139,6 +139,20 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 				dg.ChannelMessageSend(agora, fmt.Sprintf("@<177531421152247809> you have %d days left of being 39 years old.", int(days)))
 				time.Sleep(2 * time.Minute)
 			}
+
+			if days == 0 {
+				dg.ChannelMessageSend(agora, "Wait a minute...")
+				time.Sleep(time.Minute)
+				dg.ChannelMessageSend(agora, "Happy birthday to you")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Happy birthday to you")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Happy birthday to @<177531421152247809>")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Happy birthday to you")
+				time.Sleep(time.Second)
+				dg.ChannelMessageSend(agora, "Groetjes, Alf de enige (maar stille) Thomas Bot microservice die een besef van tijd heeft. In een complot van Maartje, Vic en Sofie!")
+			}
 		}
 	}()
 
