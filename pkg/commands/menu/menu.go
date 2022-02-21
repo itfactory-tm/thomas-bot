@@ -3,6 +3,7 @@ package menu
 import (
 	"errors"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/embed"
@@ -40,7 +41,38 @@ type CategoryDay struct {
 	ChoiceGroups []interface{}
 }
 
+type ById []CategoryDay
+func (d ById) Len() int { return len(d) }
+func (d ById) Swap(i, j int) { d[i], d[j] = d[j], d[i] }
+func (d ById) Less(i, j int) bool {
+	/*
+		Order of menu categories
+		Lunch of the day - e8f7294e-f715-488f-97f6-43f20fdf3ac5
+		Snack - d95ce225-965d-4845-80ce-a1a8edf1dde8
+		Sandwich of the day - fcee44ea-9d06-4b18-b262-6b318d3b33ec
+		Sandwich of the week - 9a0128ee-18f8-4a7f-831a-7fae4ffb70b8
+		Soup - e285952a-6689-4b3b-87b5-603c5ae19171
+		Salad - abbde23a-8b68-4bf2-b218-26be61a698a8
+		Veggie - d1d7b8a8-b37e-4ed4-b3b6-25b83848ad8d
+	*/
+	na := func(s string) int {
+		switch s {
+		case "e8f7294e-f715-488f-97f6-43f20fdf3ac5": return 7
+		case "d95ce225-965d-4845-80ce-a1a8edf1dde8": return 6
+		case "fcee44ea-9d06-4b18-b262-6b318d3b33ec": return 5
+		case "9a0128ee-18f8-4a7f-831a-7fae4ffb70b8": return 4
+		case "e285952a-6689-4b3b-87b5-603c5ae19171": return 3
+		case "abbde23a-8b68-4bf2-b218-26be61a698a8": return 2
+		case "d1d7b8a8-b37e-4ed4-b3b6-25b83848ad8d": return 1
+		default: return 0
+		}
+	}
+
+	return na(d[i].Category.ID) > na(d[j].Category.ID)
+}
+
 // we return quite a bit of text, so globals
+// TODO: maybe passing pointers around is better?
 var localisation ResponseTexts
 
 type MenuCommand struct{}
@@ -69,10 +101,6 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 					{
 						Name:  "Geel",
 						Value: "Geel",
-					},
-					{
-						Name:  "Lier",
-						Value: "Lier",
 					},
 					{
 						Name:  "Turnhout",
@@ -105,6 +133,7 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Campus De Vest gebruikt "Mechelen"
 						Campus Kruidtuin gebruikt "Mechelen"
 						Campus Lucas Faydherbe gebruikt "Mechelen"
+						Campus Lier heeft de warme keuken afgeschaft
 					*/
 				},
 			},
@@ -274,6 +303,7 @@ func parseWeekmenu(data []interface{}) (menu WeekMenu) {
 			if err != nil {
 				log.Fatalf(err.Error())
 			}
+
 			switch k {
 			case "Monday":
 				menu.Days[0].MenuItems = append(menu.Days[0].MenuItems, day)
@@ -288,6 +318,11 @@ func parseWeekmenu(data []interface{}) (menu WeekMenu) {
 			}
 		}
 	}
+
+	for _, day := range menu.Days {
+		sort.Sort(ById(day.MenuItems))
+	}
+
 	return menu
 }
 
