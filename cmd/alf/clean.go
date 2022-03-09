@@ -133,9 +133,9 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 			time.Sleep(time.Second)
 			now := time.Now().In(tz)
 			// calculate days till dirk
-			days := dirk.Sub(now).Hours() / 24
+			days := int(dirk.Sub(now).Hours() / 24)
 
-			if days <= 100 && days >= 0 && now.Hour() == 0 && now.Minute() == 0 && now.Year() == 2022 {
+			if days <= 100 && days >= 0 && now.Hour() == 8 && now.Minute() == 0 && now.Year() == 2022 {
 				dg.ChannelMessageSend(agora, fmt.Sprintf("@<177531421152247809> you have %d days left of being 39 years old.", int(days)))
 				time.Sleep(2 * time.Minute)
 			}
