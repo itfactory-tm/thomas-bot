@@ -152,6 +152,7 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 				dg.ChannelMessageSend(agora, "Happy birthday to you")
 				time.Sleep(time.Second)
 				dg.ChannelMessageSend(agora, "Groetjes, Alf de enige (maar stille) Thomas Bot microservice die een besef van tijd heeft. In een complot van Maartje, Vic en Sofie!")
+				time.Sleep(24 * time.Hour)
 			}
 		}
 	}()
