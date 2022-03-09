@@ -141,7 +141,7 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 				time.Sleep(2 * time.Minute)
 			}
 
-			if days == 0 {
+			if days == 0 && now.Hour() == 0 && now.Minute() == 0 && now.Year() == 2022 {
 				dg.ChannelMessageSend(agora, "Wait a minute...")
 				time.Sleep(time.Minute)
 				dg.ChannelMessageSend(agora, "Happy birthday to you")
