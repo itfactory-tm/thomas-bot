@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"os/signal"
 	"strings"
@@ -129,11 +130,11 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 				panic(err)
 			}
 
-			dirk, _ := time.Parse("2006-01-02", "2022-06-18")
+			dirk, _ := time.Parse("2006-01-02 15:04", "2022-06-18 08:00")
 			time.Sleep(time.Second)
 			now := time.Now().In(tz)
 			// calculate days till dirk
-			days := int(dirk.Sub(now).Hours() / 24)
+			days := math.Round(dirk.Sub(now).Hours() / 24)
 
 			if days <= 100 && days >= 0 && now.Hour() == 8 && now.Minute() == 0 && now.Year() == 2022 {
 				dg.ChannelMessageSend(agora, fmt.Sprintf("@<177531421152247809> you have %d days left of being 39 years old.", int(days)))
