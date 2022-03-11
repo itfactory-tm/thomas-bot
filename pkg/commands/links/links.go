@@ -9,9 +9,10 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 )
 
-// LinkCommands contains the tm!hello command
+// LinkCommands contains the /link command
 type LinkCommands struct {
 	infos    []command.Command
+	iceinfos []string
 	output   map[string]string
 	registry command.Registry
 }
@@ -37,6 +38,28 @@ func (l *LinkCommands) InstallSlashCommands(session *discordgo.Session) error {
 	if l.registry == nil {
 		return nil
 	}
+
+	var icechoices []*discordgo.ApplicationCommandOptionChoice
+	for _, info := range l.iceinfos {
+		icechoices = append(icechoices, &discordgo.ApplicationCommandOptionChoice{
+			Name:  info,
+			Value: info,
+		})
+	}
+
+	slash.InstallSlashCommand(session, "808273924600365058", discordgo.ApplicationCommand{
+		Name:        "link",
+		Description: "Gives a useful link",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "name",
+				Description: "name of the link",
+				Required:    true,
+				Choices:     icechoices,
+			},
+		},
+	})
 
 	var choices []*discordgo.ApplicationCommandOptionChoice
 	for _, info := range l.infos {
@@ -98,7 +121,22 @@ func (l *LinkCommands) buildLinks() {
 	l.registerLinkCommand("wallet", "Link naar wallet", "Hoeveel staat er nog op mijn studentenkaart? https://thomasmore.mynetpay.be/")
 	//l.registerLinkCommand("webcam", "Campus webcams", "B300 Camera 1: https://www.twitch.tv/maartjeme \nB300 Camera 2: https://www.twitch.tv/b300camera2\nGeitjes: https://www.twitch.tv/tmgeitlive")
 	l.registerInfoDagCommand("website", "Link naar Thomas More website", "Bezoek onze website: https://thomasmore.be/opleidingen/professionele-bachelor/it-factory")
-	l.registerLinkCommand("atomos", "Link naar Atomos kalender", "Hier vind je de Atomos kalender: https://atomosvzw.be/kalender.php")}
+	l.registerLinkCommand("atomos", "Link naar Atomos kalender", "Hier vind je de Atomos kalender: https://atomosvzw.be/kalender.php")
+
+	l.registerICELinkCommand("level1", "", "https://donut.sinners.be/on/Level_1.pdf")
+	l.registerICELinkCommand("level2", "", "https://donut.sinners.be/ly/Level_2.pdf")
+	l.registerICELinkCommand("level3", "", "https://donut.sinners.be/go/Level_3.pdf")
+	l.registerICELinkCommand("level4", "", "https://donut.sinners.be/od/Level_4.pdf")
+	l.registerICELinkCommand("level5", "", "https://donut.sinners.be/vi/Level_5.pdf")
+	l.registerICELinkCommand("level6", "", "https://donut.sinners.be/be/Level_6.pdf")
+	l.registerICELinkCommand("level7", "", "https://donut.sinners.be/si/Level_7.pdf")
+	l.registerICELinkCommand("level8", "", "https://donut.sinners.be/ce/Level_8.pdf")
+	l.registerICELinkCommand("brainstorm", "", "https://donut.sinners.be/word/Document_Brainstorm.docx")
+	l.registerICELinkCommand("fase1", "", "https://donut.sinners.be/word/Document_Fase_1.docx")
+	l.registerICELinkCommand("fase2", "", "https://donut.sinners.be/word/Document_Fase_2.docx")
+	l.registerICELinkCommand("fase3", "", "https://donut.sinners.be/word/Document_Fase_3.docx")
+	l.registerICELinkCommand("pitch", "", "https://donut.sinners.be/word/Document_Pitch.docx")
+}
 
 func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
 	l.infos = append(l.infos, command.Command{
@@ -113,6 +151,11 @@ func (l *LinkCommands) registerLinkCommand(name, helpText, response string) {
 	l.registry.RegisterMessageCreateHandler(name, func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, response)
 	})
+}
+
+func (l *LinkCommands) registerICELinkCommand(name, helpText, response string) {
+	l.output[name] = response
+	l.iceinfos = append(l.iceinfos, name)
 }
 
 func (l *LinkCommands) registerInfoDagCommand(name, helpText, response string) {
