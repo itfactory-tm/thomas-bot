@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"github.com/itfactory-tm/thomas-bot/pkg/sudo"
 	"log"
 	"regexp"
 	"strconv"
@@ -384,7 +385,8 @@ func (l *LookCommand) handleBtnClick(s *discordgo.Session, i *discordgo.Interact
 
 	hostID, neededPlayers, playersIDs, backupPlayersIDs := l.getPlayers(message)
 	_, activePlayers := l.buildBackup(message, playersIDs, neededPlayers)
-	if uid == hostID {
+	//If host of LFP or gamer admin
+	if (uid == hostID) || sudo.IsItfGameAdmin(uid) {
 		if i.MessageComponentData().CustomID == "lfp_delete" {
 			//Delete message first to prevent players being notified multiple times when emoji spam (Dirk proofing)
 			err := s.ChannelMessageDelete(i.ChannelID, i.Message.ID)
@@ -401,7 +403,7 @@ func (l *LookCommand) handleBtnClick(s *discordgo.Session, i *discordgo.Interact
 		if i.MessageComponentData().CustomID == "lfp_start" {
 			l.startGame(s, i, activePlayers, backupPlayersIDs, neededPlayers, message)
 		}
-	} else if i.MessageComponentData().CustomID == "lfp_delete" {
+	} else if i.MessageComponentData().CustomID == "lfp_delete" { //If delete was pressed as normal player
 		_, activePlayers, activeBackupPlayers, backupPlayers, _ := l.removePlayer(message, uid)
 		l.handleJoinReaction(activePlayers, activeBackupPlayers, backupPlayers, neededPlayers, message, s)
 		return
