@@ -386,7 +386,7 @@ func (l *LookCommand) handleBtnClick(s *discordgo.Session, i *discordgo.Interact
 	hostID, neededPlayers, playersIDs, backupPlayersIDs := l.getPlayers(message)
 	_, activePlayers := l.buildBackup(message, playersIDs, neededPlayers)
 	//If host of LFP or gamer admin
-	if (uid == hostID) || sudo.IsItfGameAdmin(uid) {
+	if uid == hostID || sudo.IsItfGameAdmin(uid) {
 		if i.MessageComponentData().CustomID == "lfp_delete" {
 			//Delete message first to prevent players being notified multiple times when emoji spam (Dirk proofing)
 			err := s.ChannelMessageDelete(i.ChannelID, i.Message.ID)
