@@ -22,7 +22,7 @@ func IsAdmin(userID string) bool {
 
 var itfGameAdmins = map[string]bool{
 	"161504618017325057": true, // Victor Welters
-	"434499632765075456": true, // Ward Beyens
+	"153480318328897536": true, // MystWizard (Mitchel Holemans)
 	"249632139228741632": true, // Brent (Allen?)
 	"252083102992695296": true, // Alex Coulon
 	"307916386238201856": true, // Jorne Marx
