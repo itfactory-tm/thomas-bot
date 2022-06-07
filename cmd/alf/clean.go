@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"os/signal"
 	"strings"
@@ -123,42 +122,44 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		}
 	}()
 
-	go func() {
-		for {
-			tz, err := time.LoadLocation("Europe/Brussels")
-			if err != nil {
-				panic(err)
-			}
+	/*
+		go func() {
+			for {
+				tz, err := time.LoadLocation("Europe/Brussels")
+				if err != nil {
+					panic(err)
+				}
 
-			dirk, _ := time.Parse("2006-01-02 15:04", "2022-06-18 00:00")
-			time.Sleep(time.Second)
-			now := time.Now().In(tz)
-			// calculate days till dirk
-			days := math.Abs(dirk.Sub(now).Hours() / 24)
+				dirk, _ := time.Parse("2006-01-02 15:04", "2022-06-18 00:00")
+				time.Sleep(time.Second)
+				now := time.Now().In(tz)
+				// calculate days till dirk
+				days := math.Abs(dirk.Sub(now).Hours() / 24)
 
-			if days <= 100 && days >= 0 && now.Hour() == 0 && now.Minute() == 0 && now.Year() == 2022 {
-				// dg.ChannelMessageSend(agora, fmt.Sprintf("<@177531421152247809> you have %d days left of being 39 years old.", int(days)))
-				time.Sleep(2 * time.Minute)
-			}
+				if days <= 100 && days >= 0 && now.Hour() == 0 && now.Minute() == 0 && now.Year() == 2022 {
+					dg.ChannelMessageSend(agora, fmt.Sprintf("<@177531421152247809> you have %d days left of being 39 years old.", int(days)))
+					time.Sleep(2 * time.Minute)
+				}
 
-			if days == 0 && now.Hour() == 0 && now.Minute() == 0 && now.Year() == 2022 {
-				dg.ChannelMessageSend(agora, "Wait a minute...")
-				time.Sleep(time.Minute)
-				dg.ChannelMessageSend(agora, "Happy birthday to you")
-				time.Sleep(time.Second)
-				dg.ChannelMessageSend(agora, "Happy birthday to you")
-				time.Sleep(time.Second)
-				dg.ChannelMessageSend(agora, "Happy birthday to <@177531421152247809>")
-				time.Sleep(time.Second)
-				dg.ChannelMessageSend(agora, "Happy birthday to you")
-				time.Sleep(time.Second)
-				dg.ChannelMessageSend(agora, "Groetjes, Alf de enige (maar stille) Thomas Bot microservice die een besef van tijd heeft. In een complot van Maartje, Vic en Sofie!")
-				time.Sleep(time.Minute)
-				dg.ChannelMessageSend(agora, "<@177531421152247809> you have 364 days left of being 40 years old.")
-				time.Sleep(24 * time.Hour)
+				if days == 0 && now.Hour() == 0 && now.Minute() == 0 && now.Year() == 2022 {
+					dg.ChannelMessageSend(agora, "Wait a minute...")
+					time.Sleep(time.Minute)
+					dg.ChannelMessageSend(agora, "Happy birthday to you")
+					time.Sleep(time.Second)
+					dg.ChannelMessageSend(agora, "Happy birthday to you")
+					time.Sleep(time.Second)
+					dg.ChannelMessageSend(agora, "Happy birthday to <@177531421152247809>")
+					time.Sleep(time.Second)
+					dg.ChannelMessageSend(agora, "Happy birthday to you")
+					time.Sleep(time.Second)
+					dg.ChannelMessageSend(agora, "Groetjes, Alf de enige (maar stille) Thomas Bot microservice die een besef van tijd heeft. In een complot van Maartje, Vic en Sofie!")
+					time.Sleep(time.Minute)
+					dg.ChannelMessageSend(agora, "<@177531421152247809> you have 364 days left of being 40 years old.")
+					time.Sleep(24 * time.Hour)
+				}
 			}
-		}
-	}()
+		}()
+	*/
 
 	// small in memory structure to keep candidates to remove
 	v.shouldRemove = map[string]bool{}
