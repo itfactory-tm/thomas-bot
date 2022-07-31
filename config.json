@@ -305,14 +305,14 @@
         "textCategoryID": "827958422674210847",
         "voiceCategoryID": "827958422674210847",
         "prefix": "vc-",
-        "voiceBitrate": 128000
+        "voiceBitrate": 96000
       }
     ],
     "lookingForPlayers": [
       {
         "requestChannelIDs": ["828204894187421696"],
-        "advertiseChannelID": "832321290190848090",
-        "hiveChannelID": "827960558258094090"
+        "advertiseChannelID": "828205635249635369",
+        "hiveChannelID": "827958422674210847"
       }
     ],
     "roleManagement": {
