@@ -3,7 +3,6 @@ package schedule
 import (
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
@@ -166,7 +165,7 @@ func (s *ScheduleCommand) SaySchedule(sess *discordgo.Session, i *discordgo.Inte
 		e := embed.NewEmbed()
 		e.SetTitle(event.Name)
 		e.SetAuthor(event.Room)
-		e.SetDescription(event.StartTime.Format("Mon Jan 2 15:04") + " - " + event.EndTime.Format("15:04") + "\n" + event.Teachers)
+		e.SetDescription(event.StartTime.Format("Mon Jan 2 15:04") + " - " + event.EndTime.Format("15:04"))
 
 		embeds = append(embeds, e.MessageEmbed)
 	}
@@ -218,7 +217,6 @@ func parseSchedule(icalURL string) ([]classSchedule, error) {
 
 	out := make([]classSchedule, 0)
 	for _, icalEvent := range cal.Events() {
-		fixICalTime(icalEvent)
 		start, err := icalEvent.GetStartAt()
 		if err != nil {
 			log.Println(err)
@@ -230,38 +228,17 @@ func parseSchedule(icalURL string) ([]classSchedule, error) {
 			continue
 		}
 
-		var teachers string
-		if p := strings.Split(icalEvent.GetProperty(ical.ComponentPropertyDescription).Value, "Staff member(s):"); len(p) > 1 {
-			teachers = strings.Split(strings.TrimSpace(p[1]), "\\n")[0]
-		}
-
 		if end.After(time.Now()) && start.Before(time.Now().Add(time.Hour*24*7)) { // only show classes in the next 7 days
 			out = append(out, classSchedule{
 				Name:      icalEvent.GetProperty(ical.ComponentPropertySummary).Value,
 				StartTime: start,
 				EndTime:   end,
 				Room:      icalEvent.GetProperty(ical.ComponentPropertyLocation).Value,
-				Teachers:  teachers,
 			})
 		}
 	}
 
 	return out, nil
-}
-
-func fixICalTime(icalEvent *ical.VEvent) {
-	icalStart := icalEvent.GetProperty(ical.ComponentPropertyDtStart)
-	if !strings.Contains(icalStart.Value, "Z") {
-		icalStart.Value = icalStart.Value + "Z"
-	}
-
-	icalEvent.SetProperty(ical.ComponentPropertyDtStart, icalStart.Value)
-
-	icalEnd := icalEvent.GetProperty(ical.ComponentPropertyDtEnd)
-	if !strings.Contains(icalEnd.Value, "Z") {
-		icalEnd.Value = icalEnd.Value + "Z"
-	}
-	icalEvent.SetProperty(ical.ComponentPropertyDtEnd, icalEnd.Value)
 }
 
 // Info return the commands in this package

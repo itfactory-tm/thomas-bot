@@ -110,84 +110,80 @@
     ],
     "schedules": [
       {
-        "className": "1ITF 01-01",
-        "URL": "https://rooster.thomasmore.be/ical?612e4995&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzI1&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=-1JqYWxl5kcKG6sGU_Ul0OrNWH4qotkazVitJdfuCsU="
+        "className": "1ITF 1",
+        "URL": "https://rooster.itf.to/v1/ical/?id=365182.11"
       },
       {
-        "className": "1ITF 03-04",
-        "URL": "https://rooster.thomasmore.be/ical?612e4a8a&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzI3&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=LK5-cncsznmwofQHJD_gxj7VSs20D3xgQICL2LlX11s="
+        "className": "1ITF 2",
+        "URL": "https://rooster.itf.to/v1/ical/?id=365183.11"
       },
       {
-        "className": "1ITF 05-06",
-        "URL": "https://rooster.thomasmore.be/ical?612e4ab9&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzI5&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=fod_yH-37fACYPBj4UfTIkXjPAkpBJ1JJqLgrlT6BXE="
+        "className": "1ITF 3",
+        "URL": "https://rooster.itf.to/v1/ical/?id=365184.11"
       },
       {
-        "className": "1ITF 07-08",
-        "URL": "https://rooster.thomasmore.be/ical?612e4ad4&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzJC&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=OaCshJR7pMqn_wGg6kXStERLKDfQQqodY_IkSASAs-0="
+        "className": "1ITF 4",
+        "URL": "https://rooster.itf.to/v1/ical/?id=365185.11"
       },
       {
-        "className": "1ITF 09-10",
-        "URL": "https://rooster.thomasmore.be/ical?612e4af8&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzJE&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=quaPduRK5dtiJ9oIR1he5zmMXybmB1x5eSH7FggelHc="
+        "className": "1ITF 6",
+        "URL": "https://rooster.itf.to/v1/ical/?id=365187.11"
       },
       {
-        "className": "1ITF 11-12",
-        "URL": "https://rooster.thomasmore.be/ical?612e4b63&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzJG&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=CE0aapswxkw_6hemFv0IklytGYxwX4LqvG_tGIKbi0A="
-      },
-      {
-        "className": "1ITF 13-14",
-        "URL": "https://rooster.thomasmore.be/ical?612e4b84&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzMx&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=iYXAqH3w9n7kReFU6cqWQfFMZxfmaSQdtd-UOYg8dXU="
+        "className": "1ITF 7",
+        "URL": "https://rooster.itf.to/v1/ical/?id=365188.11"
       },
       {
         "className": "1ACS",
-        "URL": "https://rooster.thomasmore.be/ical?612e4ba8&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzNF&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=RMKSZtGUav5UjtvhIzHK0T6OJf7cRmi_PfUHfGVvefY="
+        "URL": "https://rooster.itf.to/v1/ical/?id=365192.11"
       },
       {
         "className": "2ACS",
-        "URL": "https://rooster.thomasmore.be/ical?612e4bbc&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzQw&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=j3kKJl8yl1QDqEIF4kbHKA4gOV79j5uU0OIzg7_0rdg="
+        "URL": "https://rooster.itf.to/v1/ical/?id=365156.11"
+      },
+      {
+        "className": "2IOT",
+        "URL": "https://rooster.itf.to/v1/ical/?id=365148.11"
       },
       {
         "className": "2APPAI 01",
-        "URL": "https://rooster.thomasmore.be/ical?612f68b1&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDRBMjJE&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=UcyW8ZQFjIFETf8UI7CggrZXYZrf6qdUhL3DPeFtopI="
+        "URL": "https://rooster.itf.to/v1/ical/?id=365189.11"
       },
       {
         "className": "2APPAI 02",
-        "URL": "https://rooster.thomasmore.be/ical?612f68c0&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDRBMjJF&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=cb3PNBOubKUxtb3ORZ6BrzIllWm-R7PYqKUqjZiBFgM="
+        "URL": "https://rooster.itf.to/v1/ical/?id=365190.11"
       },
       {
         "className": "2CCS 01",
-        "URL": "https://rooster.thomasmore.be/ical?612f68ee&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzM1&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=icPQIHxjzikaiPKvN_cBKYhm1frhxndkhZfznUWR2MU="
+        "URL": "https://rooster.itf.to/v1/ical/?id=300714.11"
       },
       {
         "className": "2CCS 02",
-        "URL": "https://rooster.thomasmore.be/ical?612f68fa&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzM2&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=v2lYBT7aDk02Rj60NQ00goV5JXBHX5Qlut4gnpEAMQU="
+        "URL": "https://rooster.itf.to/v1/ical/?id=300715.11"
       },
       {
         "className": "3APP 01",
-        "URL": "https://rooster.thomasmore.be/ical?612f69eb&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDRBMjJG&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=GE8hrHw5WGwVj5S5EQH5eugLrFhoMyyhSc8X1Weow1E="
+        "URL": "https://rooster.itf.to/v1/ical/?id=365154.11"
       },
       {
         "className": "3APP 02",
-        "URL": "https://rooster.thomasmore.be/ical?612f6a00&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDRBMjMw&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=hjxGJKGXK8AZJPWqIYqs6aPuSxTPP-RUG74Cc8r0RtQ="
+        "URL": "https://rooster.itf.to/v1/ical/?id=379140.11"
       },
       {
         "className": "3AI 01",
-        "URL": "https://rooster.thomasmore.be/ical?612f6a1c&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzQx&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=Ty1eCYUf2EISG7Pa6OX7N9KgwFmo61NORJkSFLLRHOA="
-      },
-      {
-        "className": "3AI 02",
-        "URL": "https://rooster.thomasmore.be/ical?612f6a2b&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzQy&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=_e-F3mb1MGVbKl9E7afT5GqhzXE2rNpBgVUZwf28xJ8="
+        "URL": "https://rooster.itf.to/v1/ical/?id=365157.11"
       },
       {
         "className": "3CCS 01",
-        "URL": "https://rooster.thomasmore.be/ical?612f698b&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzNC&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=4yXBluGSHVpGFW7ukQBC49olqjBH_4gBJWsM8TfSBLA="
+        "URL": "https://rooster.itf.to/v1/ical/?id=365149.11"
       },
       {
         "className": "3CCS 02",
-        "URL": "https://rooster.thomasmore.be/ical?612f699a&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzND&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=Q8C3ywlxW-2Ked0pBE73FGLXPlP-K3_yetz5E-B_4S4="
+        "URL": "https://rooster.itf.to/v1/ical/?id=379126.11"
       },
       {
         "className": "3IOT",
-        "URL": "https://rooster.thomasmore.be/ical?612e4ce5&group=true&timetable=!MjAyMSFzdHVkZW50c2V0IUE3RUFDMjBCNEQ5QTVFNzdBQUE5NkZFN0NEMDQ5MzNB&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=ynsz40KJLvsG7PSC1w2BDhohyltTUJ1OPIxUTqcgtXA="
+        "URL": "https://rooster.itf.to/v1/ical/?id=365148.11"
       }
     ]
   },
@@ -236,7 +232,7 @@
     "schedules": [
       {
         "className": "Maartje",
-        "URL": "https://rooster.thomasmore.be/ical?612e48c3&group=true&timetable=!MjAyMSFzdGFmZiE3MDk0QzJBNzVFQzFFMjNCMjMyRjM1N0ZFMkZCMURFNQ==&eu=dTAxMzQ5OTdAdGhvbWFzbW9yZS5iZQ==&h=Z7n9wRTS7zdjWhIGKH91esU-ETdNKsz__SPKolA15uo="
+        "URL": ""
       }
     ]
   },
