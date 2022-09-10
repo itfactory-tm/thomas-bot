@@ -195,14 +195,15 @@ L:
 			continue L
 		}
 
-		// ignoring this for the current run
-
-		/*for _, mr := range member.Roles {
+		for _, mr := range member.Roles {
 			if mr == val {
-				s.ChannelMessageSend(ch.ID, fmt.Sprintf("Oopsie! You already have the role %q, no worries I will not re-request it!", role.Name))
-				continue L
+				// ignoring this for the current run
+				//s.ChannelMessageSend(ch.ID, fmt.Sprintf("Oopsie! You already have the role %q, no worries I will not re-request it!", role.Name))
+				//continue L
+
+				log.Printf("Role %q from %q will be re-requested", role.Name, member.User.Username)
 			}
-		}*/
+		}
 
 		s.ChannelMessageSend(ch.ID, fmt.Sprintf("Thank you! I have asked our moderators for permissions to assign the role %q", role.Name))
 		if role.Name == "Docent" {
