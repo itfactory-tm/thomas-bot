@@ -18,9 +18,9 @@ func init() {
 }
 
 var studentRoles = map[string]bool{
-	"687567949795557386": true,
-	"687568334379679771": true,
-	"687568470820388864": true,
+	"687567949795557386": true, // 1ITF
+	"687568334379679771": true, // 2ITF
+	"687568470820388864": true, // 3ITF
 }
 
 type serveCmdOptions struct {
@@ -113,7 +113,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		roleCMD.SendRoleDM(dg, "687565213943332875", member.User.ID)
 		log.Printf("Sent roles request to %q\n", member.User.ID)
 
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 5)
 	}
 
 	return nil
