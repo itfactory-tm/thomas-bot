@@ -218,15 +218,18 @@ L:
 		if configRole != nil && configRole.AutoApprove {
 			time.Sleep(time.Second)
 			s.ChannelMessageSend(ch.ID, fmt.Sprintf("I have assigned the role %q to you", role.Name))
-			err = s.GuildMemberRoleAdd(i.GuildID, i.User.ID, configRole.ID)
+			err = s.GuildMemberRoleAdd(guildID, i.User.ID, configRole.ID)
 			if err != nil {
 				s.ChannelMessage(ch.ID, fmt.Sprintf("I was unable to assign the role %q to you, please contact a moderator", role.Name))
 				log.Printf("Error assigning role %q\n", err)
-				return
+				continue
 			}
 
-			s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("The role <@%s> was automatically assigned to <@&%s>", role.ID, i.User.ID))
-			return
+			_, err = s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("The role <@%s> was automatically assigned to <@&%s>", role.ID, i.User.ID))
+			if err != nil {
+				log.Printf("Error sending role request message to admin channel %q\n", err)
+			}
+			continue
 		}
 
 		if role.Name == "Docent" {
