@@ -14,7 +14,7 @@
         {
           "message": "We need to assign you a role inside our Discord which will help you gain access to the class specific channels.\nSelect the roles you want to request, note that our moderation team has to approve these first.",
           "roles": [
-            {"emoji": "1️⃣", "id": "687567949795557386"},
+            {"emoji": "1️⃣", "id": "687567949795557386", "autoApprove": true},
             {"emoji": "2️⃣", "id": "687568334379679771"},
             {"emoji": "3️⃣", "id": "687568470820388864"},
             {"emoji": "👩‍💻", "id": "689844328528478262"},

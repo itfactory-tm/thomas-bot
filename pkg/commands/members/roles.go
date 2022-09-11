@@ -206,6 +206,29 @@ L:
 		}
 
 		s.ChannelMessageSend(ch.ID, fmt.Sprintf("Thank you! I have asked our moderators for permissions to assign the role %q", role.Name))
+		var configRole *db.Role
+		for _, rs := range conf.RoleManagement.RoleSets {
+			for _, crole := range rs.Roles {
+				if crole.ID == val {
+					configRole = &crole
+					break
+				}
+			}
+		}
+		if configRole != nil && configRole.AutoApprove {
+			time.Sleep(time.Second)
+			s.ChannelMessageSend(ch.ID, fmt.Sprintf("I have assigned the role %q to you", role.Name))
+			err = s.GuildMemberRoleAdd(i.GuildID, i.User.ID, configRole.ID)
+			if err != nil {
+				s.ChannelMessage(ch.ID, fmt.Sprintf("I was unable to assign the role %q to you, please contact a moderator", role.Name))
+				log.Printf("Error assigning role %q\n", err)
+				return
+			}
+
+			s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("The role <@%s> was automatically assigned to <@&%s>", role.ID, i.User.ID))
+			return
+		}
+
 		if role.Name == "Docent" {
 			s.ChannelMessageSend(ch.ID, "Not already working at Thomas More? We're hiring! http://werkenbij.thomasmore.be/")
 		}
