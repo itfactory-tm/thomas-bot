@@ -225,7 +225,7 @@ L:
 				continue
 			}
 
-			_, err = s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("The role <@%s> was automatically assigned to <@&%s>", role.ID, i.User.ID))
+			_, err = s.ChannelMessageSend(conf.RoleManagement.RoleAdminChannelID, fmt.Sprintf("The role <@&%s> was automatically assigned to <@%s>", configRole.ID, i.User.ID))
 			if err != nil {
 				log.Printf("Error sending role request message to admin channel %q\n", err)
 			}
