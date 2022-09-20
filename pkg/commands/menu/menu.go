@@ -42,7 +42,8 @@ type CategoryDay struct {
 }
 
 type ById []CategoryDay
-func (d ById) Len() int { return len(d) }
+
+func (d ById) Len() int      { return len(d) }
 func (d ById) Swap(i, j int) { d[i], d[j] = d[j], d[i] }
 func (d ById) Less(i, j int) bool {
 	/*
@@ -57,14 +58,22 @@ func (d ById) Less(i, j int) bool {
 	*/
 	na := func(s string) int {
 		switch s {
-		case "e8f7294e-f715-488f-97f6-43f20fdf3ac5": return 7
-		case "d95ce225-965d-4845-80ce-a1a8edf1dde8": return 6
-		case "fcee44ea-9d06-4b18-b262-6b318d3b33ec": return 5
-		case "9a0128ee-18f8-4a7f-831a-7fae4ffb70b8": return 4
-		case "e285952a-6689-4b3b-87b5-603c5ae19171": return 3
-		case "abbde23a-8b68-4bf2-b218-26be61a698a8": return 2
-		case "d1d7b8a8-b37e-4ed4-b3b6-25b83848ad8d": return 1
-		default: return 0
+		case "e8f7294e-f715-488f-97f6-43f20fdf3ac5":
+			return 7
+		case "d95ce225-965d-4845-80ce-a1a8edf1dde8":
+			return 6
+		case "fcee44ea-9d06-4b18-b262-6b318d3b33ec":
+			return 5
+		case "9a0128ee-18f8-4a7f-831a-7fae4ffb70b8":
+			return 4
+		case "e285952a-6689-4b3b-87b5-603c5ae19171":
+			return 3
+		case "abbde23a-8b68-4bf2-b218-26be61a698a8":
+			return 2
+		case "d1d7b8a8-b37e-4ed4-b3b6-25b83848ad8d":
+			return 1
+		default:
+			return 0
 		}
 	}
 
@@ -109,6 +118,9 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 					{
 						Name:  "Vorselaar",
 						Value: "Vorselaar",
+					}, {
+						Name:  "Lier",
+						Value: "Lier",
 					},
 					{
 						Name:  "Mechelen",
@@ -133,7 +145,6 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 						Campus De Vest gebruikt "Mechelen"
 						Campus Kruidtuin gebruikt "Mechelen"
 						Campus Lucas Faydherbe gebruikt "Mechelen"
-						Campus Lier heeft de warme keuken afgeschaft
 					*/
 				},
 			},
