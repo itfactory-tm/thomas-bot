@@ -1,12 +1,14 @@
 package game
 
 import (
+	"errors"
 	"fmt"
-	"github.com/itfactory-tm/thomas-bot/pkg/sudo"
 	"log"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/sudo"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/util/slash"
 
@@ -16,11 +18,6 @@ import (
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
 	"github.com/itfactory-tm/thomas-bot/pkg/db"
 )
-
-//GuildID for init of slash commands
-const tmGaming = "773847927910432789"
-const itf = "687565213943332875"
-const choo = "694621018970390538"
 
 var reg = regexp.MustCompile(`^[A-Za-z0-9 ]+$`)
 
@@ -119,17 +116,13 @@ func (l *LookCommand) InstallSlashCommands(s *discordgo.Session) error {
 			},
 		},
 	}
-
-	if err := slash.InstallSlashCommand(s, choo, app); err != nil {
-		return fmt.Errorf("error installing lfp in choo: %w", err)
-	}
-
-	if err := slash.InstallSlashCommand(s, tmGaming, app); err != nil {
-		return fmt.Errorf("error installing lfp in TM Gaming: %w", err)
-	}
-
-	if err := slash.InstallSlashCommand(s, itf, app); err != nil {
-		return fmt.Errorf("error installing lfp in ITF: %w", err)
+	conf, _ := l.db.GetAllConfigurations()
+	for _, c := range conf {
+		if len(c.LookingForPlayers) > 0 {
+			if err := slash.InstallSlashCommand(s, c.GuildID, app); err != nil {
+				return fmt.Errorf("error installing lfp in %s: %w", c.GuildID, err)
+			}
+		}
 	}
 
 	return nil
@@ -246,7 +239,7 @@ func (l *LookCommand) checkConfig(guildID, channelID string) (*db.LookingForPlay
 	}
 
 	// no lfp found
-	return nil, false, nil
+	return nil, false, errors.New("no LFP configured")
 }
 
 func (l *LookCommand) checkHiveConfig(guildID, channelID string) (*db.HiveConfiguration, bool, error) {

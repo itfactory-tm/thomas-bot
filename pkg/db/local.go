@@ -22,7 +22,7 @@ func (l *LocalDatabase) ConfigForGuild(guildID string) (*Configuration, error) {
 }
 
 func (l *LocalDatabase) GetAllConfigurations() ([]Configuration, error) {
-	configs := make([]Configuration, 0)
+	configs := []Configuration{}
 	for key, config := range l.config {
 		config.GuildID = key
 		configs = append(configs, config)
