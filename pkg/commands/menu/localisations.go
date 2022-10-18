@@ -1,5 +1,10 @@
 package menu
 
+import (
+	"math/rand"
+	"time"
+)
+
 type ResponseTexts struct {
 	Language       string
 	LanguageCode   string
@@ -14,6 +19,7 @@ var supportedLanguages = [2]string{"nl", "en"}
 
 // GetResponseTexts returns the different localisation options
 func GetResponseTexts(language string) (responses ResponseTexts) {
+	rand.Seed(time.Now().UnixNano())
 	switch language {
 	case "nl":
 		responses.Language = "Nederlands"
@@ -23,6 +29,10 @@ func GetResponseTexts(language string) (responses ResponseTexts) {
 		responses.NoDayMenu = "Er is geen menu op deze dag"
 		responses.PoliteResponse = "Hier is het menu: "
 		responses.NoItem = func(itemName string) string { return "Er is geen " + itemName + " beschikbaar vandaag" }
+		// 1 in 50 chance
+		if rand.Intn(50) == 1 {
+			responses.PoliteResponse = "Hier is het menu (als ik nu eens een stoofvlees friet kreeg voor elke keer dat iemand dit commando gebruikt he...): "
+		}
 		break
 
 	case "en":
@@ -43,6 +53,10 @@ func GetResponseTexts(language string) (responses ResponseTexts) {
 		responses.NoDayMenu = "Er is geen menu op deze dag"
 		responses.PoliteResponse = "Hier is het menu: "
 		responses.NoItem = func(itemName string) string { return "Er is geen " + itemName + " beschikbaar vandaag" }
+		// 1 in 50 chance
+		if rand.Intn(50) == 1 {
+			responses.PoliteResponse = "Hier is het menu (als ik nu eens een stoofvlees friet kreeg voor elke keer dat iemand dit commando gebruikt he...): "
+		}
 		break
 	}
 
