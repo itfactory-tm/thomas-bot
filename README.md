@@ -11,8 +11,18 @@ It helps teachers doing their job and students also... sometimes...
 ### Build manually
 0. Make sure the [Go toolchain](https://golang.org/doc/install) is installed and working.
 1. Make sure the required dependencies are installed:
-    - On Ubuntu and other Debian-based distros, install the following packages: `libsox-dev libsdl2-dev portaudio19-dev libopusfile-dev libopus-dev curl`.
-    - On Arch-based distros, install the following packages: `libsoxr sdl portaudio opusfile`.
+    - On Ubuntu and other Debian-based distros, install the following packages: 
+        - [libsox-dev](https://packages.debian.org/bullseye/libsox-dev) 
+        - [libsdl2-dev](https://packages.debian.org/bullseye/libsdl2-dev) 
+        - [portaudio19-dev](https://packages.debian.org/bullseye/portaudio19-dev)
+        - [libopusfile-dev](https://packages.debian.org/bullseye/libopusfile-dev) 
+        - [libopus-dev](https://packages.debian.org/bullseye/libopus-dev)
+        - [curl](https://packages.debian.org/bullseye/curl)
+    - On Arch-based distros, install the following packages: 
+        - [libsoxr](https://archlinux.org/packages/extra/x86_64/libsoxr/)
+        - [sdl<sup>aur</sup>](https://aur.archlinux.org/packages/sdl)
+        - [portaudio](https://archlinux.org/packages/extra/x86_64/portaudio/)
+        - [opusfile](https://archlinux.org/packages/community/x86_64/opusfile/)
     - On Windows, you're on your own for now :)
 2. Compile and run the project:
     - On Unix-like systems, run `THOMASBOT_TOKEN={TOKEN} go run ./`, where `{TOKEN}` is your Discord bot's token.
