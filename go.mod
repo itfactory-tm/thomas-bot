@@ -20,7 +20,7 @@ require (
 	github.com/spf13/viper v1.7.1
 	go.mongodb.org/mongo-driver v1.5.1
 	go.uber.org/multierr v1.7.0 // indirect
-	golang.org/x/net v0.0.0-20210508051633-16afe75a6701 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2 // indirect
 	mvdan.cc/xurls/v2 v2.2.0
 )
