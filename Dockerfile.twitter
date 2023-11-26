@@ -1,7 +1,0 @@
-ARG src
-FROM $src
-
-COPY ./config.json /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/
-WORKDIR /go/src/github.com/itfactory-tm/thomas-bot/thomas-bot/
-
-CMD [ "/usr/local/bin/thomas", "twitter" ]
