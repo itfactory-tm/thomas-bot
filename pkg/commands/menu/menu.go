@@ -90,12 +90,12 @@ func NewMenuCommand() *MenuCommand {
 	return &MenuCommand{}
 }
 
-//	Register registers the handlers
+// Register registers the handlers
 func (h *MenuCommand) Register(registry command.Registry, server command.Server) {
 	registry.RegisterInteractionCreate("menu", h.SayMenu)
 }
 
-//	InstallSlashCommands registers the slash commands
+// InstallSlashCommands registers the slash commands
 func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 	app := discordgo.ApplicationCommand{
 		Name:        "menu",
@@ -174,7 +174,7 @@ func (h *MenuCommand) InstallSlashCommands(session *discordgo.Session) error {
 	return nil
 }
 
-//	SayMenu relays the menu
+// SayMenu relays the menu
 func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	var selectedCampus string
 	var language = ""
@@ -259,6 +259,9 @@ func (h *MenuCommand) SayMenu(s *discordgo.Session, i *discordgo.InteractionCrea
 	content := localisation.PoliteResponse
 	if len(embeds) == 0 {
 		content = localisation.NoWeekMenu
+		if time.Now().Weekday() == time.Sunday {
+			content = localisation.NoWeekMenuSunday
+		}
 	}
 
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -429,7 +432,7 @@ func (h *MenuCommand) Info() []command.Command {
 	return []command.Command{}
 }
 
-//	GetSiteContent returns the json from the api
+// GetSiteContent returns the json from the api
 func GetSiteContent(campus string) []interface{} {
 	res, err := http.Get(apiString + campus)
 	if err != nil {
