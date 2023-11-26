@@ -75,7 +75,7 @@ func (m *ModerationCommands) membercount(s *discordgo.Session, msg *discordgo.Me
 	//Create embed
 	embedmessage := embed.NewEmbed()
 	embedmessage.SetTitle("Membercount")
-	embedmessage.SetThumbnail(g.IconURL())
+	embedmessage.SetThumbnail(g.IconURL("4096"))
 	embedmessage.SetFooter(fmt.Sprintf("Guild total %v; Members counted: %v", g.MemberCount, len(memberList)))
 	embedmessage.AddField("Total", strconv.Itoa(g.MemberCount))
 

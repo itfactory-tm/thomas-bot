@@ -183,7 +183,7 @@ func (s *ScheduleCommand) SaySchedule(sess *discordgo.Session, i *discordgo.Inte
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: "No classes found in the next week, enjoy!",
-				Flags:   uint64(flags),
+				Flags:   discordgo.MessageFlags(flags),
 			},
 		})
 		return
@@ -194,7 +194,7 @@ func (s *ScheduleCommand) SaySchedule(sess *discordgo.Session, i *discordgo.Inte
 		Data: &discordgo.InteractionResponseData{
 			Content: "Here is your schedule:",
 			Embeds:  embeds,
-			Flags:   uint64(flags),
+			Flags:   discordgo.MessageFlags(flags),
 		},
 	})
 	if err != nil {

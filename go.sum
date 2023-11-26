@@ -75,6 +75,8 @@ github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kB
 github.com/bketelsen/crypt v0.0.3-0.20200106085610-5cbc8cc4026c/go.mod h1:MKsuJmJgSg28kpZDP6UIiPt0e0Oz0kqKNGyRaWEPv84=
 github.com/bkielbasa/cyclop v1.2.0/go.mod h1:qOI0yy6A7dYC4Zgsa72Ppm9kONl0RoIlPbzot9mhmeI=
 github.com/bombsimon/wsl/v3 v3.3.0/go.mod h1:st10JtZYLE4D5sC7b8xV4zTKZwAQjCH/Hy2Pm1FNZIc=
+github.com/bwmarrin/discordgo v0.27.1 h1:ib9AIc/dom1E/fSIulrBwnez0CToJE113ZGt4HoliGY=
+github.com/bwmarrin/discordgo v0.27.1/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
 github.com/cenkalti/backoff v2.1.1+incompatible h1:tKJnvO2kl0zmb/jA5UKAt4VoEVw1qxKWjE/Bpp46npY=
 github.com/cenkalti/backoff v2.1.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
@@ -438,6 +440,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5
 github.com/mbilski/exhaustivestruct v1.2.0/go.mod h1:OeTBVxQWoEmB2J2JCHmXWPJ0aksxSUOUy+nvtVEfzXc=
 github.com/meyskens/discord-ha v0.0.0-20210723094030-8791e408bab7 h1:rPbHy7dVJUzjVSE7/pW+7/JyjxgOGkikSXS+6uvmwLE=
 github.com/meyskens/discord-ha v0.0.0-20210723094030-8791e408bab7/go.mod h1:QpnvQEcrsH8bCce7hGhhj0tYuOMGKWGILHTRmElASVs=
+github.com/meyskens/discord-ha v0.0.0-20231126184545-b70d469e3c1e h1:/L1yCRZoHv+5UjyvtT5FkU/Ncpo0nMgMtMggKmBvJYA=
+github.com/meyskens/discord-ha v0.0.0-20231126184545-b70d469e3c1e/go.mod h1://H9+n6ntQWcOlSqOzr01RUvJ9YoPBMRWLpfRM2JKUo=
 github.com/meyskens/discordgo v0.23.3-0.20210723093830-80a9f1364942 h1:AMm3QNLw9i+O2RoJOe6K0A3NlX2XeXF+zyvXgDuqZKo=
 github.com/meyskens/discordgo v0.23.3-0.20210723093830-80a9f1364942/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
 github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd h1:n0QVTkt3UwQ9166YyvKgMCXIm02r5ZZZtadIIfkmzbI=

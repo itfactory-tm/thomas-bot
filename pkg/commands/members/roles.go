@@ -112,6 +112,7 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 		if maxValues > 25 {
 			maxValues = 25
 		}
+		minValues := 1
 
 		_, err = s.ChannelMessageSendComplex(ch.ID, &discordgo.MessageSend{
 			Content: rs.Message,
@@ -119,7 +120,7 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
 						discordgo.SelectMenu{
-							MinValues:   1,
+							MinValues:   &minValues,
 							MaxValues:   maxValues,
 							CustomID:    "rolereq--" + guildID,
 							Placeholder: "Select the roles you want to request",

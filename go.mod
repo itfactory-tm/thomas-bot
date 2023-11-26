@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/arran4/golang-ical v0.0.0-20210807024147-770fa87aff1d
-	github.com/bwmarrin/discordgo v0.23.2
+	github.com/bwmarrin/discordgo v0.27.1
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/go-audio/wav v1.0.0
@@ -12,7 +12,7 @@ require (
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/hraban/opus v0.0.0-20191117073431-57179dff69a6
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/meyskens/discord-ha v0.0.0-20210723094030-8791e408bab7
+	github.com/meyskens/discord-ha v0.0.0-20231126184545-b70d469e3c1e
 	github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd
 	github.com/sanzaru/go-giphy v0.0.0-20211118160211-e9e78e55bc7a
 	github.com/spf13/cobra v1.1.3
@@ -25,9 +25,5 @@ require (
 	mvdan.cc/xurls/v2 v2.2.0
 )
 
-replace (
-	// pull select code
-	github.com/bwmarrin/discordgo v0.23.2 => github.com/meyskens/discordgo v0.23.3-0.20210723093830-80a9f1364942
-	// etcd fix
-	google.golang.org/grpc => google.golang.org/grpc v1.26.0
-)
+// etcd fix
+replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
