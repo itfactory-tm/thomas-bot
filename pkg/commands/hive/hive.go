@@ -287,7 +287,7 @@ func (h *HiveCommand) createChannel(s *discordgo.Session, i *discordgo.Interacti
 								Label:    "Join Channel",
 								Style:    discordgo.SuccessButton,
 								CustomID: "hive_join",
-								Emoji: discordgo.ComponentEmoji{
+								Emoji: &discordgo.ComponentEmoji{
 									Name: "👋",
 								},
 							},

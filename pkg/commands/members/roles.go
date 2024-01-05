@@ -99,7 +99,7 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 					Label:       role.Name,
 					Value:       role.ID,
 					Description: role.Name,
-					Emoji: discordgo.ComponentEmoji{
+					Emoji: &discordgo.ComponentEmoji{
 						Name: crole.Emoji,
 					},
 					Default: false,
@@ -245,7 +245,7 @@ L:
 						discordgo.Button{
 							Label: "Add Role",
 							Style: discordgo.SuccessButton,
-							Emoji: discordgo.ComponentEmoji{
+							Emoji: &discordgo.ComponentEmoji{
 								Name: "➕",
 							},
 							CustomID: fmt.Sprintf("roleresponse--add--%s--%s", role.ID, i.User.ID),
@@ -253,7 +253,7 @@ L:
 						discordgo.Button{
 							Label: "Replace role of type",
 							Style: discordgo.SecondaryButton,
-							Emoji: discordgo.ComponentEmoji{
+							Emoji: &discordgo.ComponentEmoji{
 								Name: "🔄",
 							},
 							CustomID: fmt.Sprintf("roleresponse--replace--%s--%s", role.ID, i.User.ID),
@@ -261,7 +261,7 @@ L:
 						discordgo.Button{
 							Label: "Deny",
 							Style: discordgo.DangerButton,
-							Emoji: discordgo.ComponentEmoji{
+							Emoji: &discordgo.ComponentEmoji{
 								Name: "❌",
 							},
 							CustomID: fmt.Sprintf("roleresponse--deny--%s--%s", role.ID, i.User.ID),

@@ -28,7 +28,7 @@ var buttons = []discordgo.MessageComponent{
 				Label:    "Join",
 				Style:    discordgo.SuccessButton,
 				CustomID: "lfp_join",
-				Emoji: discordgo.ComponentEmoji{
+				Emoji: &discordgo.ComponentEmoji{
 					Name: "👋",
 				},
 			},
@@ -36,7 +36,7 @@ var buttons = []discordgo.MessageComponent{
 				Label:    "Join as Backup",
 				Style:    discordgo.SecondaryButton,
 				CustomID: "lfp_backup",
-				Emoji: discordgo.ComponentEmoji{
+				Emoji: &discordgo.ComponentEmoji{
 					Name: "💾",
 				},
 			},
@@ -48,7 +48,7 @@ var buttons = []discordgo.MessageComponent{
 				Label:    "Delete",
 				Style:    discordgo.DangerButton,
 				CustomID: "lfp_delete",
-				Emoji: discordgo.ComponentEmoji{
+				Emoji: &discordgo.ComponentEmoji{
 					Name: "🗑",
 				},
 			},
@@ -56,7 +56,7 @@ var buttons = []discordgo.MessageComponent{
 				Label:    "Start",
 				Style:    discordgo.SuccessButton,
 				CustomID: "lfp_start",
-				Emoji: discordgo.ComponentEmoji{
+				Emoji: &discordgo.ComponentEmoji{
 					Name: "🎮",
 				},
 			},
