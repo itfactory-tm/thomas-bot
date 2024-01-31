@@ -22,7 +22,7 @@ It helps teachers doing their job and students also... sometimes...
         - [libsoxr](https://archlinux.org/packages/extra/x86_64/libsoxr/)
         - [sdl<sup>aur</sup>](https://aur.archlinux.org/packages/sdl)
         - [portaudio](https://archlinux.org/packages/extra/x86_64/portaudio/)
-        - [opusfile](https://archlinux.org/packages/community/x86_64/opusfile/)
+        - [opusfile](https://archlinux.org/packages/extra/x86_64/opusfile/)
     - On Windows, you're on your own for now :)
 2. Compile and run the project:
     - On Unix-like systems, run `THOMASBOT_TOKEN={TOKEN} go run ./`, where `{TOKEN}` is your Discord bot's token.
