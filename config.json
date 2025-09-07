@@ -17,7 +17,7 @@
             {"emoji": "1️⃣", "id": "687567949795557386", "autoApprove": true, "nameOverride": "1st year Bachelor (ITF/ACS)"},
             {"emoji": "2️⃣", "id": "687568334379679771", "nameOverride": "2nd year Bachelor (ITF/ACS)" },
             {"emoji": "3️⃣", "id": "687568470820388864", "nameOverride": "3rd year Bachelor (ITF/ACS)"},
-            {"emoji": "🥇", "id": "1414219489804812308", "nameOverride": "1ste jaar Graduaat"},
+            {"emoji": "🥇", "id": "1414219489804812308", "autoApprove": true, "nameOverride": "1ste jaar Graduaat"},
             {"emoji": "🥈", "id": "1414219862494154823", "nameOverride": "2de jaar Graduaat"},
             {"emoji": "👩‍💻", "id": "689844328528478262", "nameOverride": "Werktraject Bachelor" },
             {"emoji": "👩‍🎓", "id": "688368287255494702"},
