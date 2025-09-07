@@ -129,13 +129,13 @@ func (v *cleanCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 		for {
 			time.Sleep(300 * time.Second)
 
-			guilds, err := dg.UserGuilds(100, "", "")
+			guilds, err := dg.UserGuilds(100, "", "", false)
 			for len(guilds) > 0 {
 				for _, guild := range guilds {
 					log.Println("Checking", guild.Name)
 					v.checkGuild(guild.ID)
 				}
-				guilds, err = dg.UserGuilds(100, "", guilds[len(guilds)-1].ID)
+				guilds, err = dg.UserGuilds(100, "", guilds[len(guilds)-1].ID, false)
 				if err != nil {
 					break
 				}

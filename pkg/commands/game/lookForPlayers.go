@@ -677,7 +677,7 @@ func (l *LookCommand) handleJoinReaction(activePlayers, activeBackupPlayers, bac
 	message.Embeds[0].Fields[4].Value = backupPlayersString
 
 	_, err := s.ChannelMessageEditComplex(&discordgo.MessageEdit{
-		Components: buttons,
+		Components: &buttons,
 		Embed:      message.Embeds[0],
 		ID:         message.ID,
 		Channel:    message.ChannelID,

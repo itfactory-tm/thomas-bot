@@ -1,5 +1,5 @@
 ARG BUILDPLATFORM="linux/amd64"
-FROM --platform=$BUILDPLATFORM golang:1.21-alpine  as build
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine  as build
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -16,7 +16,7 @@ RUN export GOARM=6 && \
     if [ "$TARGETPLATFORM" == "linux/arm" ]; then export GOARCH=arm; fi && \
     go build -ldflags "-X main.revision=$(git rev-parse --short HEAD)" ./cmd/thomas/
 
-FROM alpine:3.18
+FROM alpine:3.22
 
 RUN apk add --no-cache ca-certificates
 

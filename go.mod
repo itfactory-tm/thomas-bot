@@ -1,15 +1,15 @@
 module github.com/itfactory-tm/thomas-bot
 
-go 1.21
+go 1.25.1
 
 require (
 	github.com/arran4/golang-ical v0.0.0-20210807024147-770fa87aff1d
-	github.com/bwmarrin/discordgo v0.27.2-0.20240104191117-afc57886f91a
+	github.com/bwmarrin/discordgo v0.29.0
 	github.com/go-audio/wav v1.0.0
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/hraban/opus v0.0.0-20191117073431-57179dff69a6
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/meyskens/discord-ha v0.0.0-20240105175717-f81dd516ef45
+	github.com/meyskens/discord-ha v0.0.0-20250907102524-dda8993d228f
 	github.com/meyskens/go-hcaptcha v0.0.0-20200428113538-5c28ead635cd
 	github.com/sanzaru/go-giphy v0.0.0-20211118160211-e9e78e55bc7a
 	github.com/spf13/cobra v1.1.3

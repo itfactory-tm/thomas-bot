@@ -87,7 +87,7 @@ func (is *InputStream) Read(b []int16) (n int, err error) {
 
 // NewEncoder gives a new Encoder
 func NewEncoder() *Encoder {
-	enc, err := opus.NewEncoder(48000, 1, opus.AppAudio)
+	enc, err := opus.NewEncoder(48000, 1, opus.Application(opus.AppAudio))
 	if err != nil {
 		panic("Failed creating encoder: " + err.Error())
 	}

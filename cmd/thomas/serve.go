@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/itfactory-tm/thomas-bot/pkg/commands/menu"
 	"log"
 	"os"
 	"os/signal"
@@ -12,6 +11,8 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/menu"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/pronostiek"
 
@@ -170,7 +171,7 @@ func (s *serveCmdOptions) RunE(cmd *cobra.Command, args []string) error {
 
 	go func() {
 		for {
-			guilds, _ := dg.UserGuilds(100, "", "")
+			guilds, _ := dg.UserGuilds(100, "", "", false)
 
 			dg.UpdateListeningStatus(fmt.Sprintf("%d servers (version %s)", len(guilds), revision))
 			time.Sleep(time.Minute)
