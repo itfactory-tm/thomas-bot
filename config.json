@@ -14,9 +14,9 @@
         {
           "message": "We need to assign you a role inside our Discord which will help you gain access to the class specific channels.\nSelect the roles you want to request, note that our moderation team has to approve these first.",
           "roles": [
-            {"emoji": "1️⃣", "id": "687567949795557386", "autoApprove": true, "nameOverride": "1st year Bachelor (ITF)"},
-            {"emoji": "2️⃣", "id": "687568334379679771", "nameOverride": "2nd year Bachelor (ITF)" },
-            {"emoji": "3️⃣", "id": "687568470820388864", "nameOverride": "3rd year Bachelor (ITF)"},
+            {"emoji": "1️⃣", "id": "687567949795557386", "autoApprove": true, "nameOverride": "1st year Bachelor (ITF/ACS)"},
+            {"emoji": "2️⃣", "id": "687568334379679771", "nameOverride": "2nd year Bachelor (ITF/ACS)" },
+            {"emoji": "3️⃣", "id": "687568470820388864", "nameOverride": "3rd year Bachelor (ITF/ACS)"},
             {"emoji": "🥇", "id": "1414219489804812308", "nameOverride": "1ste jaar Graduaat"},
             {"emoji": "🥈", "id": "1414219862494154823", "nameOverride": "2de jaar Graduaat"},
             {"emoji": "👩‍💻", "id": "689844328528478262", "nameOverride": "Werktraject Bachelor" },
