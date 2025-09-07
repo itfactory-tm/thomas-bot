@@ -329,9 +329,10 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 	if permType == "deny" {
 		msg := fmt.Sprintf("<@%s> denied the request from <@%s> for role <@&%s>", i.Member.User.ID, userID, role.ID)
 		s.ChannelMessageEditComplex(&discordgo.MessageEdit{
-			Channel: i.Message.ChannelID,
-			ID:      i.Message.ID,
-			Content: &msg,
+			Channel:    i.Message.ChannelID,
+			ID:         i.Message.ID,
+			Content:    &msg,
+			Components: &[]discordgo.MessageComponent{},
 		})
 		s.ChannelMessageSend(dm.ID, fmt.Sprintf("I'm sorry, your request for role %q has been denied.", role.Name))
 		return
@@ -382,9 +383,10 @@ func (m *MemberCommands) handleRolePermissionResponse(s *discordgo.Session, i *d
 
 	msg := fmt.Sprintf("<@%s> assigned <@&%s> role for <@%s>", i.Member.User.ID, roleID, userID)
 	_, err = s.ChannelMessageEditComplex(&discordgo.MessageEdit{
-		Channel: i.Message.ChannelID,
-		ID:      i.Message.ID,
-		Content: &msg,
+		Channel:    i.Message.ChannelID,
+		ID:         i.Message.ID,
+		Content:    &msg,
+		Components: &[]discordgo.MessageComponent{},
 	})
 	if err != nil {
 		log.Println("error responding to interaction", err)
