@@ -17,8 +17,8 @@
             {"emoji": "1️⃣", "id": "687567949795557386", "autoApprove": true, "nameOverride": "1st year Bachelor (ITF)"},
             {"emoji": "2️⃣", "id": "687568334379679771", "nameOverride": "2nd year Bachelor (ITF)" },
             {"emoji": "3️⃣", "id": "687568470820388864", "nameOverride": "3rd year Bachelor (ITF)"},
-            {"emoji": "1️", "id": "1414219489804812308", "nameOverride": "1ste jaar Graduaat"},
-            {"emoji": "2️", "id": "1414219862494154823", "nameOverride": "2de jaar Graduaat"},
+            {"emoji": "🥇", "id": "1414219489804812308", "nameOverride": "1ste jaar Graduaat"},
+            {"emoji": "🥈", "id": "1414219862494154823", "nameOverride": "2de jaar Graduaat"},
             {"emoji": "👩‍💻", "id": "689844328528478262", "nameOverride": "Werktraject Bachelor" },
             {"emoji": "👩‍🎓", "id": "688368287255494702"},
             {"emoji": "👩‍🏫", "id": "687567374198767617"}
@@ -32,9 +32,9 @@
             {"emoji": "🔐", "id": "882541824395325470", "nameOverride": "Bachelor - Cloud & Cyber Security"},
             {"emoji": "🧭", "id": "882541923351560214", "nameOverride": "Bachelor - Digital Innovation"},
             {"emoji": "⚡", "id": "882541999989866497", "nameOverride": "Bachelor - Internet of Things"},
-            {"emoji": "💻", "id": "882541999989866497", "nameOverride": "Graduaat - Programmeren"},
-            {"emoji": "🌐", "id": "882541999989866497", "nameOverride": "Graduaat - Systeem- en Netwerkbeheer"},
-            {"emoji": "📡", "id": "882541999989866497", "nameOverride": "Graduaat - Internet of Things"}
+            {"emoji": "💻", "id": "1414225393766109254", "nameOverride": "Graduaat - Programmeren"},
+            {"emoji": "🌐", "id": "1414225803092168876", "nameOverride": "Graduaat - Systeem- en Netwerkbeheer"},
+            {"emoji": "📡", "id": "1414240713553743924", "nameOverride": "Graduaat - Internet of Things"}
           ]
         }
       ],
