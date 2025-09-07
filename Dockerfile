@@ -1,5 +1,5 @@
 ARG BUILDPLATFORM="linux/amd64"
-FROM --platform=$BUILDPLATFORM golang:1.25-alpine  as build
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS build
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
