@@ -6,7 +6,7 @@ require (
 	github.com/arran4/golang-ical v0.0.0-20210807024147-770fa87aff1d
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/go-audio/wav v1.0.0
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+	github.com/golang/glog v1.2.4
 	github.com/hraban/opus v0.0.0-20191117073431-57179dff69a6
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/meyskens/discord-ha v0.0.0-20250907104801-63d2a58cf21e
