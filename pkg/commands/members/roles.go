@@ -71,11 +71,13 @@ func (m *MemberCommands) roleSlashCommand(s *discordgo.Session, i *discordgo.Int
 func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string) {
 	conf, err := m.db.ConfigForGuild(guildID)
 	if err != nil || conf == nil {
+		log.Println("no guild data")
 		return
 	}
 
 	ch, err := s.UserChannelCreate(userID)
 	if err != nil {
+		log.Println("error creating DM channel", err)
 		return
 	}
 
@@ -87,6 +89,7 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 	guild, err := s.Guild(guildID)
 	if err != nil {
 		log.Println("Guild error", err)
+		s.ChannelMessageSend(ch.ID, "I'm sorry I cannot look up the roles in this server :(")
 		return
 	}
 
@@ -136,6 +139,7 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 		})
 
 		if err != nil {
+			s.ChannelMessageSend(ch.ID, "I'm sorry I cannot send you the role selection :( "+err.Error())
 			log.Println(err)
 		}
 
