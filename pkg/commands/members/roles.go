@@ -94,11 +94,15 @@ func (m *MemberCommands) SendRoleDM(s *discordgo.Session, guildID, userID string
 		roles := []discordgo.SelectMenuOption{}
 		for _, crole := range rs.Roles {
 			role := findRole(guild.Roles, crole.ID)
+			name := role.Name
+			if crole.NameOverride != "" {
+				name = crole.NameOverride
+			}
 			if role != nil {
 				roles = append(roles, discordgo.SelectMenuOption{
-					Label:       role.Name,
+					Label:       name,
 					Value:       role.ID,
-					Description: role.Name,
+					Description: name,
 					Emoji: &discordgo.ComponentEmoji{
 						Name: crole.Emoji,
 					},

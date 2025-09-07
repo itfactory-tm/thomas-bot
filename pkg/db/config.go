@@ -35,9 +35,10 @@ type RoleSet struct {
 }
 
 type Role struct {
-	ID          string `json:"id"`
-	Emoji       string `json:"emoji"`
-	AutoApprove bool   `json:"autoApprove"`
+	ID           string `json:"id"`
+	Emoji        string `json:"emoji"`
+	NameOverride string `json:"nameOverride"`
+	AutoApprove  bool   `json:"autoApprove"`
 }
 
 type LookingForPlayersConfiguration struct {
