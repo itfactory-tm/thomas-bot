@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/itfactory-tm/thomas-bot/pkg/commands/honeypot"
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/menu"
 
 	"github.com/itfactory-tm/thomas-bot/pkg/commands/pronostiek"
@@ -201,6 +202,7 @@ func (s *serveCmdOptions) RegisterHandlers() {
 		menu.NewMenuCommand(),
 		pronostiek.NewPronostiekCommand(),
 		schedule.NewScheduleCommand(s.db),
+		honeypot.NewHoneypotCommands(s.db),
 	}
 
 	for _, handler := range s.handlers {

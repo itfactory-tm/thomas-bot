@@ -6,6 +6,8 @@ type Configuration struct {
 	WelcomeText      string   `json:"welcomeText"`
 	WelcomeDM        []string `json:"welcomeDM"`
 
+	HoneypotChannelID string `json:"honeypotChannelID"`
+
 	RoleManagement RoleManagementConfiguration `json:"roleManagement"`
 
 	Hives             []HiveConfiguration              `json:"hives"`
