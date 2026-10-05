@@ -20,6 +20,10 @@ var dieMessages = []string{
 	"Gunther is trots op je... sorry ik heb trots fout begrepen...",
 	"To the shadow realm you go",
 	"Niet op vreemde linkjes klikken he",
+	"So you have chosen ban?",
+	"YOU SHALL NOT PASS `Your cybersecurity course`",
+	"uw studiepunten zijn nu gehalveerd",
+	"dit is voor jou de eindhalte",
 }
 
 // HoneypotCommands contains the vegan honeypot module
