@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/itfactory-tm/thomas-bot/pkg/command"
@@ -17,6 +18,8 @@ var dieMessages = []string{
 	"de instructies waren duidelijk volgende keer beter!",
 	"het KULoket is geinformeerd...",
 	"Gunther is trots op je... sorry ik heb trots fout begrepen...",
+	"To the shadow realm you go",
+	"Niet op vreemde linkjes klikken he",
 }
 
 // HoneypotCommands contains the vegan honeypot module
@@ -72,5 +75,10 @@ func (m *HoneypotCommands) checkMessageCreateAsync(s *discordgo.Session, msg *di
 
 	randomInt := rand.Intn(len(dieMessages))
 
-	s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Sorry %s, %s", msg.Author.ID, dieMessages[randomInt]))
+	s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Sorry %s, %s", msg.Author.Username, dieMessages[randomInt]))
+
+	time.Sleep(10 * time.Second)
+
+	// soft ban you can come back once more
+	s.GuildBanDelete(msg.GuildID, msg.Author.ID)
 }
