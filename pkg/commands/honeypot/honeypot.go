@@ -80,9 +80,17 @@ func (m *HoneypotCommands) checkMessageCreateAsync(s *discordgo.Session, msg *di
 	randomInt := rand.Intn(len(dieMessages))
 
 	s.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Sorry %s, %s", msg.Author.Username, dieMessages[randomInt]))
+	s.ChannelMessageSend("698102614742794281", fmt.Sprintf("<@687715371255463972> het is weer van dat.... Ik heb %s verbannen voor spam.", msg.Author.Username))
+	s.ChannelMessageSend("698102614742794281", fmt.Sprintf("Hier is het bericht: %q", msg.Content))
+	attachments := ""
+	for _, a := range msg.Attachments {
+		attachments = fmt.Sprintf("%s %s", a.URL)
+	}
+	s.ChannelMessageSend("698102614742794281", fmt.Sprintf("attachments: %q", attachments))
 
 	time.Sleep(10 * time.Second)
 
 	// soft ban you can come back once more
 	s.GuildBanDelete(msg.GuildID, msg.Author.ID)
+	s.ChannelMessageSend("698102614742794281", fmt.Sprintf("Softban van %s is nu vervallen", msg.Author.Username))
 }
