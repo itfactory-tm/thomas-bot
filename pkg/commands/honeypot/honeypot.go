@@ -84,7 +84,7 @@ func (m *HoneypotCommands) checkMessageCreateAsync(s *discordgo.Session, msg *di
 	s.ChannelMessageSend("698102614742794281", fmt.Sprintf("Hier is het bericht: %q", msg.Content))
 	attachments := ""
 	for _, a := range msg.Attachments {
-		attachments = fmt.Sprintf("%s %s", a.URL)
+		attachments = fmt.Sprintf("%s %s", attachments, a.URL)
 	}
 	s.ChannelMessageSend("698102614742794281", fmt.Sprintf("attachments: %q", attachments))
 
